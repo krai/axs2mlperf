@@ -1,0 +1,11 @@
+{
+    "_parent_entries": [
+        [ "^", "core_collection" ],
+        [ "^", "byname", "git" ]
+    ],
+    "tags": [
+        "collection"
+    ],
+    "contained_entries": {
+    }
+}
