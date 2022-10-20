@@ -14,6 +14,16 @@
         "git_repo",
         "collection"
     ],
-    "contained_entries": {},
+    "contained_entries": {
+        "loadgen_example": "loadgen_example",
+        "loadgen_wheel_recipe": "loadgen_wheel_recipe",
+        "base_loadgen_experiment": "base_loadgen_experiment",
+        "base_imagenet_loadgen_experiment": "base_imagenet_loadgen_experiment",
+        "image_classification_torch_loadgen_py": "image_classification_torch_loadgen_py",
+        "image_classification_onnx_loadgen_py": "image_classification_onnx_loadgen_py",
+        "base_object_detection_loadgen_experiment": "base_object_detection_loadgen_experiment",
+        "object_detection_onnx_loadgen_py": "object_detection_onnx_loadgen_py",
+        "chai_sut": "chai_sut"
+    },
     "repo_name": "axs2mlperf"
 }
