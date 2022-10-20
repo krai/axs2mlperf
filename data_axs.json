@@ -1,11 +1,19 @@
 {
     "_parent_entries": [
-        [ "^", "core_collection" ],
-        [ "^", "byname", "git" ]
+        [
+            "^",
+            "core_collection"
+        ],
+        [
+            "^",
+            "byname",
+            "git"
+        ]
     ],
     "tags": [
+        "git_repo",
         "collection"
     ],
-    "contained_entries": {
-    }
+    "contained_entries": {},
+    "repo_name": "axs2mlperf"
 }
