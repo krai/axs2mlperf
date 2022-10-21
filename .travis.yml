@@ -15,6 +15,8 @@ matrix:
       python: 3.7
       env:
         - PYTHON_EXE=python
+      before-install:
+        - ${PYTHON_EXE} -m pip install --ignore-installed --verbose pip setuptools importlib-metadata
 
     - language: python
       python: 3.8
@@ -40,7 +42,6 @@ install:
     - echo "CWD=${CWD}, THIS_REPO_NAME=${THIS_REPO_NAME}, PATH=${PATH}"
     - which ${PYTHON_EXE}
     - ${PYTHON_EXE} --version
-    - ${PYTHON_EXE} -m pip install --ignore-installed --verbose pip setuptools
     - which git
     - git --version
     - git clone https://github.com/krai/axs.git
