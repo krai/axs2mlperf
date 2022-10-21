@@ -8,19 +8,29 @@ matrix:
   include:
     - language: python
       python: 3.6
+      env:
+        - PYTHON_EXE=python
 
     - language: python
       python: 3.7
+      env:
+        - PYTHON_EXE=python
 
     - language: python
       python: 3.8
+      env:
+        - PYTHON_EXE=python
 
     - language: python
       python: 3.9
+      env:
+        - PYTHON_EXE=python
 
     - os: osx
       osx_image: xcode11.2  # Python 3.7, but may change with time
       language: shell       # 'language: python' is an error on Travis CI macOS
+      env:
+        - PYTHON_EXE=python3
 
 install:
     - CWD=`pwd`
