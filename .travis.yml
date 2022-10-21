@@ -1,0 +1,59 @@
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+
+os:         linux
+language:   python
+
+matrix:
+  include:
+    - language: python
+      python: 3.6
+      env:
+        - PYTORCH_CLASSIFY=on
+        - PYTHON_EXE=python
+        - C_COMPILE_AND_RUN=on
+
+    - language: python
+      python: 3.7
+      env:
+        - ONNX_CLASSIFY=on
+        - PYTHON_EXE=python
+        - C_COMPILE_AND_RUN=on
+
+    - language: python
+      python: 3.8
+      env:
+        - TF_CLASSIFY=on
+        - PYTHON_EXE=python
+        - C_COMPILE_AND_RUN=on
+
+    - language: python
+      python: 3.9
+      env:
+        - PYTORCH_CLASSIFY=on
+        - PYTHON_EXE=python
+        - C_COMPILE_AND_RUN=on
+
+    - os: osx
+      osx_image: xcode11.2  # Python 3.7, but may change with time
+      language: shell       # 'language: python' is an error on Travis CI macOS
+      env:
+        - ONNX_CLASSIFY=on
+        - PYTHON_EXE=python3
+        - C_COMPILE_AND_RUN=on
+
+install:
+    - CWD=`pwd`
+    - PATH=$PATH:$CWD:$CWD/axs
+    - THIS_REPO_NAME=`basename $CWD`
+    - echo "TRAVIS_OS_NAME=${TRAVIS_OS_NAME}, TRAVIS_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION}"
+    - echo "CWD=${CWD}, THIS_REPO_NAME=${THIS_REPO_NAME}, PATH=${PATH}"
+    - which ${PYTHON_EXE}
+    - ${PYTHON_EXE} --version
+    - which git
+    - git --version
+    - git clone https://github.com/krai/axs.git
+    - axs byquery git_repo,collection,repo_name=$THIS_REPO_NAME
+
+script:
+    - axs byname loadgen_example , run
