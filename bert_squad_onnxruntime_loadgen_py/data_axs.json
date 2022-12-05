@@ -17,13 +17,11 @@
                                        {"default_value": [ "python_package", ["^^", "get", "onnxruntime_name"] ] } ],
 
     "tensorflow_query": ["python_package", "package_name=tensorflow"],
-    "torch_query": [ "^^", "case", [ [ "^^", "get", "num_gpus"] , "0" ,["python_package", "package_name=torch"] ], {"default_value": ["python_package", "package_name=torch", "with_cuda"] } ],
     "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
 
     "python_deps": [
         [ "^", "byquery", [ [ "^^", "get", "tensorflow_query" ] ], {}, ["tensorflow_query"] ],
         [ "^", "byquery", [ [ "^^", "get", "onnxruntime_query" ] ], {}, ["onnxruntime_query"] ],
-        [ "^", "byquery", [ [ "^^", "get", "torch_query" ] ], {}, ["torch_query"] ],
         [ "^", "byquery", [ [ "^^", "get", "loadgen_query" ] ], {}, ["loadgen_query"] ]
     ],
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
