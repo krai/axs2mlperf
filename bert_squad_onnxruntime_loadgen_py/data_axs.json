@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
         [ [ "loadgen_output", "bert_squad", "framework=onnx" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
@@ -62,21 +62,6 @@
     "execution_device": "",
     "verbosity": 2,
 
-    "loadgen_scenario": "SingleStream",
-    "loadgen_mode": "AccuracyOnly",
-    "loadgen_dataset_size": 20,
-    "loadgen_buffer_size": 8,
-    "loadgen_count_override": "",
-
-    "loadgen_multistreamness": null,
-    "loadgen_target_latency": null,
-    "loadgen_target_qps": null,
-
-    "loadgen_mlperf_conf_path": [ "^", "execute", [[
-        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-        [ "get_path", "mlperf.conf" ]
-    ]] ],
-
     "sut_name": ["^", "func", "socket.gethostname" ],
 
     "output_entry": [ "^^", "execute", [[
@@ -110,14 +95,6 @@
         [ "get_path" ]
     ]] ],
 
-    "target_user_conf_path": [ "^^", "execute", [[
-        [ "get", "output_entry" ],
-        [ "get_path", "user.conf" ]
-    ]] ],
-
-    "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
-        [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness", "loadgen_target_latency", "loadgen_target_qps" ] ]
-    ]],
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",
 
     "script_extra_params": [ "^^", "substitute", "\"#{mlperf_inference_path}#\" \"#{tokenized_squad_path}#\" \"#{model_name}#\" \"#{model_path}#\" \"#{model_input_layers_tms}#\" \"#{batch_size}#\" \"#{execution_device}#\" \"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# \"#{loadgen_count_override}#\" \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" \"#{verbosity}#\" " ]

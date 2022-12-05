@@ -25,7 +25,8 @@
         "object_detection_onnx_loadgen_py": "object_detection_onnx_loadgen_py",
         "chai_sut": "chai_sut",
         "base_bert_loadgen_experiment": "base_bert_loadgen_experiment",
-        "bert_squad_onnxruntime_loadgen_py": "bert_squad_onnxruntime_loadgen_py"
+        "bert_squad_onnxruntime_loadgen_py": "bert_squad_onnxruntime_loadgen_py",
+        "base_loadgen_program": "base_loadgen_program"
     },
     "repo_name": "axs2mlperf"
 }
