@@ -1,0 +1,49 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+    "bert_code_extra_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "language","bert", "DeepLearningExamples", "TensorFlow", "LanguageModeling", "BERT" ]] ]
+    ]] ],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "language","bert", "accuracy-squad.py" ]] ]
+            ]], {}, ["mlperf_inference_git_entry"] ],
+
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+
+    "predictions_path":   [ "^^", "get_path", "predictions.json" ],
+
+    "selected_size": [ "^^", "get", "loadgen_dataset_size" ],
+
+    "tokenization_vocab_query":[ "downloaded","tokenization","vocab_for_bert" ],
+    "tokenization_vocab_entry": [ "^", "byquery", [[ "^^", "get", "tokenization_vocab_query" ]], {}, ["tokenization_vocab_query"] ],
+    "tokenization_vocab_path": [ "^^", "execute", [[
+        [ "get", "tokenization_vocab_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "accuracy_dict": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "python_script" ],
+        [ "run", [], {
+                "python_deps": [
+                    [ "^^", "get", "bert_code_extra_path" ],
+                    [ "^", "byquery", "python_package,package_name=tensorflow" ],
+                    [ "^", "byquery", "python_package,package_name=transformers" ]
+                ],
+                "abs_script_path": ["^^", "get", "abs_script_path"],
+                "script_extra_params": [ "^^", "substitute", "--vocab_file=\"#{tokenization_vocab_path}#\" --val_data=\"#{squad_dataset_original_path}#\" --features_cache_file=\"#{squad_dataset_tokenized_path}#\" --log_file=\"#{accuracy_log_path}#\" --out_file=\"#{predictions_path}#\" --max_examples=\"#{selected_size}#\" " ],
+                "capture_output": true,
+                "split_to_lines": true
+            } ],
+        [ "__getitem__", 0 ],
+        0,
+        [ "func", "eval" ]
+    ]], {} ],
+    "f1": [ "^^" , "dig","accuracy_dict.f1" ],
+    "exact_match": [ "^^" , "dig","accuracy_dict.exact_match" ],
+    "accuracy": [ "^^" , "get","f1" ]
+}
