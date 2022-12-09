@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
         [ [ "loadgen_output", "classified_imagenet", "framework=onnx" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
@@ -51,14 +51,6 @@
     "execution_device": "",
     "verbosity": 2,
 
-    "loadgen_scenario": "SingleStream",
-    "loadgen_mode": "AccuracyOnly",
-    "loadgen_dataset_size": 20,
-    "loadgen_buffer_size": 8,
-    "loadgen_count_override": "",
-    "loadgen_multistreamness": "",
-    "loadgen_config_path": "",
-
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "attach", [ "^", "work_collection" ] ],
@@ -74,7 +66,7 @@
             "loadgen_buffer_size", "#{loadgen_buffer_size}#",
             "loadgen_count_override", "#{loadgen_count_override}#",
             "loadgen_multistreamness", "#{loadgen_multistreamness}#",
-            "loadgen_config_path", "#{loadgen_config_path}#",
+            "loadgen_mlperf_conf_path", "#{loadgen_mlperf_conf_path}#",
 
             "tags", [ "loadgen_output", "classified_imagenet" ]
          ]] ] ],
@@ -87,5 +79,5 @@
     ]] ],
     "rel_script_path": "onnx_loadgen_classifier.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# \"#{loadgen_count_override}#\" \"#{loadgen_multistreamness}#\" \"#{loadgen_config_path}#\" #{verbosity}# \"#{model_path}#\" \"#{model_name}#\" \"#{normalize_symmetric}#\" \"#{subtract_mean_bool}#\" \"#{given_channel_means}#\" \"#{execution_device}#\" #{batch_size}# #{cpu_threads}# \"#{preprocessed_images_dir}#\"" ]
+    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# \"#{loadgen_count_override}#\" #{loadgen_multistreamness}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" #{verbosity}# \"#{model_path}#\" \"#{model_name}#\" \"#{normalize_symmetric}#\" \"#{subtract_mean_bool}#\" \"#{given_channel_means}#\" \"#{execution_device}#\" #{batch_size}# #{cpu_threads}# \"#{preprocessed_images_dir}#\"" ]
 }

@@ -24,19 +24,20 @@ scenario_str                = sys.argv[1]
 mode_str                    = sys.argv[2]
 dataset_size                = int(sys.argv[3])
 buffer_size                 = int(sys.argv[4])
-multistreamness_str         = sys.argv[5]
-count_override_str          = sys.argv[6]
-config_filepath             = sys.argv[7]
-verbosity                   = int( sys.argv[8] )
-model_path                  = sys.argv[9]
-model_name                  = sys.argv[10]
-normalize_symmetric         = eval(sys.argv[11])    # FIXME: currently we are passing a stringified form of a data structure,
-subtract_mean_bool          = eval(sys.argv[12])    # it would be more flexible to encode/decode through JSON instead.
-given_channel_means         = eval(sys.argv[13])
-execution_device            = sys.argv[14]          # if empty, it will be autodetected
-batch_size                  = int( sys.argv[15])
-cpu_threads                 = int( sys.argv[16])
-preprocessed_imagenet_dir   = sys.argv[17]
+count_override_str          = sys.argv[5]
+multistreamness_str         = sys.argv[6]
+mlperf_conf_path            = sys.argv[7]
+user_conf_path              = sys.argv[8]
+verbosity                   = int( sys.argv[9] )
+model_path                  = sys.argv[10]
+model_name                  = sys.argv[11]
+normalize_symmetric         = eval(sys.argv[12])    # FIXME: currently we are passing a stringified form of a data structure,
+subtract_mean_bool          = eval(sys.argv[13])    # it would be more flexible to encode/decode through JSON instead.
+given_channel_means         = eval(sys.argv[14])
+execution_device            = sys.argv[15]          # if empty, it will be autodetected
+batch_size                  = int( sys.argv[16])
+cpu_threads                 = int( sys.argv[17])
+preprocessed_imagenet_dir   = sys.argv[18]
 
 given_channel_stds          = []
 data_layout                 = 'NCHW'
@@ -92,7 +93,6 @@ def tick(letter, quantity=1):
     if verbosity:
         print(letter + (str(quantity) if quantity>1 else ''), end='')
 
-
 def load_query_samples(sample_indices):     # 0-based indices in our whole dataset
     global preprocessed_image_buffer
 
@@ -115,14 +115,12 @@ def load_query_samples(sample_indices):     # 0-based indices in our whole datas
     if verbosity:
         print('')
 
-
 def unload_query_samples(sample_indices):
     #print("unload_query_samples({})".format(sample_indices))
     tick('U')
 
     if verbosity:
         print('')
-
 
 def issue_queries(query_samples):
 
@@ -145,7 +143,7 @@ def issue_queries(query_samples):
         actual_batch_size = "(unknown)"
 
         if verbosity > 1:
-            print("[batch of {}] inference={:.2f} ms".format(actual_batch_size, inference_time_s*1000))
+            print("[batch of {}] inference={:.2f} ms".format(len(batch), inference_time_s*1000))
 
         batch_predicted_labels  = (np.argmax( batch_predictions, axis=1) - 1).tolist()
 
@@ -165,10 +163,8 @@ def issue_queries(query_samples):
         #tick('R', len(response))
     sys.stdout.flush()
 
-
 def flush_queries():
     pass
-
 
 def benchmark_using_loadgen():
     "Perform the benchmark using python API for the LoadGen library"
@@ -187,14 +183,15 @@ def benchmark_using_loadgen():
     }[mode_str]
 
     ts = lg.TestSettings()
-    if(config_filepath):
-        ts.FromConfig(config_filepath, model_name, scenario_str)
+    if(mlperf_conf_path):
+        ts.FromConfig(mlperf_conf_path, model_name, scenario_str)
+    if(user_conf_path):
+        ts.FromConfig(user_conf_path, model_name, scenario_str)
     ts.scenario = scenario
     ts.mode     = mode
 
-    if multistreamness_str:
+    if multistreamness_str != "None":
         ts.multi_stream_samples_per_query = int(multistreamness_str)
-
     if count_override_str:
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
