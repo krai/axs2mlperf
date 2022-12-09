@@ -3,5 +3,5 @@
 
     "summary": [ "^^", "parse_summary" ],
 
-    "performance": ["^^", "case",[ ["^^",  "dig", "summary.Result_is"], "INVALID", "None"], { "default_value": ["^^", "dig", "summary.Samples_per_second" ] } ]
+    "performance": ["^^", "parse_performance"]
 }
