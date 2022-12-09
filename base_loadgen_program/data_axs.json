@@ -4,6 +4,8 @@
     "loadgen_dataset_size": 20,
     "loadgen_buffer_size": 8,
     "loadgen_count_override": "",
+    "loadgen_count_override_min": ["^^", "get", "loadgen_count_override"],
+    "loadgen_count_override_max": ["^^", "get", "loadgen_count_override"],
 
     "loadgen_multistreamness": null,
     "loadgen_target_latency": null,
@@ -18,6 +20,6 @@
         [ "get_path", "user.conf" ]
     ]] ],
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
-        [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness", "loadgen_target_latency", "loadgen_target_qps" ] ]
+        [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" ] ]
     ]]
 }

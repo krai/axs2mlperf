@@ -2,6 +2,8 @@
 def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, target_user_conf_path):
 
     param_to_conf_pair = {
+        "loadgen_count_override_min":   ("min_query_count", 1),
+        "loadgen_count_override_max":   ("max_query_count", 1),
         "loadgen_multistreamness":      ("samples_per_query", 1),
         "loadgen_max_query_count":      ("max_query_count", 1),
         "loadgen_buffer_size":          ("performance_sample_count_override", 1),
