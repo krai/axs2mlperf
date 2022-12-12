@@ -192,7 +192,7 @@ def benchmark_using_loadgen():
 
     if multistreamness_str != "None":
         ts.multi_stream_samples_per_query = int(multistreamness_str)
-    if count_override_str:
+    if count_override_str != "None":
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
 
