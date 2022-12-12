@@ -28,29 +28,30 @@ mode_str                    = sys.argv[2]
 dataset_size                = int(sys.argv[3])
 buffer_size                 = int(sys.argv[4])
 count_override_str          = sys.argv[5]
-mlperf_conf_path            = sys.argv[6]
-user_conf_path              = sys.argv[7]
-verbosity                   = int( sys.argv[8] )
+multistreamness_str         = sys.argv[6]
+mlperf_conf_path            = sys.argv[7]
+user_conf_path              = sys.argv[8]
+verbosity                   = int( sys.argv[9] )
 
-model_name                  = sys.argv[9]
-model_path                  = sys.argv[10]
-model_resolution            = int(sys.argv[11])
-model_output_scale          = float(sys.argv[12])
-model_input_layer_name      = sys.argv[13]
-model_output_layers_bls     = eval(sys.argv[14])
-model_skipped_classes       = eval(sys.argv[15])
-normalize_symmetric         = eval(sys.argv[16])    # FIXME: currently we are passing a stringified form of a data structure,
-subtract_mean_bool          = eval(sys.argv[17])    # it would be more flexible to encode/decode through JSON instead.
-given_channel_means         = eval(sys.argv[18])
-given_channel_stds          = eval(sys.argv[19])
+model_name                  = sys.argv[10]
+model_path                  = sys.argv[11]
+model_resolution            = int(sys.argv[12])
+model_output_scale          = float(sys.argv[13])
+model_input_layer_name      = sys.argv[14]
+model_output_layers_bls     = eval(sys.argv[15])
+model_skipped_classes       = eval(sys.argv[16])
+normalize_symmetric         = eval(sys.argv[17])    # FIXME: currently we are passing a stringified form of a data structure,
+subtract_mean_bool          = eval(sys.argv[18])    # it would be more flexible to encode/decode through JSON instead.
+given_channel_means         = eval(sys.argv[19])
+given_channel_stds          = eval(sys.argv[20])
 
-preprocessed_coco_dir       = sys.argv[20]
-coco_labels_file_path       = sys.argv[21]
-execution_device            = sys.argv[22]          # if empty, it will be autodetected
-batch_size                  = int( sys.argv[23])
-cpu_threads                 = int( sys.argv[24])
+preprocessed_coco_dir       = sys.argv[21]
+coco_labels_file_path       = sys.argv[22]
+execution_device            = sys.argv[23]          # if empty, it will be autodetected
+batch_size                  = int( sys.argv[24])
+cpu_threads                 = int( sys.argv[25])
 
-minimal_class_id            = int( sys.argv[25])
+minimal_class_id            = int( sys.argv[26])
 
 
 ## Model parameters:
@@ -244,7 +245,10 @@ def benchmark_using_loadgen():
     ts.scenario = scenario
     ts.mode     = mode
 
-    if count_override_str:
+    if multistreamness_str != "None":
+         ts.multi_stream_samples_per_query = int(multistreamness_str)
+
+    if count_override_str != "None":
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
 
