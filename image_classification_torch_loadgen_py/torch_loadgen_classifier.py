@@ -23,13 +23,14 @@ scenario_str                = sys.argv[1]
 mode_str                    = sys.argv[2]
 dataset_size                = int(sys.argv[3])
 buffer_size                 = int(sys.argv[4])
-multistreamness_str         = sys.argv[5]
-count_override_str          = sys.argv[6]
-config_filepath             = sys.argv[7]
-verbosity                   = int( sys.argv[8] )
-model_name                  = sys.argv[9]
-batch_size                  = int( sys.argv[10] )
-preprocessed_imagenet_dir   = sys.argv[11]
+count_override_str          = sys.argv[5]
+multistreamness_str         = sys.argv[6]
+mlperf_conf_path            = sys.argv[7]
+user_conf_path              = sys.argv[8]
+verbosity                   = int( sys.argv[9] )
+model_name                  = sys.argv[10]
+batch_size                  = int( sys.argv[11] )
+preprocessed_imagenet_dir   = sys.argv[12]
 
 
 use_cuda                    = torch.cuda.is_available()
@@ -174,15 +175,18 @@ def benchmark_using_loadgen():
     }[mode_str]
 
     ts = lg.TestSettings()
-    if(config_filepath):
-        ts.FromConfig(config_filepath, model_name, scenario_str)
+    if(mlperf_conf_path):
+        ts.FromConfig(mlperf_conf_path, model_name, scenario_str)
+    if(user_conf_path):
+        ts.FromConfig(user_conf_path, model_name, scenario_str)
+
     ts.scenario = scenario
     ts.mode     = mode
 
-    if multistreamness_str:
+    if multistreamness_str != "None":
         ts.multi_stream_samples_per_query = int(multistreamness_str)
 
-    if count_override_str:
+    if count_override_str != "None":
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
 
