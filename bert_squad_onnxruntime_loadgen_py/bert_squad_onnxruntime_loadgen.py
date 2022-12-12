@@ -170,7 +170,7 @@ def benchmark_using_loadgen():
 
     ts.scenario = scenario
     ts.mode     = mode
-    if count_override_str:
+    if count_override_str != "None":
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
     sut = lg.ConstructSUT(issue_queries, flush_queries)
