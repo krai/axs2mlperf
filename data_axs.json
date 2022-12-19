@@ -11,8 +11,8 @@
         ]
     ],
     "tags": [
-        "git_repo",
-        "collection"
+        "collection",
+        "git_repo"
     ],
     "contained_entries": {
         "loadgen_example": "loadgen_example",
@@ -26,7 +26,8 @@
         "chai_sut": "chai_sut",
         "base_bert_loadgen_experiment": "base_bert_loadgen_experiment",
         "bert_squad_onnxruntime_loadgen_py": "bert_squad_onnxruntime_loadgen_py",
-        "base_loadgen_program": "base_loadgen_program"
+        "base_loadgen_program": "base_loadgen_program",
+        "model_onnx_distilbert_squad_recipe": "model_onnx_distilbert_squad_recipe"
     },
     "repo_name": "axs2mlperf"
 }
