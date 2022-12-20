@@ -29,6 +29,7 @@
 
     "python_deps": [
         [ "^", "byquery", "python_package,package_name=setuptools-rust"],
+        [ "^", "byquery", "python_package,package_name=torch"],
         [ "^", "byquery", "python_package,package_name=transformers[onnx]"]
     ],
 
