@@ -6,8 +6,7 @@
 
     "model_name": "distilbert_huggingface",
     "repo": "distilbert-base-uncased-distilled-squad",
-    "entry_name": "downloaded_distilbert_huggingface",
-
+    "model_feature": "question-answering",
 
     "return_this_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
@@ -32,8 +31,8 @@
         [ "^", "byquery", "python_package,package_name=transformers[onnx]"]
     ],
 
-    "abs_script_path": "-m transformers.onnx --feature question-answering",
+    "abs_script_path": "-m transformers.onnx",
 
-    "script_extra_params": [ "^^", "substitute", "--model=\"#{repo}#\" \"#{target_model_path}#\"" ]
+    "script_extra_params": [ "^^", "substitute", "--feature \"#{model_feature}#\" --model=\"#{repo}#\" \"#{target_model_path}#\"" ]
 
 }
