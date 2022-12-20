@@ -5,7 +5,6 @@
     ],
 
     "model_name": "distilbert_huggingface",
-    "url": "distilbert-base-uncased-distilled-squad/pytorch_model.bin",
     "repo": "distilbert-base-uncased-distilled-squad",
     "entry_name": "downloaded_distilbert_huggingface",
 
@@ -33,7 +32,7 @@
         [ "^", "byquery", "python_package,package_name=transformers[onnx]"]
     ],
 
-    "abs_script_path": "-m transformers.onnx",
+    "abs_script_path": "-m transformers.onnx --feature question-answering",
 
     "script_extra_params": [ "^^", "substitute", "--model=\"#{repo}#\" \"#{target_model_path}#\"" ]
 
