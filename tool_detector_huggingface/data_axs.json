@@ -4,19 +4,12 @@
     ],
     "_producer_rules": [
         [ ["shell_tool", "can_download_url_from_huggingface" ] , [["detect"]],
-            { 
-                "tool_name": "hf_download", 
-                "shell_cmd_with_subs": "\"#{tool_path}#\" \"#{url}#\" --save-dir \"#{target_dir}#\"",
-                "target_dir": [ "AS^IS", "AS^IS", "^^", "func", ["os.path.dirname", ["^^", "get", "target_path"]] ]
-            }
-        ],
-        [ ["shell_tool", "can_download_url_from_huggingface" ] , [["detect"]],
             {   "tool_name": "hf_download",
                 "tool_path": [ "AS^IS", "AS^IS", "^", "execute", [[
-                    [ "byquery", "python_package,package_name=huggingface-donwload-cli" ],
+                    [ "byquery", "python_package,package_name=huggingface-download-cli" ],
                     [ "get_path", [["install", "bin", "hf_download"]] ]
                 ]] ],
-                "env": { "PYTHONPATH": [ "AS^IS", "AS^IS", "^", "execute", [[
+                "env": { "PYTHONPATH": [ "AS^IS", "^", "execute", [[
                     [ "byquery", "python_package,package_name=huggingface-download-cli"],
                     [ "get_path_from", "abs_packages_dir" ]
                 ]] ] },
@@ -24,8 +17,5 @@
                 "target_dir": [ "AS^IS", "AS^IS", "^^", "func", ["os.path.dirname", ["^^", "get", "target_path"]] ]
             }
         ]
-    ],
-
-    "tool_path": [ "^^", "which" ],
-    "tool_name": [ "^^", "basename" ]
+    ]
 }
