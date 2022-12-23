@@ -7,6 +7,7 @@
     "model_name": "distilbert_huggingface",
     "repo": "distilbert-base-uncased-distilled-squad",
     "model_feature": "question-answering",
+    "entry_path": "inference_ready_distilbert_huggingface",
 
     "return_this_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
@@ -37,5 +38,5 @@
     ],
     "abs_script_path": "-m transformers.onnx",
 
-    "script_extra_params": [ "^^", "substitute", "--feature \"#{model_feature}#\" --model=\"#{repo}#\" \"#{target_model_path}#/../inference_ready_distilbert_huggingface\"" ]
+    "script_extra_params": [ "^^", "substitute", "--feature \"#{model_feature}#\" --model=\"#{repo}#\" \"#{target_model_path}#/../#[entry_path}#\"" ]
 }
