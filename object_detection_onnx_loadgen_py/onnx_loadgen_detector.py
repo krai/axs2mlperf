@@ -89,7 +89,7 @@ if (model_skipped_classes):
             class_map.append(i)
 
 preprocessed_image_buffer   = None
-preprocessed_image_map      = np.empty(dataset_size, dtype=np.int)   # this type should be able to hold indices in range 0:dataset_size
+preprocessed_image_map      = np.empty(dataset_size, dtype=int)   # this type should be able to hold indices in range 0:dataset_size
 
 
 sess_options = rt.SessionOptions()
