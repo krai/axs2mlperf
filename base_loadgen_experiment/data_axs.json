@@ -5,5 +5,7 @@
 
     "performance": ["^^", "parse_performance"],
 
+    "produced_by": [ "^^", "guess_command" ],
+
     "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ]
 }
