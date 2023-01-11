@@ -3,5 +3,7 @@
 
     "summary": [ "^^", "parse_summary" ],
 
-    "performance": ["^^", "parse_performance"]
+    "performance": ["^^", "parse_performance"],
+
+    "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ]
 }
