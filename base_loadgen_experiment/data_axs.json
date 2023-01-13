@@ -7,5 +7,11 @@
 
     "produced_by": [ "^^", "guess_command" ],
 
-    "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ]
+    "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ],
+
+    "sut_query": [ "sut", [ "^^", "substitute", "sut_name=#{sut_name}#" ] ],
+
+    "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
+
+    "sut_data":  [ "^^", "dig", "sut_entry.data" ]
 }

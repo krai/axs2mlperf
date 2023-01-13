@@ -1,9 +1,6 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
 
-    "sut_query": [ "sut", [ "^^", "substitute", "sut_name=#{sut_name}#" ] ],
-    "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
-    "sut_data":  [ "^^", "dig", "sut_entry.data" ],
 
     "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],

@@ -11,6 +11,8 @@
     "loadgen_target_latency": null,
     "loadgen_target_qps": null,
 
+    "sut_name": ["^", "func", "socket.gethostname" ],
+
     "loadgen_mlperf_conf_path": [ "^", "execute", [[
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
         [ "get_path", "mlperf.conf" ]

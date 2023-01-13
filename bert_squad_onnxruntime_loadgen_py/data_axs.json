@@ -63,8 +63,6 @@
     "execution_device": "",
     "verbosity": 2,
 
-    "sut_name": ["^", "func", "socket.gethostname" ],
-
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "attach", [ "^", "work_collection" ] ],

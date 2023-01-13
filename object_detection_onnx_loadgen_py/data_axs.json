@@ -68,7 +68,6 @@
 
     "loadgen_scenario": "Offline",
 
-    "sut_name": ["^", "func", "socket.gethostname" ],
 
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
