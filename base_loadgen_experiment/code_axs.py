@@ -29,9 +29,10 @@ def parse_performance(summary):
         return summary["Scheduled_samples_per_second"]
 
 
-def guess_command(tags, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None ):
+def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None ):
 
     terms_list = [] + tags
+    terms_list.append( f"framework={framework}" )
     terms_list.append( f"loadgen_scenario={loadgen_scenario}" )
     terms_list.append( f"loadgen_mode={loadgen_mode}" )
     terms_list.append( f"model_name={model_name}" )
