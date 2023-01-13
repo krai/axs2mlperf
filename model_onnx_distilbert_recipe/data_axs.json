@@ -1,21 +1,21 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ] ],
     "_producer_rules": [
-        [ ["inference_ready", "onnx_model", "model_name=distilbert_huggingface" ], [["run"]], { "return_saved_record_entry": false } ]
+        [ ["inference_ready", "onnx_model", "model_name=distilbert" ], [["run"]], { "return_saved_record_entry": false } ]
     ],
 
-    "model_name": "distilbert_huggingface",
+    "model_name": "distilbert",
     "repo": "distilbert-base-uncased-distilled-squad",
     "model_feature": "question-answering",
 
     "return_this_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
-        [ "set_path", "inference_ready_distilbert_huggingface" ],
+        [ "set_path", "inference_ready_distilbert" ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "plant", [ 
             "tags", [ "inference_ready", "onnx_model"],
             "model_name", [ "^^", "substitute", "model_name=#{model_name}#" ],
-            "model_name", "distilbert_huggingface",
+            "model_name", "distilbert",
             "weight_transformations", "PyTorch -> ONNX",
             "input_layers_tms", "['input_ids','attention_mask']",
             "file_name", "model.onnx"
