@@ -7,7 +7,6 @@
     "model_name": "distilbert_huggingface",
     "repo": "distilbert-base-uncased-distilled-squad",
     "model_feature": "question-answering",
-    "entry_path": "inference_ready_distilbert_huggingface",
 
     "return_this_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
@@ -19,18 +18,17 @@
             "model_name", "distilbert_huggingface",
             "weight_transformations", "PyTorch -> ONNX",
             "input_layers_tms", "['input_ids','attention_mask']",
-            "file_name", "model.onnx",
-            "abs_work_path", [ "^", "execute", [[
-                ["byquery", "python_package,package_name=setuptools-rust"],
-                ["get_path"]
-            ]] ]
+            "file_name", "model.onnx"
         ]],
         [ "save" ]
     ]] ],
-    "target_model_path": [ "^^", "execute", [[
+    "target_dirname": [ "^^", "execute", [[
         [ "get", "return_this_entry" ],
-	    [ "get", "abs_work_path"]
-    ] ]],
+        [ "get_path" ],
+        0,
+        [ "func", "os.path.dirname" ]
+    ]] ],
+
     "python_deps": [
         [ "^", "byquery", "python_package,package_name=setuptools-rust"],
         [ "^", "byquery", "python_package,package_name=torch"],
@@ -38,5 +36,5 @@
     ],
     "abs_script_path": "-m transformers.onnx",
 
-    "script_extra_params": [ "^^", "substitute", "--feature \"#{model_feature}#\" --model=\"#{repo}#\" \"#{target_model_path}#/../#{entry_path}#\"" ]
+    "script_extra_params": [ "^^", "substitute", "--feature \"#{model_feature}#\" --model=\"#{repo}#\" \"#{target_dirname}#\"" ]
 }
