@@ -27,7 +27,8 @@
         "base_bert_loadgen_experiment": "base_bert_loadgen_experiment",
         "bert_squad_onnxruntime_loadgen_py": "bert_squad_onnxruntime_loadgen_py",
         "base_loadgen_program": "base_loadgen_program",
-        "model_onnx_distilbert_recipe": "model_onnx_distilbert_recipe"
+        "model_onnx_distilbert_recipe": "model_onnx_distilbert_recipe",
+        "submitter": "submitter"
     },
     "repo_name": "axs2mlperf"
 }

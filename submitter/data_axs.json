@@ -1,0 +1,24 @@
+{
+    "division": "open",
+    "submitter": "Krai",
+    "record_entry_name": "laid_out_submission",
+
+    "experiment_entries": [
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline", false]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline", false]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=SingleStream", false]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=SingleStream,loadgen_target_latency=35", false]]
+    ],
+    
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "log_truncation_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [["tools", "submission", "truncate_accuracy_log.py"]] ]
+    ]], {}, ["mlperf_inference_git_entry"] ],
+    "submission_checker_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [["tools", "submission", "submission-checker.py"]] ]
+    ]], {}, ["mlperf_inference_git_entry"] ]
+
+}
