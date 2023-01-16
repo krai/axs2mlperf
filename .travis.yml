@@ -7,8 +7,20 @@ language:   python
 matrix:
   include:
     - language: python
+      python: 3.8
+      env:
+        - PYTHON_EXE=python
+
+    - language: python
+      python: 3.9
+      env:
+        - ONNX_DETECTION=on
+        - PYTHON_EXE=python
+
+    - language: python
       python: 3.6
       env:
+        - ONNX_DETECTION=on
         - PYTHON_EXE=python
 
     - language: python
@@ -17,16 +29,6 @@ matrix:
         - PYTHON_EXE=python
       before-install:
         - ${PYTHON_EXE} -m pip install --ignore-installed --verbose pip setuptools importlib-metadata
-
-    - language: python
-      python: 3.8
-      env:
-        - PYTHON_EXE=python
-
-    - language: python
-      python: 3.9
-      env:
-        - PYTHON_EXE=python
 
     - os: osx
       osx_image: xcode11.2  # Python 3.7, but may change with time
@@ -46,6 +48,8 @@ install:
     - git --version
     - git clone https://github.com/krai/axs.git
     - axs byquery git_repo,collection,repo_name=$THIS_REPO_NAME
+    - wget https://raw.github.com/lehmannro/assert.sh/master/assert.sh
 
 script:
     - axs byname loadgen_example , run
+    - bash test_axs2mlperf.sh
