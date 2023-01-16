@@ -34,8 +34,12 @@
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--#{dataset_name}#-dir \"#{annotation_dir}#\" --mlperf-accuracy-file \"#{accuracy_log_path}#\" --output-file #{detections_path}#" ],
-                "capture_output": true
-            } ]
+                "capture_output": true,
+                "split_to_lines": true
+            } ],
+        [ "__getitem__", -1 ],
+        0,
+        [ "func", ["ufun.rematch", "mAP=(\\d+\\.\\d+)%" ] ]
     ]], {} ],
 
     "accuracy": [ "^^", "get", "mAP" ]
