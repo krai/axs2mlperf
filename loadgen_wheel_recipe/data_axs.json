@@ -41,6 +41,8 @@
         "CC": [ "^^", "get", "compiler_path" ],
         "CFLAGS": "-std=c++14"
     },
+    "env": [ "^^", "ext_use_python_deps" ],
+
     "in_dir": [ "^", "execute", [[
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
         [ "get_path", "loadgen" ]
