@@ -66,6 +66,7 @@ install:
     - which git
     - git --version
     - git clone https://github.com/krai/axs.git
+    - axs version
     - axs byquery git_repo,collection,repo_name=$THIS_REPO_NAME
     - wget https://raw.github.com/lehmannro/assert.sh/master/assert.sh
 
