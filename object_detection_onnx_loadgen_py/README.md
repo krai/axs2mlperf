@@ -11,7 +11,7 @@ Currently it supports the following models:
 
 Below is a self-contained demonstration of our object detection workflow, which installs `axs`, downloads some necessary Python packages, the SSD-ResNet34 model, the RetinaNet model, the original COCO dataset and a short partial resized subset of 20 images.
 
-Build the Docker image. It takes ~12 minutes on our server and is ~4.89GB in size.
+Download the [Dockerfile](https://github.com/krai/axs2mlperf/blob/master/object_detection_onnx_loadgen_py/Dockerfile) and build the Docker image. It takes ~12 minutes on our server and is ~4.89GB in size.
 ```
 time docker build -t axs:object-detection -f Dockerfile .
 ```
@@ -33,21 +33,21 @@ The mAP value and running time should be printed after a successful run. To inst
 This workflow is designed to showcase the `axs` workflow management system.
 So the only prerequisite from the user's point of view is a sufficiently fresh version of `axs` system.
 
-<details>
-
+First, clone the `axs` repository.
 ```
 git clone https://github.com/krai/axs
 ```
 
-And add the path to `bashrc`.
+Then, add the path to `bashrc`.
 ```
-echo "export PATH='$PATH:$HOME/axs'" >> ~/.bashrc
-```
-
-```
+echo "export PATH='$PATH:$HOME/axs'" >> ~/.bashrc && \
 source ~/.bashrc
 ```
-</details>
+
+Finally, import this repository into your `work_collection`
+```
+axs byquery git_repo,collection,repo_name=axs2mlperf
+```
 
 The dependencies of various components (on Python code and external utilities) as well as interdependencies of the workflow's main components (original dataset, preprocessed dataset, model and its parameters) have been described in `axs`'s internal language to achieve the fullest automation we could.
 
@@ -65,7 +65,8 @@ The entry cache is there for a reason.
 
 The following command effectively wipes off hours of downloading, compilation and/or installation:
 ```
-axs work_collection , remove
+axs work_collection , remove && \
+axs byquery git_repo,collection,repo_name=axs2mlperf
 ```
 
 

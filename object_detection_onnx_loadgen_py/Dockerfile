@@ -30,8 +30,15 @@ WORKDIR /home/krai
 RUN git clone https://github.com/krai/axs
 ENV PATH="$PATH:/home/krai/axs"
 
+# Import this repository into your work_collection
+RUN axs byquery git_repo,collection,repo_name=axs2mlperf
+
 # Download model/dataset/runtime dependencies and perform two quick accuracy runs on SSD-ResNet34 and RetinaNet.
 RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , get accuracy
 RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy
+
+# Remove the generated experiments to start at a clean state
+RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , remove
+RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , remove
 
 CMD [ "/bin/bash" ]
