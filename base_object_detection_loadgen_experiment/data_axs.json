@@ -39,7 +39,9 @@
             } ],
         [ "__getitem__", -1 ],
         0,
-        [ "func", ["ufun.rematch", "mAP=(\\d+\\.\\d+)%" ] ]
+        [ "func", ["ufun.rematch", "mAP=(\\d+\\.\\d+)%" ] ],
+	0,
+	[ "func", "float"]
     ]], {} ],
 
     "accuracy": [ "^^", "get", "mAP" ]

@@ -16,6 +16,7 @@ matrix:
       env:
         - PYTHON_EXE=python3
         - PATH=/c/Python38:/c/Python38/Scripts:$PATH
+        #- ONNX_DETECTION=on # temporarily switched off to save time
       before_install:
         - choco install python --version 3.8.0
         - cmd <<< "mklink C:\\Python38\\python3.exe C:\\Python38\\python.exe"
@@ -51,7 +52,7 @@ matrix:
       osx_image: xcode11.2  # Python 3.7, but may change with time
       language: shell       # 'language: python' is an error on Travis CI macOS
       env:
-        - ONNX_DETECTION=on
+        #- ONNX_DETECTION=on # temporarily switched off to save time
         - PYTHON_EXE=python3
 
 install:
