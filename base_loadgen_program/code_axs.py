@@ -12,6 +12,7 @@ def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, t
         "loadgen_target_qps":           ("target_qps", 1),
         "loadgen_max_duration_s":       ("max_duration_ms", 1000),
         "loadgen_offline_expected_qps": ("offline_expected_qps", 1),
+        "loadgen_min_duration_s":       ( "min_duration_ms", 1000),
     }
 
     user_conf   = []

@@ -52,7 +52,8 @@ batch_size                  = int( sys.argv[24])
 cpu_threads                 = int( sys.argv[25])
 
 minimal_class_id            = int( sys.argv[26])
-
+min_duration_str            = sys.argv[27]
+max_duration_str            = sys.argv[28]
 
 ## Model parameters:
 #
@@ -251,6 +252,10 @@ def benchmark_using_loadgen():
     if count_override_str != "None":
         ts.min_query_count = int(count_override_str)
         ts.max_query_count = int(count_override_str)
+    if min_duration_str != "None":
+        ts.min_duration_ms = int(min_duration_str)
+    if max_duration_str != "None":
+        ts.max_duration_ms = int(max_duration_str)
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
