@@ -60,6 +60,7 @@
             "framework", "#{framework}#",
             "preprocessed_images_dir", "#{preprocessed_images_dir}#",
             "sut_name", "#{sut_name}#",
+            "program_name", "image_classification_onnx_loadgen_py",
 
             "loadgen_scenario", "#{loadgen_scenario}#",
             "loadgen_mode", "#{loadgen_mode}#",
