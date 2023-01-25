@@ -24,6 +24,8 @@
         [ "get", "tokenization_vocab_entry" ],
         [ "get_path" ]
     ]] ],
+    "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
+    "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
     "accuracy_dict": [ "^^", "execute", [[
         [ "get_kernel" ],
