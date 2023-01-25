@@ -17,6 +17,7 @@
     "contained_entries": {
         "loadgen_example": "loadgen_example",
         "loadgen_wheel_recipe": "loadgen_wheel_recipe",
+        "loadgen_c_recipe": "loadgen_c_recipe",
         "base_loadgen_experiment": "base_loadgen_experiment",
         "base_imagenet_loadgen_experiment": "base_imagenet_loadgen_experiment",
         "image_classification_torch_loadgen_py": "image_classification_torch_loadgen_py",

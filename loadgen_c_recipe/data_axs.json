@@ -1,0 +1,31 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ] ],
+
+    "_producer_rules": [
+        [ [ "compiled", "loadgen_c" ], [["run"]], { "return_saved_record_entry": false }, ["shell_cmd_with_subs"] ]
+    ],
+
+    "abs_source_path": [ "^^", "get_path" ],
+
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "work_collection" ],
+        [ "attached_entry", [ "loadgen_c", {
+                "tags": [ "compiled", "loadgen_c" ]
+            } ] ],
+        [ "save" ]
+    ]] ],
+
+    "target_path": [ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "loadgen_path": [ "^", "execute", [[
+        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+        [ "get_path", "loadgen" ]
+    ]] ],
+
+    "shell_cmd_with_subs": [ "^^", "substitute", "SRC_DIR=#{loadgen_path}# INSTALL_DIR=#{target_path}# #{abs_source_path}#/install.sh" ]
+
+}
