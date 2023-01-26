@@ -30,7 +30,9 @@
         ["split", ","],
         [ "__getitem__", 0 ],
         0,
-        [ "func", ["ufun.rematch", "accuracy=(\\d+\\.\\d+)%" ] ]
+        [ "func", ["ufun.rematch", "accuracy=(\\d+\\.\\d+)%" ] ],
+        0,
+        [ "func", "float"]
         ]]
     ]
 }
