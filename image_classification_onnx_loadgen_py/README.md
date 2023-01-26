@@ -84,7 +84,7 @@ axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=Accur
 The accuracy value should be printed after a successful run.
 <details><pre>
 ...
-accuracy=85.000%, good=17, total=20
+accuracy=75.200%, good=376, total=500
 
 </pre></details>
 
@@ -94,7 +94,7 @@ axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=Accur
 The accuracy value should be printed after a successful run.
 <details><pre>
 ...
-85.000
+75.2
 
 </pre></details>
 

@@ -94,7 +94,7 @@ axs byquery loadgen_output,classified_imagenet,framework=pytorch,loadgen_mode=Ac
 The accuracy value should be printed after a successful run.
 <details><pre>
 ...
-75.200
+75.2
 </pre></details>
 
 ## Benchmarking resnet50 model in the Performance mode
