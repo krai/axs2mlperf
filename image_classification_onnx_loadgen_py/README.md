@@ -79,7 +79,7 @@ The following command will run on the whole dataset of 50000 images used by the 
 
 Example for 500 images:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
+axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy_report
 ```
 The accuracy value should be printed after a successful run.
 <details><pre>
@@ -88,8 +88,17 @@ accuracy=85.000%, good=17, total=20
 
 </pre></details>
 
+```
+axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
+```
+The accuracy value should be printed after a successful run.
+<details><pre>
+...
+85.000
 
-## Benchmarking bert_large model in the Performance mode
+</pre></details>
+
+## Benchmarking resnet50 model in the Performance mode
 
 ###Offline
 

@@ -14,7 +14,7 @@
         [ "get_path", [["vision", "classification_and_detection", "tools", "accuracy-imagenet.py"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
 
-    "accuracy": [ "^^", "execute", [[
+    "accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
@@ -23,5 +23,14 @@
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --imagenet-val-file \"#{ground_truth_path}#\"" ],
                 "capture_output": true
             } ]
-    ]], {} ]
+    ]], {} ],
+
+    "accuracy":[ "^^", "execute", [[
+        [ "get", "accuracy_report" ],
+        ["split", ","],
+        [ "__getitem__", 0 ],
+        0,
+        [ "func", ["ufun.rematch", "accuracy=(\\d+\\.\\d+)%" ] ]
+        ]]
+    ]
 }

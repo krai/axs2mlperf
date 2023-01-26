@@ -79,7 +79,7 @@ The following command will run on the whole dataset of 50000 images used by the 
 
 Example for 500 images:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=pytorch,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
+axs byquery loadgen_output,classified_imagenet,framework=pytorch,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy_report
 ```
 The accuracy value should be printed after a successful run.
 <details><pre>
@@ -87,6 +87,15 @@ The accuracy value should be printed after a successful run.
 accuracy=75.200%, good=376, total=500
 </pre></details>
 
+
+```
+axs byquery loadgen_output,classified_imagenet,framework=pytorch,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
+```
+The accuracy value should be printed after a successful run.
+<details><pre>
+...
+75.200
+</pre></details>
 
 ## Benchmarking resnet50 model in the Performance mode
 
