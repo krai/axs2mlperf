@@ -1,0 +1,9 @@
+{
+        "tags": [ "inference_ready", "pytorch_model" ],
+        "model_name": "resnet50",
+        "retrained": false,
+        "input_data_types": "fp32",
+        "weight_data_types": "fp32",
+        "weight_transformations": "no",
+        "url": "pytorch/vision:resnet50"
+}
