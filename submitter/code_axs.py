@@ -42,6 +42,19 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     readme_template_path = __entry__.get_path("README_template.md")
     for experiment_entry in experiment_entries:
         experiment_parameters = []
+
+        model_entry      = experiment_entry["model_entry"]
+        model_entry_path = model_entry.get_path("")
+        with  open(os.path.join(model_entry_path, "data_axs.json")) as file_json:
+            model_dict = json.load(file_json)
+
+        keys_list = ["input_data_types", "weight_data_types", "url", "weight_transformations", "retrained"]
+        for key in keys_list:
+            if key not in model_dict:
+                print("Error: Some of the following parameters (input_data_types, weight_data_types, url, weight_transformations, retrained) are not present in model file.")
+                __record_entry__.remove()
+                return
+
         src_dir        = experiment_entry.get_path("")
         sut_name       = experiment_entry.get('sut_name')
         sut_data       = experiment_entry.get('sut_data')
@@ -49,9 +62,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         readme_path    = experiment_entry.get('program_entry').get_path("README.md")
         experiment_cmd = experiment_entry.get('produced_by')
 
+        experiment_program_name  = experiment_entry.get('program_name')
         benchmark_framework_list = experiment_entry.get('program_name').replace("_loadgen_py", "").split("_")
         
-        framework = benchmark_framework_list[2].upper()
+        framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
         benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
         
         mode = loadgen_mode.replace("Only", "")
@@ -62,8 +76,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         model_name  = experiment_entry['model_name']
         
-        display_model_name  = model_name.replace('_', '-')      # replaces ssd_resnet34 with ssd-resnet34
-        code_model_program_path        = make_local_dir( [code_path, display_model_name , 'object_detection_onnx_loadgen_py' ] )
+        if experiment_program_name == "object_detection_onnx_loadgen_py":
+            display_model_name  = model_name.replace('_', '-')      # replaces ssd_resnet34 with ssd-resnet34
+        elif model_name == "bert_large":
+            display_model_name  = "bert-99"
+        else:
+            display_model_name  = model_name
+
+        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name ] )
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
         if os.path.exists(readme_path):
@@ -89,9 +109,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        model_entry             = experiment_entry["model_entry"]
-        program_name            = experiment_entry.get("program_name", "object_detection_onnx_loadgen_py")
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json")
+        program_name            = experiment_entry.get("program_name", experiment_program_name)
+        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
         measurements_meta_data  = {
             "retraining": ("yes" if model_entry.get('retrained', False) else "no"),
             "input_data_types": model_entry["input_data_types"],
@@ -126,7 +145,13 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             shutil.copy( src_file_path, dst_file_path)
 
         if mode=='accuracy':
-            accuracy_content    = experiment_entry["mAP"]
+            if experiment_program_name == "object_detection_onnx_loadgen_py":
+                accuracy_content    = experiment_entry["mAP"]
+            elif experiment_program_name == "bert_squad_onnxruntime_loadgen_py":
+                accuracy_content    = str(experiment_entry["f1"])
+            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py":
+                accuracy_content    = str(experiment_entry["accuracy"])
+
             dst_file_path       = os.path.join(results_path, "accuracy.txt")
             print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
             with open(dst_file_path, "w") as fd:

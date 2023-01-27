@@ -26,6 +26,12 @@
     ],
 
     "model_name": "resnet50",
+    "model_query": [ "inference_ready", "pytorch_model", [ "^^", "substitute", "model_name=#{model_name}#" ] ],
+    "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get_path" ]
+    ]] ],
     "batch_size": 1,
     "framework": "pytorch",
     "verbosity": 2,
@@ -36,6 +42,7 @@
         [ "plant", [ "^^", "substitute", [[
             "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_imagenet_loadgen_experiment" ] ],
             "model_name", "#{model_name}#",
+            "model_query", "#{model_query}#",
             "framework", "#{framework}#",
             "preprocessed_images_dir", "#{preprocessed_images_dir}#",
             "sut_name", "#{sut_name}#",
