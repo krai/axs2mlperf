@@ -4,12 +4,11 @@
     "record_entry_name": "laid_out_submission",
 
     "experiment_entries": [
-        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline", true]],
-        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline", true]],
-        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=SingleStream", true]],
-        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=SingleStream,loadgen_target_latency=35", true]]
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=100,loadgen_buffer_size=100", true]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_latency=35,loadgen_dataset_size=100,loadgen_buffer_size=100", true]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=AccuracyOnly,loadgen_scenario=SingleStream,loadgen_dataset_size=100,loadgen_buffer_size=100", true]],
+        [ "^", "byquery", ["loadgen_output,detected_coco,framework=onnx,model_name=ssd_resnet34,loadgen_mode=PerformanceOnly,loadgen_scenario=SingleStream,loadgen_target_latency=35,loadgen_dataset_size=100,loadgen_buffer_size=100", true]]
     ],
-    
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "log_truncation_script_path": [ "^^", "execute", [[
