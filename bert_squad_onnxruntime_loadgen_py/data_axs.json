@@ -93,7 +93,7 @@
         [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
-
+    "errorize_output": true,
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",
 
     "script_extra_params": [ "^^", "substitute", "\"#{mlperf_inference_path}#\" \"#{tokenized_squad_path}#\" \"#{model_name}#\" \"#{model_path}#\" \"#{model_input_layers_tms}#\" \"#{batch_size}#\" \"#{execution_device}#\" \"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" \"#{verbosity}#\" " ]

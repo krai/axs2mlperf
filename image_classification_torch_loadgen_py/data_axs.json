@@ -65,6 +65,7 @@
         [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
+    "errorize_output": true,
     "rel_script_path": "torch_loadgen_classifier.py",
 
     "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# #{loadgen_multistreamness}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" #{verbosity}# \"#{model_name}#\" #{batch_size}# \"#{preprocessed_images_dir}#\"" ]
