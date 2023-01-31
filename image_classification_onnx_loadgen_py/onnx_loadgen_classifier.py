@@ -54,7 +54,7 @@ MODEL_INPUT_DATA_TYPE       = 'float32'
 
 loader_object               = ImagenetLoader(preprocessed_imagenet_dir, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, data_layout, normalize_symmetric, subtract_mean_bool, given_channel_means, given_channel_stds)
 preprocessed_image_buffer   = None
-preprocessed_image_map      = np.empty(dataset_size, dtype=np.int)   # this type should be able to hold indices in range 0:dataset_size
+preprocessed_image_map      = np.empty(dataset_size, dtype=np.int32)   # this type should be able to hold indices in range 0:dataset_size
 
 
 sess_options = rt.SessionOptions()
