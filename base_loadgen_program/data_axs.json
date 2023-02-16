@@ -12,16 +12,27 @@
     "loadgen_target_qps": null,
     "loadgen_min_duration_s": null,
     "loadgen_max_duration_s": null,
+    "loadgen_compliance_test": null,
+
+    "compliance_test_config": "audit.config",
 
     "sut_name": ["^", "func", "socket.gethostname" ],
 
     "loadgen_mlperf_conf_path": [ "^", "execute", [[
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
         [ "get_path", "mlperf.conf" ]
-    ]] ],    
+    ]] ],
+    "loadgen_mlperf_path": [ "^", "execute", [[
+        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+        [ "get_path", "" ]
+     ]] ],
     "target_user_conf_path": [ "^^", "execute", [[
         [ "get", "output_entry" ],
         [ "get_path", "user.conf" ]
+    ]] ],
+    "target_audit_conf_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "audit.config" ]
     ]] ],
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
         [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
