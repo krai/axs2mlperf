@@ -44,6 +44,10 @@
     "normalize_symmetric": [ "^^", "dig", "model_entry.normalize_symmetric" ],
     "subtract_mean_bool": [ "^^", "dig", "model_entry.subtract_mean_bool" ],
     "given_channel_means": [ "^^", "dig", "model_entry.given_channel_means" ],
+    "output_layer_name": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get", [ "output_layer_name", "" ] ]
+    ]] ],
 
     "cpu_threads": 0,
     "batch_size": 1,
@@ -82,5 +86,5 @@
     "errorize_output": true,
     "rel_script_path": "onnx_loadgen_classifier.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# #{loadgen_multistreamness}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" #{verbosity}# \"#{model_path}#\" \"#{model_name}#\" \"#{normalize_symmetric}#\" \"#{subtract_mean_bool}#\" \"#{given_channel_means}#\" \"#{execution_device}#\" #{batch_size}# #{cpu_threads}# \"#{preprocessed_images_dir}#\"" ]
+    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# #{loadgen_multistreamness}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" #{verbosity}# \"#{model_path}#\" \"#{model_name}#\" \"#{normalize_symmetric}#\" \"#{subtract_mean_bool}#\" \"#{given_channel_means}#\" \"#{output_layer_name}#\" \"#{execution_device}#\" #{batch_size}# #{cpu_threads}# \"#{preprocessed_images_dir}#\"" ]
 }
