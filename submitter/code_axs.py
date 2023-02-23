@@ -256,7 +256,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario] )
+            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario, 'tmp' ] )
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , model_name, scenario)
@@ -273,7 +273,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             ],
                 cwd=tmp_dir,
             )
-
+            shutil.rmtree(tmp_dir)
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
     truncation_cmd = [
