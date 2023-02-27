@@ -24,7 +24,7 @@
 
     "detections_path": ["^^", "get_path", "detections.json"],
 
-    "mAP": [ "^^", "execute", [[
+    "accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
@@ -36,12 +36,16 @@
                 "script_extra_params": [ "^^", "substitute", "--#{dataset_name}#-dir \"#{annotation_dir}#\" --mlperf-accuracy-file \"#{accuracy_log_path}#\" --output-file #{detections_path}#" ],
                 "capture_output": true,
                 "split_to_lines": true
-            } ],
+            } ]
+    ]], {} ],
+
+    "mAP": [ "^^", "execute", [[
+        [ "get", "accuracy_report" ],
         [ "__getitem__", -1 ],
         0,
         [ "func", ["ufun.rematch", "mAP=(\\d+\\.\\d+)%" ] ],
-	0,
-	[ "func", "float"]
+        0,
+        [ "func", "float"]
     ]], {} ],
 
     "accuracy": [ "^^", "get", "mAP" ]
