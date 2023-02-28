@@ -36,5 +36,6 @@
     ]] ],
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
         [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
-    ]]
+    ]],
+    "model_name_compliance_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert", "bert_99_9": "bert", "bert_99": "bert"}
 }
