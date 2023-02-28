@@ -16,6 +16,12 @@ def store_json(data_structure, json_file_path):
     with open(json_file_path, "w") as json_fd:
         json_fd.write( json_data+"\n" )
 
+def get_mlperf_model_name(model_name_dict, model_name):
+    if model_name in model_name_dict.keys():
+        return model_name_dict[model_name]
+    else:
+        return None
+
 def generate_experiment_entries(sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size, __entry__=None):
 
     if sut_system_type == "edge":
@@ -39,7 +45,7 @@ def generate_experiment_entries(sut_system_type, program_name, division, framewo
             common_attributes["loadgen_dataset_size"] = 5000
             common_attributes["loadgen_buffer_size"]  = 64
 
-    elif  program_name == "bert_squad_onnxruntime_loadgen_py":
+    elif  program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_qaic_loadgen_kilt" ]:
         experiment_tags = [ "loadgen_output", "bert_squad" ]
         common_attributes["loadgen_dataset_size"] = 10833
         common_attributes["loadgen_buffer_size"]  = 10833
@@ -94,7 +100,7 @@ def generate_experiment_entries(sut_system_type, program_name, division, framewo
     return experiment_entries
 
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, __entry__=None, __record_entry__=None):
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
 
@@ -105,7 +111,6 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         except:
             pass
         return joined_path
-
 
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
@@ -120,18 +125,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     dest_dir            = __record_entry__.get_path( "" )
     experiment_cmd_list = []
     readme_template_path = __entry__.get_path("README_template.md")
+
     for experiment_entry in experiment_entries:
         experiment_parameters = []
-
-        model_entry      = experiment_entry["model_entry"]
-        model_entry_path = model_entry.get_path("")
-        with  open(os.path.join(model_entry_path, "data_axs.json")) as file_json:
-            model_dict = json.load(file_json)
-        keys_list = ["input_data_types", "weight_data_types", "url", "weight_transformations"]
-        for key in keys_list:
-            if key not in model_dict:
-                print("Error: Some of the following parameters (input_data_types, weight_data_types, url, weight_transformations, retrained) are not present in model file.")
-                return
 
         src_dir        = experiment_entry.get_path("")
         sut_name       = experiment_entry.get('sut_name')
@@ -154,12 +150,12 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
 
         model_name  = experiment_entry['model_name']
-        if experiment_program_name == "object_detection_onnx_loadgen_py":
-            display_model_name  = model_name.replace('_', '-')      # replaces ssd_resnet34 with ssd-resnet34
-        elif model_name == "bert_large":
-            display_model_name  = "bert-99"
+        mlperf_model_name = get_mlperf_model_name(model_name_dict, model_name)
+        if mlperf_model_name is not None:
+            display_model_name = mlperf_model_name
         else:
             display_model_name  = model_name
+
         code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name ] )
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
@@ -178,7 +174,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         with open(path_model_readme, "a") as fd:
             fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-
+        print("")
         for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
             filename = os.path.basename( src_file_path )
             dst_file_path = os.path.join(measurement_path, filename)
@@ -187,13 +183,21 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         program_name            = experiment_entry.get("program_name", experiment_program_name)
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
-        measurements_meta_data  = {
-            "retraining": ("yes" if model_entry.get('retrained', False) else "no"),
-            "input_data_types": model_entry["input_data_types"],
-            "weight_data_types": model_entry["weight_data_types"],
-            "starting_weights_filename": model_entry["url"],
-            "weight_transformations": model_entry["weight_transformations"],
-        }
+
+        if not model_meta_data:
+            model_meta_data = experiment_entry["model_entry"]
+
+        try:
+            measurements_meta_data  = {
+                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
+                "input_data_types": model_meta_data["input_data_types"],
+                "weight_data_types": model_meta_data["weight_data_types"],
+                "starting_weights_filename": model_meta_data["url"],
+                "weight_transformations": model_meta_data["weight_transformations"],
+            }
+        except KeyError as e:
+            print(f"Key {e} is missing from model_meta_data or the model")
+            return
         store_json(measurements_meta_data, measurements_meta_path)
 
         experiment_entry.parent_objects = None
@@ -207,9 +211,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if  ( mode== 'accuracy') or ( mode == 'performance' and compliance_test_name is False ):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-            results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario , compliance_test_name ]
+            results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
-                results_path_syll_TEST01_acc = ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST01_acc = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -236,9 +240,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name == "object_detection_onnx_loadgen_py":
-                accuracy_content    = str(experiment_entry["mAP"])
-            elif experiment_program_name == "bert_squad_onnxruntime_loadgen_py":
-                accuracy_content    = str(experiment_entry["f1"])
+                accuracy_content    = str(experiment_entry["accuracy_report"])
+            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_qaic_loadgen_kilt"]:
+                accuracy_content    = str(experiment_entry["accuracy_report"])
             elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py":
 
                 accuracy_content    = str(experiment_entry["accuracy_report"])
@@ -252,14 +256,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario, compliance_test_name ] )
+            compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , model_name, scenario, 'tmp' ] )
+            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
             result = subprocess.run(
             [
                 sys.executable,

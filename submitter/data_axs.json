@@ -11,6 +11,7 @@
     "division": "open",
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
+    "model_name_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert-99", "bert_99_9": "bert-99.9", "bert_99": "bert-99" },
 
     "experiment_entries": ["^^", "generate_experiment_entries" ],
 
