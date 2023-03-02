@@ -22,7 +22,7 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size, __entry__=None):
+def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_server_target_qps=None, __entry__=None):
 
     if sut_system_type == "edge":
         if model_name in ("resnet50", "retinanet_openimages"):
@@ -80,10 +80,19 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
             list_output = []
             if "loadgen_mode=AccuracyOnly" in mode_attribs:
                 if sc == "Server":
-                     scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+                    if loadgen_server_target_qps is not None:
+                        scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
+                else:
+                    scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
             elif "loadgen_mode=PerformanceOnly" in mode_attribs:
                 if sc in ("Offline", "Server"):
-                    scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+                    if sc == "Server":
+                        if loadgen_server_target_qps is not None:
+                            scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
+                        else:
+                            scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+                    else:
+                        scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
                 elif sc in ("SingleStream", "MultiStream"):
                     scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
                 elif  sc == "MultiStream":
