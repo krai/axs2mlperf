@@ -82,8 +82,8 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
                 if sc == "Server":
                     if loadgen_server_target_qps is not None:
                         scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                else:
-                    scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+                    else:
+                       scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
             elif "loadgen_mode=PerformanceOnly" in mode_attribs:
                 if sc in ("Offline", "Server"):
                     if sc == "Server":
@@ -93,6 +93,7 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
                             scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
                     else:
                         scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+
                 elif sc in ("SingleStream", "MultiStream"):
                     scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
                 elif  sc == "MultiStream":
