@@ -104,7 +104,6 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
             joined_query = ','.join( list_query )
-
             #print("Generated query = ", joined_query )
             #print("")
             experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
@@ -264,7 +263,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 dst_file_path       = os.path.join(results_path_TEST01_acc, "accuracy.txt")
             print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
             with open(dst_file_path, "w") as fd:
-                fd.write(accuracy_content + "\n")
+                if mode=='accuracy':
+                    fd.write(accuracy_content + "\n")
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
