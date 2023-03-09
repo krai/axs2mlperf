@@ -29,6 +29,45 @@
     "compliance_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path", [["compliance", "nvidia"]] ]
-    ]], {}, ["mlperf_inference_git_entry"] ]
+    ]], {}, ["mlperf_inference_git_entry"] ],
 
+    "desired_python_version": ["^", "kernel_python_major_dot_minor"],
+    "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],
+    "run_verify": [ "^^", "execute", [[
+        [ "get", "python_tool_entry" ],
+        [ "run", [], {
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{verify_script_path}# --results_dir #{results_dir}# --compliance_dir #{compliance_dir}# --output_dir #{output_dir}#",
+            "capture_output": false,
+            "capture_stderr": true,
+            "verify_script_path": [ "^^", "get", "verify_script_path" ],
+            "results_dir": [ "^^", "get", "results_dir" ],
+            "compliance_dir": [ "^^", "get", "compliance_dir" ],
+            "output_dir": [ "^^", "get", "output_dir" ]
+        } ]
+        ]]
+        ],
+        "run_truncation_script": [ "^^", "execute", [[
+            [ "get", "python_tool_entry" ],
+            [ "run", [], {
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{log_truncation_script_path}# --input #{submitted_tree_path}# --submitter #{submitter}# --backup #{log_backup_path}#",
+            "capture_output": false,
+            "capture_stderr": false,
+            "log_truncation_script_path": ["^^", "get", "log_truncation_script_path" ],
+            "submitted_tree_path": [ "^^", "get", "submitted_tree_path" ],
+            "submitter": [ "^^", "get", "submitter" ],
+            "log_backup_path": [ "^^", "get", "log_backup_path" ]
+            } ]
+        ]]
+        ],
+        "run_checker_script": [ "^^", "execute", [[
+            [ "get", "python_tool_entry" ],
+            [ "run", [], {
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --csv /dev/null",
+            "capture_output": false,
+            "capture_stderr": true,
+            "submission_checker_path":["^^", "get", "submission_checker_path" ],
+            "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
+            } ]
+       ]]
+       ]
 }

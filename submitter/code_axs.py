@@ -22,7 +22,7 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_server_target_qps=None, __entry__=None):
+def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
 
     if sut_system_type == "edge":
         if model_name in ("resnet50", "retinanet_openimages"):
@@ -105,12 +105,13 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
             joined_query = ','.join( list_query )
-            #print("Generated query = ", joined_query )
-            #print("")
-            experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+            if experiment_list_only is True:
+                print("Generated query = ", joined_query )
+                print("")
+            else:
+                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
 
     return experiment_entries
-
 
 def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
 
@@ -123,7 +124,6 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         except:
             pass
         return joined_path
-
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
 
@@ -277,36 +277,32 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
-            result = subprocess.run(
-            [
-                sys.executable,
-                os.path.join(compliance_path,compliance_test_name, "run_verification.py"),
-                "--results_dir",
-                results_dir,
-                "--compliance_dir",
-                compliance_dir,
-                "--output_dir",
-                output_dir,
-            ],
-                cwd=tmp_dir,
-            )
-            shutil.rmtree(tmp_dir)
+            verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
+            result_verify =  __entry__.call('get', 'run_verify', {
+                    "in_dir": tmp_dir,
+                    "verify_script_path": verify_script_path,
+                    "results_dir": results_dir,
+                    "compliance_dir": compliance_dir,
+                    "output_dir": output_dir
+                        } )
+            if result_verify == "":
+                shutil.rmtree(tmp_dir, ignore_errors=True)
+            else:
+                return
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
-    truncation_cmd = [
-        sys.executable,
-        log_truncation_script_path,
-        '--input',
-        submitted_tree_path,
-        '--submitter',
-        submitter,
-        '--backup',
-        log_backup_path
-    ]
-    print('Truncation cmd:\n\t' + ' '.join(truncation_cmd))
-    subprocess.run( truncation_cmd )
-    shutil.rmtree(log_backup_path, ignore_errors=True)
 
+    result_trucation =  __entry__.call( 'get', 'run_truncation_script', {
+            "log_truncation_script_path": log_truncation_script_path,
+            "submitted_tree_path": submitted_tree_path,
+            "submitter": submitter,
+            "log_backup_path": log_backup_path
+            } )
+
+    if  result_trucation == 0:
+        shutil.rmtree(log_backup_path, ignore_errors=True)
+    else:
+        return
     # -------------------------------[ systems ]--------------------------------------
     for sut_name in sut_dictionary:
         sut_data = sut_dictionary[sut_name]
@@ -319,14 +315,33 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
         store_json(sut_data, sut_path)
 
-    args = [sys.executable, submission_checker_path, "--input", submitted_tree_path, "--csv", "/dev/null"]
-
-    res = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = res.communicate()
-    print(stderr.decode())
-
-    checker_log_path = make_local_dir( ['submitted_tree', division, submitter ] )
-    logfile = open(os.path.join(checker_log_path,"submission-checker.log"),"w")
-    logfile.write(stderr.decode())
-
     return __record_entry__
+
+def run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__):
+
+    checker_log_path  = os.path.join(submitted_tree_path, division, submitter )
+    result_checker =  __entry__.call( 'get', 'run_checker_script', {
+            "submission_checker_path": submission_checker_path,
+            "submitted_tree_path": submitted_tree_path
+             } )
+
+    print(result_checker)
+    logfile = open(os.path.join(checker_log_path,"submission-checker.log"),"w")
+    logfile.write(result_checker)
+
+
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
+
+    __record_entry__["tags"] = ["laid_out_submission"]
+    __record_entry__.save( record_entry_name )
+    submitted_tree_path  = __record_entry__.get_path( ['submitted_tree'] )
+
+    if os.path.exists(submitted_tree_path):
+        print("Run checker...")
+        run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
+    else:
+        print("Run lay_out...")
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
+        print("Run checker...")
+        run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__)
+
