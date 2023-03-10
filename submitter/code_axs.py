@@ -45,9 +45,9 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
             common_attributes["loadgen_dataset_size"] = 5000
             common_attributes["loadgen_buffer_size"]  = 64
 
-    elif  program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_qaic_loadgen_kilt" ]:
+    elif  program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ]:
         experiment_tags = [ "loadgen_output", "bert_squad" ]
-        if program_name == "bert_squad_qaic_loadgen_kilt":
+        if program_name == "bert_squad_kilt_loadgen_c":
             experiment_tags.append("qaic")
         common_attributes["loadgen_dataset_size"] = 10833
         common_attributes["loadgen_buffer_size"]  = 10833
@@ -63,7 +63,7 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
     if division == "closed":
         if model_name == "resnet50":
             compliance_test_list = [ 'TEST01', 'TEST04', 'TEST05' ]
-        elif program_name in ( "bert_squad_onnxruntime_loadgen_py", "bert_squad_qaic_loadgen_kilt" ):
+        elif program_name in ( "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ):
             compliance_test_list = [ 'TEST01', 'TEST05' ]
         elif program_name == "object_detection_onnx_loadgen_py" and model_name == "retinanet_openimages":
             compliance_test_list = [ 'TEST01', 'TEST05' ]
@@ -253,7 +253,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name == "object_detection_onnx_loadgen_py":
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_qaic_loadgen_kilt"]:
+            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py":
 
