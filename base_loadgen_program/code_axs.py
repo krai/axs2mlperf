@@ -9,7 +9,7 @@ def get_mlperf_model_name(model_name_compliance_dict, model_name):
         return None
 
 def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, target_user_conf_path, loadgen_mlperf_path, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
-    if model_name in [ "bert_99", "bert_99_9", "bert-99", "bert-99.9"]:
+    if model_name in [ "bert-99", "bert-99.9"]:
         model_name = "bert"
     param_to_conf_pair = {
         "loadgen_count_override_min":   ("min_query_count", 1),
