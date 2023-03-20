@@ -12,6 +12,7 @@ import array
 import os
 import sys
 import time
+import json
 
 import numpy as np
 import onnxruntime as rt
@@ -19,28 +20,9 @@ from imagenet_loader import ImagenetLoader
 
 import mlperf_loadgen as lg
 
+input_parameters_file_path = sys.argv[1]
+user_conf_path             = sys.argv[2]
 
-scenario_str                = sys.argv[1]
-mode_str                    = sys.argv[2]
-dataset_size                = int(sys.argv[3])
-buffer_size                 = int(sys.argv[4])
-count_override_str          = sys.argv[5]
-multistreamness_str         = sys.argv[6]
-mlperf_conf_path            = sys.argv[7]
-user_conf_path              = sys.argv[8]
-verbosity                   = int( sys.argv[9] )
-model_path                  = sys.argv[10]
-model_name                  = sys.argv[11]
-normalize_symmetric         = eval(sys.argv[12])    # FIXME: currently we are passing a stringified form of a data structure,
-subtract_mean_bool          = eval(sys.argv[13])    # it would be more flexible to encode/decode through JSON instead.
-given_channel_means         = eval(sys.argv[14])
-output_layer_name           = sys.argv[15]
-execution_device            = sys.argv[16]          # if empty, it will be autodetected
-batch_size                  = int( sys.argv[17])
-cpu_threads                 = int( sys.argv[18])
-preprocessed_imagenet_dir   = sys.argv[19]
-
-given_channel_stds          = []
 data_layout                 = 'NCHW'
 
 MODEL_IMAGE_CHANNELS        = 3
@@ -48,10 +30,31 @@ MODEL_IMAGE_HEIGHT          = 224
 MODEL_IMAGE_WIDTH           = 224
 MODEL_INPUT_DATA_TYPE       = 'float32'
 
-#normalize_symmetric         = False # ternary choice (False means "asymmetric normalization ON")
-#subtract_mean_bool          = True
-#given_channel_means         = [0.485, 0.456, 0.406]
-#given_channel_stds          = [0.229, 0.224, 0.225]
+input_parameters = {}
+
+with open(input_parameters_file_path) as f:
+    input_parameters = json.load(f)
+
+scenario_str                = input_parameters["loadgen_scenario"]
+mode_str                    = input_parameters["loadgen_mode"]
+dataset_size                = input_parameters["loadgen_dataset_size"]
+buffer_size                 = input_parameters["loadgen_buffer_size"]
+count_override              = input_parameters["loadgen_count_override"]
+multistreamness             = input_parameters["loadgen_multistreamness"]
+mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+verbosity                   = input_parameters["verbosity"]
+model_path                  = input_parameters["model_path"]
+model_name                  = input_parameters["model_name"]
+normalize_symmetric         = eval(input_parameters["normalize_symmetric"])
+subtract_mean_bool          = eval(input_parameters["subtract_mean_bool"])
+given_channel_means         = eval(input_parameters["given_channel_means"])
+output_layer_name           = input_parameters["output_layer_name"]
+execution_device            = input_parameters["execution_device"]         # if empty, it will be autodetected
+batch_size                  = input_parameters["batch_size"]
+cpu_threads                 = input_parameters["cpu_threads"]
+preprocessed_imagenet_dir   = input_parameters["preprocessed_images_dir"]
+
+given_channel_stds          = []
 
 loader_object               = ImagenetLoader(preprocessed_imagenet_dir, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, data_layout, normalize_symmetric, subtract_mean_bool, given_channel_means, given_channel_stds)
 preprocessed_image_buffer   = None
@@ -199,11 +202,11 @@ def benchmark_using_loadgen():
     ts.scenario = scenario
     ts.mode     = mode
 
-    if multistreamness_str != "None":
-        ts.multi_stream_samples_per_query = int(multistreamness_str)
-    if count_override_str != "None":
-        ts.min_query_count = int(count_override_str)
-        ts.max_query_count = int(count_override_str)
+    if multistreamness is not None:
+        ts.multi_stream_samples_per_query = multistreamness
+    if count_override is not None:
+        ts.min_query_count = count_override
+        ts.max_query_count = count_override
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
