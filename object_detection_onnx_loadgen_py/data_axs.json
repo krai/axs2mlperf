@@ -75,6 +75,18 @@
         [ "plant", [ "^^", "substitute", [[
             "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
             "model_name", "#{model_name}#",
+            "model_path", "#{model_path}#",
+            "model_resolution", "#{model_resolution}#",
+            "model_output_scale", "#{model_output_scale}#",
+            "model_input_layer_name", "#{model_input_layer_name}#",
+            "model_output_layers_bls", "#{model_output_layers_bls}#",
+            "model_skipped_classes", "#{model_skipped_classes}#",
+            "normalize_symmetric", "#{normalize_symmetric}#",
+            "subtract_mean_bool", "#{subtract_mean_bool}#",
+            "given_channel_means","#{given_channel_means}#",
+            "given_channel_stds", "#{given_channel_stds}#",
+            "labels_file_path", "#{labels_file_path}#",
+
             "framework", "#{framework}#",
             "dataset_name", "#{dataset_name}#",
             "preprocessed_images_dir", "#{preprocessed_images_dir}#",
@@ -90,6 +102,13 @@
             "loadgen_mlperf_conf_path", "#{loadgen_mlperf_conf_path}#",
             "loadgen_min_duration_s", "#{loadgen_min_duration_s}#",
             "loadgen_max_duration_s", "#{loadgen_min_duration_s}#",
+
+            "verbosity", "#{verbosity}#",
+            "execution_device", "#{execution_device}#",
+            "batch_size", "#{batch_size}#",
+            "cpu_threads", "#{cpu_threads}#",
+            "minimal_class_id", "#{minimal_class_id}#",
+
             "tags", [ "loadgen_output", "detected_coco" ]
          ]] ] ],
          [ "save" ]
@@ -103,8 +122,12 @@
         [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
+    "input_parameters_file_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "data_axs.json" ]
+    ]] ],
     "errorize_output": true,
     "rel_script_path": "onnx_loadgen_detector.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# #{loadgen_multistreamness}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" #{verbosity}# \"#{model_name}#\" \"#{model_path}#\" #{model_resolution}# #{model_output_scale}# \"#{model_input_layer_name}#\" \"#{model_output_layers_bls}#\" \"#{model_skipped_classes}#\" \"#{normalize_symmetric}#\" \"#{subtract_mean_bool}#\" \"#{given_channel_means}#\" \"#{given_channel_stds}#\" \"#{preprocessed_images_dir}#\" \"#{labels_file_path}#\" \"#{execution_device}#\" \"#{batch_size}#\" #{cpu_threads}# #{minimal_class_id}# #{loadgen_min_duration_s}# #{loadgen_min_duration_s}#" ]
+    "script_extra_params": [ "^^", "substitute", "\"#{input_parameters_file_path}#\" \"#{loadgen_user_conf_path}#\"" ]
 }

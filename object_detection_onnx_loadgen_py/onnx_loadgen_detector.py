@@ -15,6 +15,7 @@ import array
 import os
 import sys
 import time
+import json
 
 import numpy as np
 import onnxruntime as rt
@@ -22,38 +23,44 @@ from coco_loader import CocoLoader
 
 import mlperf_loadgen as lg
 
+input_parameters_file_path = sys.argv[1]
+user_conf_path = sys.argv[2]
 
-scenario_str                = sys.argv[1]
-mode_str                    = sys.argv[2]
-dataset_size                = int(sys.argv[3])
-buffer_size                 = int(sys.argv[4])
-count_override_str          = sys.argv[5]
-multistreamness_str         = sys.argv[6]
-mlperf_conf_path            = sys.argv[7]
-user_conf_path              = sys.argv[8]
-verbosity                   = int( sys.argv[9] )
+input_parameters = {}
 
-model_name                  = sys.argv[10]
-model_path                  = sys.argv[11]
-model_resolution            = int(sys.argv[12])
-model_output_scale          = float(sys.argv[13])
-model_input_layer_name      = sys.argv[14]
-model_output_layers_bls     = eval(sys.argv[15])
-model_skipped_classes       = eval(sys.argv[16])
-normalize_symmetric         = eval(sys.argv[17])    # FIXME: currently we are passing a stringified form of a data structure,
-subtract_mean_bool          = eval(sys.argv[18])    # it would be more flexible to encode/decode through JSON instead.
-given_channel_means         = eval(sys.argv[19])
-given_channel_stds          = eval(sys.argv[20])
+with open(input_parameters_file_path) as f:
+    input_parameters = json.load(f)
 
-preprocessed_coco_dir       = sys.argv[21]
-coco_labels_file_path       = sys.argv[22]
-execution_device            = sys.argv[23]          # if empty, it will be autodetected
-batch_size                  = int( sys.argv[24])
-cpu_threads                 = int( sys.argv[25])
+scenario_str                = input_parameters["loadgen_scenario"]
+mode_str                    = input_parameters["loadgen_mode"]
+dataset_size                = input_parameters["loadgen_dataset_size"]
+buffer_size                 = input_parameters["loadgen_buffer_size"]
+count_override              = input_parameters["loadgen_count_override"]
+multistreamness             = input_parameters["loadgen_multistreamness"] 
+mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+verbosity                   = input_parameters["verbosity"]
 
-minimal_class_id            = int( sys.argv[26])
-min_duration_str            = sys.argv[27]
-max_duration_str            = sys.argv[28]
+model_name                  = input_parameters["model_name"]
+model_path                  = input_parameters["model_path"]
+model_resolution            = input_parameters["model_resolution"]
+model_output_scale          = input_parameters["model_output_scale"]
+model_input_layer_name      = input_parameters["model_input_layer_name"]
+model_output_layers_bls     = eval(input_parameters["model_output_layers_bls"])
+model_skipped_classes       = eval(input_parameters["model_skipped_classes"])
+normalize_symmetric         = eval(input_parameters["normalize_symmetric"])   
+subtract_mean_bool          = eval(input_parameters["subtract_mean_bool"])
+given_channel_means         = eval(input_parameters["given_channel_means"])
+given_channel_stds          = eval(input_parameters["given_channel_means"])
+
+preprocessed_coco_dir       = input_parameters["preprocessed_images_dir"]
+coco_labels_file_path       = input_parameters["labels_file_path"]
+execution_device            = input_parameters["execution_device"]          # if empty, it will be autodetected
+batch_size                  = input_parameters["batch_size"]
+cpu_threads                 = input_parameters["cpu_threads"]
+
+minimal_class_id            = input_parameters["minimal_class_id"]
+min_duration                = input_parameters["loadgen_min_duration_s"]
+max_duration                = input_parameters["loadgen_min_duration_s"]
 
 ## Model parameters:
 #
@@ -246,16 +253,16 @@ def benchmark_using_loadgen():
     ts.scenario = scenario
     ts.mode     = mode
 
-    if multistreamness_str != "None":
-         ts.multi_stream_samples_per_query = int(multistreamness_str)
+    if multistreamness is not None:
+         ts.multi_stream_samples_per_query = multistreamness
 
-    if count_override_str != "None":
-        ts.min_query_count = int(count_override_str)
-        ts.max_query_count = int(count_override_str)
-    if min_duration_str != "None":
-        ts.min_duration_ms = int(min_duration_str)
-    if max_duration_str != "None":
-        ts.max_duration_ms = int(max_duration_str)
+    if count_override is not None:
+        ts.min_query_count = count_override
+        ts.max_query_count = count_override
+    if min_duration is not None:
+        ts.min_duration_ms = min_duration
+    if max_duration is not None:
+        ts.max_duration_ms = max_duration
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
