@@ -13,34 +13,43 @@ import array
 
 import mlperf_loadgen as lg
 
-bert_code_root = os.path.join(sys.argv[1], 'language', 'bert')
+input_parameters_file_path = sys.argv[1]
+user_conf_path = sys.argv[2]
+
+input_parameters = {}
+
+with open(input_parameters_file_path) as f:
+    input_parameters = json.load(f)
+
+print("DEBUG: input_parameters = ", input_parameters)
+
+bert_code_root = os.path.join( input_parameters["mlperf_inference_path"], 'language', 'bert')
 
 sys.path.insert(0, bert_code_root)
 sys.path.insert(0, os.path.join(bert_code_root,'DeepLearningExamples','TensorFlow','LanguageModeling','BERT'))
 
 ## SQuAD dataset - original and tokenized
 #
-squad_dataset_tokenized_path= sys.argv[2]
+squad_dataset_tokenized_path= input_parameters["tokenized_squad_path"]
 
 ## BERT model:
 #
-model_name                  = sys.argv[3]
-bert_model_path             = sys.argv[4]
-model_input_layers_tms      = eval(sys.argv[5])
+model_name                  = input_parameters["model_name"]
+bert_model_path             = input_parameters["model_path"]
+model_input_layers_tms      = eval(input_parameters["model_input_layers_tms"])
 
 ## Processing by batches:
 #
-batch_size                  = int(sys.argv[6])
-execution_device            = sys.argv[7]
+batch_size                  = input_parameters["batch_size"]
+execution_device            = input_parameters["execution_device"]
 
-scenario_str                = sys.argv[8]
-mode_str                    = sys.argv[9]
-dataset_size                = int(sys.argv[10])
-buffer_size                 = int(sys.argv[11])
-count_override_str          = sys.argv[12]
-mlperf_conf_path            = sys.argv[13]
-user_conf_path              = sys.argv[14]
-verbosity                   = int( sys.argv[15] )
+scenario_str                = input_parameters["loadgen_scenario"]
+mode_str                    = input_parameters["loadgen_mode"]
+dataset_size                = input_parameters["loadgen_dataset_size"]
+buffer_size                 = input_parameters["loadgen_buffer_size"]
+count_override              = input_parameters["loadgen_count_override"]
+mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+verbosity                   = input_parameters["verbosity"]
 
 sess_options = onnxruntime.SessionOptions()
 
@@ -170,9 +179,9 @@ def benchmark_using_loadgen():
 
     ts.scenario = scenario
     ts.mode     = mode
-    if count_override_str != "None":
-        ts.min_query_count = int(count_override_str)
-        ts.max_query_count = int(count_override_str)
+    if count_override is not None:
+        ts.min_query_count = count_override
+        ts.max_query_count = count_override
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
     log_settings = lg.LogSettings()

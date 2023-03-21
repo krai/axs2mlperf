@@ -48,7 +48,7 @@
         [ "get_path" ]
     ]] ],
 
-    "batch_size": "1",
+    "batch_size": 1,
 
     "dataset_max_seq_length": 384,
     "tokenized_squad_query":[ "tokenized", "squad_v1_1","calibration=no" , [ "^^", "substitute", "dataset_max_seq_length=#{dataset_max_seq_length}#" ] ],
@@ -69,6 +69,8 @@
         [ "plant", [ "^^", "substitute", [[
             "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
             "model_name", "#{model_name}#",
+            "model_path","#{model_path}#",
+            "model_input_layers_tms", "#{model_input_layers_tms}#",
             "framework", "#{framework}#",
             "dataset_name", "#{dataset_name}#",
             "squad_dataset_original_path", "#{squad_dataset_original_path}#",
@@ -83,6 +85,11 @@
             "loadgen_count_override", "#{loadgen_count_override}#",
             "loadgen_multistreamness", "#{loadgen_multistreamness}#",
             "loadgen_mlperf_conf_path", "#{loadgen_mlperf_conf_path}#",
+ 
+            "mlperf_inference_path", "#{mlperf_inference_path}#",
+            "batch_size", "#{batch_size}#",
+            "execution_device", "#{execution_device}#",
+            "verbosity", "#{verbosity}#",
 
             "tags", [ "loadgen_output", "bert_squad" ]
          ]] ] ],
@@ -93,8 +100,12 @@
         [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
+    "input_parameters_file_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "data_axs.json" ]
+    ]] ],
     "errorize_output": true,
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{mlperf_inference_path}#\" \"#{tokenized_squad_path}#\" \"#{model_name}#\" \"#{model_path}#\" \"#{model_input_layers_tms}#\" \"#{batch_size}#\" \"#{execution_device}#\" \"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# #{loadgen_count_override}# \"#{loadgen_mlperf_conf_path}#\" \"#{loadgen_user_conf_path}#\" \"#{verbosity}#\" " ]
+    "script_extra_params": [ "^^", "substitute", "\"#{input_parameters_file_path}#\" \"#{loadgen_user_conf_path}#\"" ]
 }
