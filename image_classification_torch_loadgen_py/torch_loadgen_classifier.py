@@ -15,22 +15,29 @@ import time
 
 import numpy as np
 import torch
+import json
 from imagenet_loader import ImagenetLoader
 import mlperf_loadgen as lg
 
+input_parameters_file_path = sys.argv[1]
+user_conf_path             = sys.argv[2]
 
-scenario_str                = sys.argv[1]
-mode_str                    = sys.argv[2]
-dataset_size                = int(sys.argv[3])
-buffer_size                 = int(sys.argv[4])
-count_override_str          = sys.argv[5]
-multistreamness_str         = sys.argv[6]
-mlperf_conf_path            = sys.argv[7]
-user_conf_path              = sys.argv[8]
-verbosity                   = int( sys.argv[9] )
-model_name                  = sys.argv[10]
-batch_size                  = int( sys.argv[11] )
-preprocessed_imagenet_dir   = sys.argv[12]
+input_parameters = {}
+
+with open(input_parameters_file_path) as f:
+    input_parameters = json.load(f)
+
+scenario_str                = input_parameters["loadgen_scenario"]
+mode_str                    = input_parameters["loadgen_mode"]
+dataset_size                = input_parameters["loadgen_dataset_size"]
+buffer_size                 = input_parameters["loadgen_buffer_size"]
+count_override              = input_parameters["loadgen_count_override"]
+multistreamness             = input_parameters["loadgen_multistreamness"]
+mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+verbosity                   = input_parameters["verbosity"]
+model_name                  = input_parameters["model_name"]
+batch_size                  = input_parameters["batch_size"]
+preprocessed_imagenet_dir   = input_parameters["preprocessed_images_dir"]
 
 
 use_cuda                    = torch.cuda.is_available()
@@ -183,12 +190,12 @@ def benchmark_using_loadgen():
     ts.scenario = scenario
     ts.mode     = mode
 
-    if multistreamness_str != "None":
-        ts.multi_stream_samples_per_query = int(multistreamness_str)
+    if multistreamness is not None:
+        ts.multi_stream_samples_per_query = multistreamness
 
-    if count_override_str != "None":
-        ts.min_query_count = int(count_override_str)
-        ts.max_query_count = int(count_override_str)
+    if count_override is not None:
+        ts.min_query_count = count_override_str
+        ts.max_query_count = count_override_str
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
