@@ -20,7 +20,6 @@ from imagenet_loader import ImagenetLoader
 import mlperf_loadgen as lg
 
 input_parameters_file_path = sys.argv[1]
-user_conf_path             = sys.argv[2]
 
 input_parameters = {}
 
@@ -34,6 +33,7 @@ buffer_size                 = input_parameters["loadgen_buffer_size"]
 count_override              = input_parameters["loadgen_count_override"]
 multistreamness             = input_parameters["loadgen_multistreamness"]
 mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+user_conf_path              = input_parameters["loadgen_user_conf_path"]
 verbosity                   = input_parameters["verbosity"]
 model_name                  = input_parameters["model_name"]
 batch_size                  = input_parameters["batch_size"]
