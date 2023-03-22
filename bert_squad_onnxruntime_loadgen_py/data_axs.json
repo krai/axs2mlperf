@@ -102,10 +102,12 @@
     ]] ],
     "input_parameters_file_path": [ "^^", "execute", [[
         [ "get", "output_entry" ],
+        [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
+        [ "save", [], { "deterministic": false } ],
         [ "get_path", "data_axs.json" ]
     ]] ],
     "errorize_output": true,
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{input_parameters_file_path}#\" \"#{loadgen_user_conf_path}#\"" ]
+    "script_extra_params": [ "^^", "substitute", "\"#{input_parameters_file_path}#\"" ]
 }

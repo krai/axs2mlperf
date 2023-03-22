@@ -14,14 +14,11 @@ import array
 import mlperf_loadgen as lg
 
 input_parameters_file_path = sys.argv[1]
-user_conf_path = sys.argv[2]
 
 input_parameters = {}
 
 with open(input_parameters_file_path) as f:
     input_parameters = json.load(f)
-
-print("DEBUG: input_parameters = ", input_parameters)
 
 bert_code_root = os.path.join( input_parameters["mlperf_inference_path"], 'language', 'bert')
 
@@ -49,6 +46,7 @@ dataset_size                = input_parameters["loadgen_dataset_size"]
 buffer_size                 = input_parameters["loadgen_buffer_size"]
 count_override              = input_parameters["loadgen_count_override"]
 mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+user_conf_path              = input_parameters["loadgen_user_conf_path"]
 verbosity                   = input_parameters["verbosity"]
 
 sess_options = onnxruntime.SessionOptions()
