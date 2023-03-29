@@ -33,5 +33,6 @@
         "submitter": "submitter",
         "model_pytorch_resnet50": "model_pytorch_resnet50"
     },
-    "repo_name": "axs2mlperf"
+    "repo_name": "axs2mlperf",
+    "checkout": "master"
 }
