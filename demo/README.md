@@ -1,6 +1,6 @@
 # Quick Demo with Docker
 
-Below is a self-contained demonstration of our onnxruntime workflow, which installs `axs` and downloads relevant dependencies. For object detection, it downloads the SSD-ResNet34 model, the RetinaNet model, the original COCO dataset and a short partial resized subset of 20 images. For image classification, it downloads the ResNet50 model, the original ImageNet dataset and a short partial resized subset of 20 images. For large language models, it downloads the Bert Large model and the original squad v1.1 dataset.
+Below is a self-contained demonstration of our onnxruntime workflow, which installs `axs` and downloads relevant dependencies. For object detection, it downloads the SSD-ResNet34 model, the RetinaNet model, the original COCO dataset and a short partial resized subset of 20 images. For image classification, it downloads the ResNet50 model, the first 500 images in the ImageNet dataset and a short partial resized subset of 20 images. For large language models, it downloads the Bert Large model and the original squad v1.1 dataset.
 
 Download the [Dockerfile](Dockerfile).
 ```
@@ -15,7 +15,7 @@ time docker build -t axs:benchmarks -f Axs_Dockerfile .
 ### SSD-ResNet34
 Launch a short accuracy run of the SSD-ResNet34 model.
 ```
-docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , get accuracy"
+docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , get mAP"
 ```
 <details>
 mAP value and run time
@@ -31,7 +31,7 @@ sys     0m2.866s
 ### RetinaNet
 Launch a short accuracy run of the RetinaNet model.
 ```
-docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy"
+docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , get mAP"
 ```
 <details>
 mAP value and run time
@@ -50,7 +50,7 @@ Launch a short accuracy run of the ResNet50 model.
 docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_dataset_size=20  , get accuracy"
 ```
 <details>
-mAP value and run time
+accuracy and run time
 <pre>
 85.0
 
@@ -66,7 +66,7 @@ Launch a short accuracy run of the Bert Large model.
 docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_dataset_size=20  , get accuracy"
 ```
 <details>
-mAP value and run time
+accuracy and run time
 <pre>
 85.0
 
@@ -76,5 +76,5 @@ sys     0m5.295s
 </pre>
 </details>
 
-The mAP value and run time should be printed after a successful run. To install `axs` locally and to explore its full potential please check out the documentation of the [object detection](../object_detection_onnx_loadgen_py/README.md), [image classification](../image_classification_onnx_loadgen_py/README.md), and [large language model](../bert_squad_onnxruntime_loadgen_py/README.md) pipelines.
+The mAP/accuracy and run time should be printed after a successful run. To install `axs` locally and to explore its full potential please check out the documentation of the [object detection](../object_detection_onnx_loadgen_py/README.md), [image classification](../image_classification_onnx_loadgen_py/README.md), and [large language model](../bert_squad_onnxruntime_loadgen_py/README.md) pipelines.
 
