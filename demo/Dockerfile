@@ -49,4 +49,7 @@ RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size
 RUN axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_dataset_size=20 , remove
 RUN axs byquery loadgen_output,bert_squad,framework=onnx , remove
 
+# Provide a place for exporting files to host
+RUN mkdir /home/krai/logs
+
 CMD [ "/bin/bash" ]
