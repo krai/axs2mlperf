@@ -11,8 +11,8 @@
         ]
     ],
     "tags": [
-        "collection",
-        "git_repo"
+        "git_repo",
+        "collection"
     ],
     "contained_entries": {
         "loadgen_example": "loadgen_example",
@@ -34,5 +34,6 @@
         "model_pytorch_resnet50": "model_pytorch_resnet50"
     },
     "repo_name": "axs2mlperf",
-    "checkout": "master"
+    "checkout": "master",
+    "submodules": false
 }

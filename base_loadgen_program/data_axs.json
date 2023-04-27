@@ -26,14 +26,25 @@
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
         [ "get_path", "" ]
      ]] ],
-    "target_user_conf_path": [ "^^", "execute", [[
+
+    "output_dir": [ "^^", "execute", [[
         [ "get", "output_entry" ],
-        [ "get_path", "user.conf" ]
+        [ "get_path" ]
     ]] ],
-    "target_audit_conf_path": [ "^^", "execute", [[
+    "target_user_conf_path":  [ "^^", "func", [ "os.path.join", [ "^^", "get", "output_dir" ], "user.conf" ] ],
+    "target_audit_conf_path": [ "^^", "func", [ "os.path.join", [ "^^", "get", "output_dir" ], "audit.config" ] ],
+    "in_dir": [ "^^", "get", "output_dir" ],
+    "errorize_output": true,
+
+    "program_name": [ "^^", "get_name" ],
+
+    "input_parameters_file_path": [ "^^", "execute", [[
         [ "get", "output_entry" ],
-        [ "get_path", "audit.config" ]
+        [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
+        [ "save", [], { "deterministic": false } ],
+        [ "get_path", "data_axs.json" ]
     ]] ],
+
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
         [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
     ]],

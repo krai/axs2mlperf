@@ -66,18 +66,6 @@
          [ "save" ]
     ]] ],
 
-    "in_dir": [ "^^", "execute", [[
-        [ "get", "output_entry" ],
-        [ "get_path" ]
-    ]] ],
-    "input_parameters_file_path": [ "^^", "execute", [[
-        [ "get", "output_entry" ],
-        [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
-        [ "save", [], { "deterministic": false } ],
-        [ "get_path", "data_axs.json" ]
-    ]] ],
-    "errorize_output": true,
     "rel_script_path": "torch_loadgen_classifier.py",
-
-    "script_extra_params": [ "^^", "substitute", "\"#{input_parameters_file_path}#\"" ]
+    "script_extra_params": [ "^^", "get", "input_parameters_file_path" ]
 }
