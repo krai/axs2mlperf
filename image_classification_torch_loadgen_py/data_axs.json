@@ -5,7 +5,7 @@
     ],
 
     "resolution": 224,
-    "preprocessed_images_query": [ "preprocessed", "dataset_name=imagenet", [ "^^", "substitute", "resolution=#{resolution}#" ] ],
+    "preprocessed_images_query": [ "preprocessed", "dataset_name=imagenet", [ "^^", "substitute", "resolution=#{resolution}#" ] , [ "^^", "substitute", "first_n=#{num_of_images}#" ]],
     "preprocessed_images_dir": [ "^", "execute", [[
         [ "byquery", [[ "^^", "get", "preprocessed_images_query" ]] ],
         [ "get_path" ]
@@ -35,6 +35,7 @@
     "batch_size": 1,
     "framework": "pytorch",
     "verbosity": 2,
+    "num_of_images": ["^^", "get", "loadgen_dataset_size" ],
 
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
