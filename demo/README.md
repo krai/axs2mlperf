@@ -4,12 +4,12 @@ Below is a self-contained demonstration of our onnxruntime workflow, which insta
 
 Download the [Dockerfile](Dockerfile).
 ```
-wget -O Axs_Dockerfile https://raw.githubusercontent.com/krai/axs2mlperf/master/demo/Dockerfile
+wget -O Axs_Dockerfile https://raw.githubusercontent.com/krai/axs2mlperf/stable/demo/Dockerfile
 ```
 
-Build the Docker image. It takes ~30 minutes on our server and is ~9.51GB in size.
+Build the Docker image. It takes ~12 minutes on our server and is ~9.51GB in size.
 ```
-time docker build -t axs:benchmarks -f Axs_Dockerfile .
+time docker build --no-cache -t axs:benchmarks -f Axs_Dockerfile .
 ```
 
 ## Measure Accuracy
@@ -104,18 +104,14 @@ p[batch of 1] inference=6.95 ms
 
 For a GPU system, see details.
 <details>
-For a GPU system, it will probably finish the run much quicker. Assuming the use of nvidia gpu, to check the GPU is visible within the docker container:
+For a GPU system, it will probably finish the run much quicker. Assuming the use of nvidia gpu, check the GPU is visible within the docker container:
 <pre>
 docker run -it --rm --privileged --gpus all axs:benchmarks -c "nvidia-smi"
-</pre>
-Or,
-<pre>
-docker run -it --rm --privileged --gpus all axs:benchmarks -c "time axs byquery shell_tool,can_gpu , run"
 </pre>
 
 To run with GPU:
 <pre>
-docker run -it --rm --privileged --gpus all axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1,verbosity=1,execution_device=gpu,cuda , get performance"
+docker run -it --rm --privileged --gpus all axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1,verbosity=1,execution_device=gpu,num_gpus=1 , get performance"
 </pre>
 </details>
 

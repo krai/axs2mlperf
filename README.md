@@ -7,7 +7,7 @@ In this repository we keep [axs](https://github.com/krai/axs) entries to support
 
 To import this repository into your **work_collection** , run
 ```
-axs byquery git_repo,collection,repo_name=axs2mlperf
+axs byquery git_repo,collection,repo_name=axs2mlperf,checkout=stable
 ```
 
 The easiest workflow that builds and tests LoadGen library:

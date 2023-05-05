@@ -12,7 +12,7 @@ So the only prerequisite from the user's point of view is a sufficiently fresh v
 
 First, clone the `axs` repository.
 ```
-git clone https://github.com/krai/axs
+git clone --branch stable https://github.com/krai/axs
 ```
 
 Then, add the path to `bashrc`.
@@ -23,7 +23,7 @@ source ~/.bashrc
 
 Finally, import this repository into your `work_collection`
 ```
-axs byquery git_repo,collection,repo_name=axs2mlperf
+axs byquery git_repo,collection,repo_name=axs2mlperf,checkout=stable
 ```
 
 The dependencies of various components (on Python code and external utilities) as well as interdependencies of the workflow's main components (original dataset, preprocessed dataset, model and its parameters) have been described in `axs`'s internal language to achieve the fullest automation we could.

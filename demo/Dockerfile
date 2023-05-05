@@ -27,11 +27,11 @@ RUN git config --global user.name "krai"\
 WORKDIR /home/krai
 
 # Install the kernel of the X workflow automation framework.
-RUN git clone https://github.com/krai/axs
+RUN git clone --branch stable https://github.com/krai/axs
 ENV PATH="$PATH:/home/krai/axs"
 
 # Import this repository into your work_collection
-RUN axs byquery git_repo,collection,repo_name=axs2mlperf
+RUN axs byquery git_repo,collection,repo_name=axs2mlperf,checkout=stable
 
 # Download model/dataset/runtime dependencies and perform two quick accuracy runs on SSD-ResNet34, RetinaNet, ResNet50, Bert Large.
 # Object Detection
