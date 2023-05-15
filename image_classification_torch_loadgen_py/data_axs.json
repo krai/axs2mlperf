@@ -5,11 +5,21 @@
     ],
 
     "resolution": 224,
-    "preprocessed_images_query": [ "preprocessed", "dataset_name=imagenet", [ "^^", "substitute", "resolution=#{resolution}#" ] , [ "^^", "substitute", "first_n=#{num_of_images}#" ]],
-    "preprocessed_images_dir": [ "^", "execute", [[
-        [ "byquery", [[ "^^", "get", "preprocessed_images_query" ]] ],
+
+    "index_file": null,
+    "preprocessed_images_query": [
+        "preprocessed",
+        "dataset_name=imagenet",
+        [ "^^", "substitute", "resolution=#{resolution}#"],
+        [ "^^", "substitute", "first_n=#{num_of_images}#"],
+        [ "index_file", [ "^^", "get", "index_file" ]]
+    ],
+    "preprocessed_images_entry": [ "^", "byquery", [[ "^^", "get", "preprocessed_images_query" ]], {}, ["preprocessed_images_query"] ],
+    "preprocessed_images_dir": [ "^^", "execute", [[
+        [ "get", "preprocessed_images_entry" ],
         [ "get_path" ]
-    ]], {}, ["preprocessed_images_query"] ],
+    ]] ],
+    "input_file_list": [ "^^", "dig", "preprocessed_images_entry.input_file_list" ],
 
     "num_gpus": [ "^", "execute", [[
                         [ "byquery", "shell_tool,can_gpu" ],
@@ -61,6 +71,7 @@
                             "model_name",
                             "model_path",
                             "preprocessed_images_dir",
+                            "input_file_list",
                             "batch_size"
 
                         ], { "plantable": true }
