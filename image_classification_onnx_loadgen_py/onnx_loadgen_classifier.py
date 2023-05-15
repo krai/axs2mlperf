@@ -53,10 +53,11 @@ execution_device            = input_parameters["execution_device"]         # if 
 batch_size                  = input_parameters["batch_size"]
 cpu_threads                 = input_parameters["cpu_threads"]
 preprocessed_imagenet_dir   = input_parameters["preprocessed_images_dir"]
+input_file_list             = input_parameters["input_file_list"]
 
 given_channel_stds          = []
 
-loader_object               = ImagenetLoader(preprocessed_imagenet_dir, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, data_layout, normalize_symmetric, subtract_mean_bool, given_channel_means, given_channel_stds)
+loader_object               = ImagenetLoader(preprocessed_imagenet_dir, input_file_list, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, data_layout, normalize_symmetric, subtract_mean_bool, given_channel_means, given_channel_stds)
 preprocessed_image_buffer   = None
 preprocessed_image_map      = np.empty(dataset_size, dtype=np.int32)   # this type should be able to hold indices in range 0:dataset_size
 
