@@ -1,0 +1,11 @@
+{
+    "_producer_rules": [
+        [ [ "git_repo", "repo_name=mlperf_power_git" ], [["get_kernel"],["byname","git"],["clone"]], {
+        }, [ "url", "checkout", "contained_files" ] ]
+    ],
+    "url": "https://github.com/mlcommons/power-dev",
+    "checkout": "r3.0",
+    "contained_files": {
+        "power_client_script": [ "ptd_client_server", "client.py" ]
+    }
+}

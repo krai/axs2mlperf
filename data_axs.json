@@ -31,7 +31,8 @@
         "base_loadgen_program": "base_loadgen_program",
         "model_onnx_distilbert_recipe": "model_onnx_distilbert_recipe",
         "submitter": "submitter",
-        "model_pytorch_resnet50": "model_pytorch_resnet50"
+        "model_pytorch_resnet50": "model_pytorch_resnet50",
+        "mlperf_power_git_recipe": "mlperf_power_git_recipe"
     },
     "repo_name": "axs2mlperf",
     "checkout": "master",
