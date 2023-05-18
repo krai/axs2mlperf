@@ -9,8 +9,8 @@
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ "vision", "classification_and_detection", "tools", [ "^^", "substitute", "accuracy-#{dataset_name}#.py" ] ]] ]
-    ]], {}, ["mlperf_inference_git_entry"] ],
+        [ "get_path_of", [ "^^", "substitute", "#{dataset_name}#_detection_accuracy_script"] ]
+    ]] ],
 
     "dataset_entry": [ "^", "byquery", [[ "^^", "substitute", "dataset,dataset_name=#{dataset_name}#" ]], {}, [ "dataset_name"] ],
 

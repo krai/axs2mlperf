@@ -13,17 +13,13 @@ import array
 
 import mlperf_loadgen as lg
 
+
 input_parameters_file_path = sys.argv[1]
 
 input_parameters = {}
 
 with open(input_parameters_file_path) as f:
     input_parameters = json.load(f)
-
-bert_code_root = os.path.join( input_parameters["mlperf_inference_path"], 'language', 'bert')
-
-sys.path.insert(0, bert_code_root)
-sys.path.insert(0, os.path.join(bert_code_root,'DeepLearningExamples','TensorFlow','LanguageModeling','BERT'))
 
 ## SQuAD dataset - original and tokenized
 #
@@ -48,6 +44,14 @@ count_override              = input_parameters["loadgen_count_override"]
 mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
 user_conf_path              = input_parameters["loadgen_user_conf_path"]
 verbosity                   = input_parameters["verbosity"]
+
+# The code that lives in MLPerf's inference repo will be used later to make sense of pickled tokenized data:
+bert_code_root              = input_parameters["bert_code_root"]
+bert_squad_code_dir         = input_parameters["bert_squad_code_dir"]
+
+sys.path.insert(0, bert_code_root)
+sys.path.insert(0, bert_squad_code_dir)
+
 
 sess_options = onnxruntime.SessionOptions()
 

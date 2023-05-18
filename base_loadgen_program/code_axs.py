@@ -1,6 +1,7 @@
 import os
 from shutil import copy2
 
+
 def get_mlperf_model_name(model_name_compliance_dict, model_name):
     if model_name in model_name_compliance_dict.keys():
         print("DEBUG: model_name_dict[model_name] = ", model_name_compliance_dict[model_name])
@@ -8,7 +9,8 @@ def get_mlperf_model_name(model_name_compliance_dict, model_name):
     else:
         return None
 
-def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, target_user_conf_path, loadgen_mlperf_path, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
+
+def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
     if model_name in [ "bert-99", "bert-99.9"]:
         model_name = "bert"
     param_to_conf_pair = {
@@ -38,18 +40,19 @@ def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, t
          user_conf_file.writelines(user_conf)
 
     if loadgen_compliance_test:
-        target_audit_conf_path = generate_audit_conf( model_name, loadgen_mlperf_path, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict)
+        target_audit_conf_path = generate_audit_conf( model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict)
 
     return target_user_conf_path
 
-def generate_audit_conf( model_name, loadgen_mlperf_path, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
+
+def generate_audit_conf( model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
 
     # Copy 'audit.config' for compliance testing into the current directory.
     mlperf_model_name = get_mlperf_model_name(model_name_compliance_dict, model_name)
     if mlperf_model_name is not None:
         model_name = mlperf_model_name
 
-    path_parts = [ loadgen_mlperf_path, 'compliance', 'nvidia', loadgen_compliance_test ]
+    path_parts = [ submission_compliance_tests_dir, loadgen_compliance_test ]
 
     if loadgen_compliance_test in [ 'TEST01' ]:
         path_parts.append(model_name)

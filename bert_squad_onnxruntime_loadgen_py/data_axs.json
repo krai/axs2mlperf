@@ -22,10 +22,15 @@
     ],
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "mlperf_inference_path": [ "^^", "execute", [[
+    "bert_code_root": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path" ]
-    ]], {}, ["mlperf_inference_git_entry"] ],
+        [ "get_path_of", "bert_code_root" ]
+    ]] ],
+
+    "bert_squad_code_dir": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "bert_squad_code_dir" ]
+    ]] ],
 
     "model_name": "bert_large",
     "model_query": [ "inference_ready", "onnx_model", [ "^^", "substitute", "model_name=#{model_name}#" ] ],
@@ -79,6 +84,7 @@
                             "sut_name",
                             "program_name",
                             "verbosity",
+                            "batch_size",
 
                             "model_name",
                             "model_path",
@@ -87,8 +93,8 @@
                             "squad_dataset_original_path",
                             "tokenized_squad_path",
 
-                            "mlperf_inference_path",
-                            "batch_size",
+                            "bert_code_root",
+                            "bert_squad_code_dir",
 
                             "execution_device"
                         ], { "plantable": true }

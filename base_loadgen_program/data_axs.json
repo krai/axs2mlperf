@@ -18,13 +18,16 @@
 
     "sut_name": ["^", "func", "socket.gethostname" ],
 
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
     "loadgen_mlperf_conf_path": [ "^", "execute", [[
-        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-        [ "get_path", "mlperf.conf" ]
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "mlperf_conf_file" ]
     ]] ],
-    "loadgen_mlperf_path": [ "^", "execute", [[
-        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-        [ "get_path", "" ]
+
+    "submission_compliance_tests_dir": [ "^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "submission_compliance_tests_dir" ]
      ]] ],
 
     "output_dir": [ "^^", "execute", [[

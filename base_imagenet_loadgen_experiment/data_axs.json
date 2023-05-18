@@ -11,8 +11,8 @@
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [["vision", "classification_and_detection", "tools", "accuracy-imagenet.py"]] ]
-    ]], {}, ["mlperf_inference_git_entry"] ],
+        [ "get_path_of", "classification_accuracy_script" ]
+    ]] ],
 
     "accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
