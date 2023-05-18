@@ -5,8 +5,6 @@
     "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", [ "^^", "substitute", "#{dataset_name}#_detection_accuracy_script"] ]

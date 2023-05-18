@@ -5,8 +5,6 @@
 
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
 
     "abs_script_path": [ "^^", "execute", [[

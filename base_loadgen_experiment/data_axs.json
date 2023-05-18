@@ -9,6 +9,8 @@
 
     "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ],
 
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
     "sut_query": [ "sut", [ "^^", "substitute", "sut_name=#{sut_name}#" ] ],
 
     "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
