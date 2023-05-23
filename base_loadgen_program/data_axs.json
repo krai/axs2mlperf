@@ -20,12 +20,12 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "loadgen_mlperf_conf_path": [ "^", "execute", [[
+    "loadgen_mlperf_conf_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "mlperf_conf_file" ]
     ]] ],
 
-    "submission_compliance_tests_dir": [ "^", "execute", [[
+    "submission_compliance_tests_dir": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "submission_compliance_tests_dir" ]
      ]] ],
