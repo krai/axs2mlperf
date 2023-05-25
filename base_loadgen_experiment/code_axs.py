@@ -29,6 +29,21 @@ def parse_performance(summary):
         return summary["Scheduled_samples_per_second"]
 
 
+def unpack_accuracy_log(raw_accuracy_log):
+    import struct
+    def unpack_one_blob(packed_blob):
+        return list(struct.unpack(f'{int(len(packed_blob)/8)}f', bytes.fromhex(packed_blob)))
+
+    readable_accuracy_log = []
+    for orig_record in raw_accuracy_log:
+        readable_accuracy_log.append( {
+            "seq_id": orig_record["seq_id"],
+            "qsl_idx": orig_record["qsl_idx"],
+            "data": unpack_one_blob(orig_record["data"]),
+        } )
+    return readable_accuracy_log
+
+
 def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None ):
 
     terms_list = [] + tags

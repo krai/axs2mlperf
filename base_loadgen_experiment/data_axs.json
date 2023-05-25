@@ -5,6 +5,14 @@
 
     "performance": ["^^", "parse_performance"],
 
+    "accuracy_log_file_name": "mlperf_log_accuracy.json",
+    "raw_accuracy_log": [ "^^", "execute", [[
+        [ "get_path_from", "accuracy_log_file_name" ],
+        0,
+        [ "func", "ufun.load_json" ]
+    ]] ],
+    "readable_accuracy_log": [ "^^", "unpack_accuracy_log" ],
+
     "produced_by": [ "^^", "guess_command" ],
 
     "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ],
