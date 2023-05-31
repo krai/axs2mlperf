@@ -31,7 +31,7 @@
         [ "byname", "python_script" ],
         [ "run", [], {
                 "python_deps": [
-                    [ "^^", "get", "bert_code_extra_path" ],
+                    [ "^^", "get", "bert_squad_code_dir" ],
                     [ "^", "byquery", "python_package,package_name=tensorflow" ],
                     [ "^", "byquery", "python_package,package_name=transformers" ]
                 ],
