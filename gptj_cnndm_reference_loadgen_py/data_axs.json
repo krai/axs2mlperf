@@ -1,0 +1,68 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
+    "_producer_rules": [
+        [ [ "loadgen_output", "gptj_cnndm", "framework=torch" ], [["run"]], { "return_saved_record_entry": true } ]
+    ],
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "gptj_code_dir": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gptj_code_dir" ]
+    ]] ],
+
+    "python_deps": [
+        [ "^", "byquery", "python_package,package_name=mlperf_loadgen" ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pillow" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ]
+    ],
+
+    "output_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "plant", [ "tags", [ "loadgen_output", "gptj_cnndm" ]
+            ] ],
+        [ "plant", [ "^^", "slice", [
+                            "loadgen_scenario",
+                            "loadgen_mode",
+                            "loadgen_dataset_size",
+
+                            "framework",
+                            "sut_name",
+                            "program_name",
+
+                            "dtype"
+                        ], {"plantable": true }
+            ] ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "save" ]
+    ]] ],
+
+    "output_entry_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "" ]
+    ]] ],
+
+    "extra_env": {
+        "LOG_PATH": [ "^^", "get", "output_entry_path" ]
+    },
+
+    "dataset_path": [ "^", "execute", [[
+        [ "byquery", "downloaded,dataset=cnndm_mlperf"],
+        [ "get_path" ]
+    ]] ],
+
+    "model_path": "/data/gpt-j/model/",
+    "mlperf_conf_path": [ "^^", "substitute", "#{gptj_code_dir}#/mlperf.conf" ],
+    "dtype": "bfloat16",
+    "loadgen_scenario": "SingleStream",
+    "loadgen_dataset_size": 1,
+    "desired_python_version": 3.9,
+
+    "rel_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/main.py" ],
+    "script_extra_params": [ "^^", "substitute",
+        "--mlperf_conf #{mlperf_conf_path}# --scenario=#{loadgen_scenario}# --model-path=#{model_path}# --dataset-path=#{dataset_path}# --dtype=#{dtype}# --max_examples=#{loadgen_dataset_size}# --accuracy --gpu"
+    ]
+}
