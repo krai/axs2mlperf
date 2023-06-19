@@ -33,6 +33,7 @@
                             "sut_name",
                             "program_name",
 
+                            "num_beams",
                             "dtype"
                         ], {"plantable": true }
             ] ],
@@ -46,7 +47,8 @@
     ]] ],
 
     "extra_env": {
-        "LOG_PATH": [ "^^", "get", "output_entry_path" ]
+        "LOG_PATH": [ "^^", "get", "output_entry_path" ],
+        "NUMBER_OF_BEAMS": [ "^^", "get", "num_beams" ]
     },
 
     "dataset_path": [ "^", "execute", [[
@@ -57,6 +59,7 @@
     "model_path": "/data/gpt-j/model/",
     "mlperf_conf_path": [ "^^", "substitute", "#{gptj_code_dir}#/mlperf.conf" ],
     "dtype": "bfloat16",
+    "num_beams": 2,
     "loadgen_scenario": "SingleStream",
     "loadgen_dataset_size": 1,
     "desired_python_version": 3.9,
