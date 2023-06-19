@@ -21,10 +21,10 @@
     "output_entry_path": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "set_path", "downloaded_cnndm_mlperf_dataset" ],
-        [ "plant", [ "tags", [ "downloaded" ], "dataset", "cnndm_mlperf" ] ],
+        [ "plant", [ "tags", [ "downloaded" ], "dataset", "cnndm_mlperf", "file_name", "cnn_eval.json" ] ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "save" ],
-        [ "get_path" ]
+        [ "get_path", "" ]
     ]] ],
 
     "extra_env": {
