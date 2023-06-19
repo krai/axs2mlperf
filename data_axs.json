@@ -32,7 +32,8 @@
         "model_onnx_distilbert_recipe": "model_onnx_distilbert_recipe",
         "submitter": "submitter",
         "model_pytorch_resnet50": "model_pytorch_resnet50",
-        "mlperf_power_git_recipe": "mlperf_power_git_recipe"
+        "mlperf_power_git_recipe": "mlperf_power_git_recipe",
+        "dataset_cnndm_mlperf_recipe": "dataset_cnndm_mlperf_recipe"
     },
     "repo_name": "axs2mlperf",
     "checkout": "master",
