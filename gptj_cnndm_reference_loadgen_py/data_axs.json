@@ -20,9 +20,8 @@
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ]
     ],
 
-    "loadgen_mlperf_conf_path": [ "^^", "substitute", "#{gptj_code_dir}#/mlperf.conf" ],
     "loadgen_scenario": "SingleStream",
-    "loadgen_dataset_size": 1,
+    "loadgen_dataset_size": 10,
     "loadgen_buffer_size": 1,
     "desired_python_version": 3.9,
 
