@@ -20,6 +20,21 @@
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ]
     ],
 
+    "loadgen_mlperf_conf_path": [ "^^", "substitute", "#{gptj_code_dir}#/mlperf.conf" ],
+    "loadgen_scenario": "SingleStream",
+    "loadgen_dataset_size": 1,
+    "loadgen_buffer_size": 1,
+    "desired_python_version": 3.9,
+
+    "loadgen_count_override_min": 64,
+    "loadgen_target_latency": 2000,
+
+    "model_name": "gptj",
+    "model_path": "/data/gpt-j/model/",
+
+    "dtype": "bfloat16",
+    "num_beams": 2,
+
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "plant", [
@@ -30,6 +45,12 @@
                             "loadgen_scenario",
                             "loadgen_mode",
                             "loadgen_dataset_size",
+                            "loadgen_buffer_size",
+                            "loadgen_multistreamness",
+                            "loadgen_mlperf_conf_path",
+
+                            "model_name",
+                            "model_path",
 
                             "framework",
                             "sut_name",
@@ -58,18 +79,10 @@
         [ "get_path" ]
     ]] ],
 
-    "model_path": "/data/gpt-j/model/",
-    "mlperf_conf_path": [ "^^", "substitute", "#{gptj_code_dir}#/mlperf.conf" ],
-    "dtype": "bfloat16",
-    "num_beams": 2,
-    "loadgen_scenario": "SingleStream",
-    "loadgen_dataset_size": 1,
-    "desired_python_version": 3.9,
-
     "accuracy_or_not": [ "^^", "case",[ ["^^", "get", "loadgen_mode"], "AccuracyOnly", "--accuracy" ], {"default_value": ""} ],
 
     "rel_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/main.py" ],
     "script_extra_params": [ "^^", "substitute",
-        "--mlperf_conf #{mlperf_conf_path}# --scenario=#{loadgen_scenario}# --model-path=#{model_path}# --dataset-path=#{dataset_path}# --dtype=#{dtype}# --max_examples=#{loadgen_dataset_size}# #{accuracy_or_not}# --gpu"
+        "--mlperf_conf=\"#{loadgen_mlperf_conf_path}#\" --user_conf=\"#{loadgen_user_conf_path}#\" --scenario=#{loadgen_scenario}# --model-path=\"#{model_path}#\" --dataset-path=\"#{dataset_path}#\" --dtype=#{dtype}# --max_examples=#{loadgen_dataset_size}# #{accuracy_or_not}# --gpu"
     ]
 }
