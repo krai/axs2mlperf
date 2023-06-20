@@ -22,7 +22,9 @@
 
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
-        [ "plant", [ "tags", [ "loadgen_output", "gptj_cnndm" ]
+        [ "plant", [
+                "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_gptj_loadgen_experiment" ] ],
+                "tags", [ "loadgen_output", "gptj_cnndm" ]
             ] ],
         [ "plant", [ "^^", "slice", [
                             "loadgen_scenario",

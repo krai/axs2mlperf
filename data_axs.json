@@ -34,7 +34,8 @@
         "model_pytorch_resnet50": "model_pytorch_resnet50",
         "mlperf_power_git_recipe": "mlperf_power_git_recipe",
         "dataset_cnndm_mlperf_recipe": "dataset_cnndm_mlperf_recipe",
-        "gptj_cnndm_reference_loadgen_py": "gptj_cnndm_reference_loadgen_py"
+        "gptj_cnndm_reference_loadgen_py": "gptj_cnndm_reference_loadgen_py",
+        "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment"
     },
     "repo_name": "axs2mlperf",
     "checkout": "master",

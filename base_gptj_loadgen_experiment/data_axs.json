@@ -1,0 +1,47 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+
+    "gptj_code_dir": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gptj_code_dir" ]
+    ]] ],
+    "abs_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/evaluation.py" ],
+
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+
+    "dataset_path": [ "^", "execute", [[
+        [ "byquery", "downloaded,dataset=cnndm_mlperf"],
+        [ "get_path" ]
+    ]] ],
+
+    "accuracy_report": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "python_script" ],
+        [ "run", [], {
+                "python_deps": [
+                    [ "^", "byquery", "python_package,package_name=torch" ],
+                    [ "^", "byquery", "python_package,package_name=transformers" ],
+                    [ "^", "byquery", "python_package,package_name=nltk" ],
+                    [ "^", "byquery", "python_package,package_name=rouge_score" ],
+                    [ "^", "byquery", "python_package,package_name=evaluate" ]
+                ],
+                "abs_script_path": ["^^", "get", "abs_script_path"],
+                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}#" ],
+                "capture_output": true
+            } ],
+        0,
+        [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
+    ]], {} ],
+
+    "accuracy_dict": [ "^^", "execute", [[
+        ["get", "accuracy_report" ],
+        0,
+        [ "func", "eval" ]
+     ]], {} ],
+    "rouge1": [ "^^" , "dig","accuracy_dict.rouge1" ],
+    "rouge2": [ "^^" , "dig","accuracy_dict.rouge2" ],
+    "rougeL": [ "^^" , "dig","accuracy_dict.rougeL" ],
+    "rougeLsum": [ "^^" , "dig","accuracy_dict.rougeLsum" ],
+    "gen_len": [ "^^" , "dig","accuracy_dict.gen_len" ],
+    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ]
+}
