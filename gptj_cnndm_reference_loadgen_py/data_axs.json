@@ -17,7 +17,10 @@
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pillow" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ]
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ],
+        [ "^^", "python_sync_pip_package", [
+                [ "^^", "case",[ ["^^", "get", "gpu"], [false, ""], [ "python_package", "package_name=accelerate" ] ], {"default_value": []} ]
+            ]]
     ],
 
     "loadgen_scenario": "SingleStream",
@@ -55,6 +58,7 @@
                             "sut_name",
                             "program_name",
 
+                            "gpu_id",
                             "num_beams",
                             "dtype"
                         ], {"plantable": true }
@@ -68,7 +72,13 @@
         [ "get_path", "" ]
     ]] ],
 
+    "accuracy_flag": [ "^^", "case",[ ["^^", "get", "loadgen_mode"], "AccuracyOnly", "--accuracy" ], {"default_value": ""} ],
+    "gpu": true,
+    "gpu_flag": [ "^^", "case",[ ["^^", "get", "gpu"], ["", false], "" ], {"default_value": "--gpu"} ],
+    "gpu_id":   [ "^^", "case",[ ["^^", "get", "gpu"], false, "", true, 0 ], {"default_value": ["^^", "get", "gpu"]} ],
+
     "extra_env": {
+        "CUDA_VISIBLE_DEVICES": [ "^^", "get", "gpu_id" ],
         "LOG_PATH": [ "^^", "get", "output_entry_path" ],
         "NUMBER_OF_BEAMS": [ "^^", "get", "num_beams" ]
     },
@@ -78,10 +88,8 @@
         [ "get_path" ]
     ]] ],
 
-    "accuracy_or_not": [ "^^", "case",[ ["^^", "get", "loadgen_mode"], "AccuracyOnly", "--accuracy" ], {"default_value": ""} ],
-
     "rel_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/main.py" ],
     "script_extra_params": [ "^^", "substitute",
-        "--mlperf_conf=\"#{loadgen_mlperf_conf_path}#\" --user_conf=\"#{loadgen_user_conf_path}#\" --scenario=#{loadgen_scenario}# --model-path=\"#{model_path}#\" --dataset-path=\"#{dataset_path}#\" --dtype=#{dtype}# --max_examples=#{loadgen_dataset_size}# #{accuracy_or_not}# --gpu"
+        "--mlperf_conf=\"#{loadgen_mlperf_conf_path}#\" --user_conf=\"#{loadgen_user_conf_path}#\" --scenario=#{loadgen_scenario}# --model-path=\"#{model_path}#\" --dataset-path=\"#{dataset_path}#\" --dtype=#{dtype}# --max_examples=#{loadgen_dataset_size}# #{accuracy_flag}# #{gpu_flag}#"
     ]
 }
