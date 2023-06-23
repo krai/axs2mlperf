@@ -35,9 +35,10 @@
         "mlperf_power_git_recipe": "mlperf_power_git_recipe",
         "dataset_cnndm_mlperf_recipe": "dataset_cnndm_mlperf_recipe",
         "gptj_cnndm_reference_loadgen_py": "gptj_cnndm_reference_loadgen_py",
-        "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment"
+        "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment",
+	"bert_pruner": "bert_pruner"
     },
     "repo_name": "axs2mlperf",
-    "checkout": "master",
+    "checkout": "stable",
     "submodules": false
 }

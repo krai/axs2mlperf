@@ -1,0 +1,38 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "python_in_shell" ]
+    ],
+    "_producer_rules": [
+        [ ["bert_pruner_output","bert_squad"] , [["run"]], {}, [] ]
+    ],
+
+    "tool_name": "bert_pruner",
+    "tool_path": "/home/krai/.local/bin/bert_prune",
+    "model_name": "bert-large",
+    "sparsity": 0.5,
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "plant", [
+                  "file_name", [ "^^", "substitute", "#{sparsity}#.onnx" ],
+		  "tags", ["bert_pruner_output","bert_squad" ]
+
+        ]],
+        [ "plant", [ "^^", "slice", [
+                "model_name",
+                "sparsity"
+                ], { "plantable": true }
+        ]],
+        [ "save" ]
+    ]] ],
+
+    "in_dir": [ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ],
+        0,
+        [ "func", "os.path.dirname" ]
+    ]] ],
+
+    "shell_cmd_with_subs": [ "^^", "substitute", "\"#{tool_path}#\" --model_name \"#{model_name}#\" --sparsity #{sparsity}# --saved_dir ./#{sparsity}#.onnx"]
+
+}
