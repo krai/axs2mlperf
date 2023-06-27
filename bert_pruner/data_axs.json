@@ -1,27 +1,23 @@
 {
-    "_parent_entries": [
-        [ "^", "byname", "python_in_shell" ]
-    ],
+    "_parent_entries": [[ "^", "byname", "python_in_shell" ]],
     "_producer_rules": [
         [ ["bert_pruner_output","bert_squad"] , [["run"]], {}, [] ]
     ],
 
-    "tool_name": "bert_pruner",
-    "tool_path": "/home/krai/.local/bin/bert_prune",
-    "model_name": "bert-large",
+    "python_deps": [
+        [ "^", "byquery", "python_package,package_name=bert-pruners"]
+    ],
+
+    "model_name": "xihajun/krai-mlperf-inference-v3.0-bert-pytorch-fp32-squad-v1.1",
     "sparsity": 0.5,
     "return_this_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "plant", [
-                  "file_name", [ "^^", "substitute", "#{sparsity}#.onnx" ],
-		  "tags", ["bert_pruner_output","bert_squad" ]
-
-        ]],
-        [ "plant", [ "^^", "slice", [
-                "model_name",
-                "sparsity"
-                ], { "plantable": true }
+            "tags", ["bert_pruner_output","bert_squad" ],
+            "file_name", "model.onnx",
+            "model_name", [ "^^", "substitute", "#{model_name}#" ],
+            "sparsity", [ "^^", "substitute", "#{sparsity}#" ]
         ]],
         [ "save" ]
     ]] ],
@@ -33,6 +29,5 @@
         [ "func", "os.path.dirname" ]
     ]] ],
 
-    "shell_cmd_with_subs": [ "^^", "substitute", "\"#{tool_path}#\" --model_name \"#{model_name}#\" --sparsity #{sparsity}# --saved_dir ./#{sparsity}#.onnx"]
-
+    "shell_cmd_with_subs": [ "^^", "substitute", "bert_prune --model_name \"#{model_name}#\" --sparsity #{sparsity}# --saved_dir ./model.onnx"]
 }
