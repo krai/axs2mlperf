@@ -31,7 +31,7 @@ docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs --volu
 
 Run.
 ```
-docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs axs:bert_pruner -c "axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,,loadgen_dataset_size=100,model_path=$(axs byquery bert_pruner_output,bert_squad,sparsity=0.5 , get_path) , get accuracy"
+docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs axs:bert_pruner -c "axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=100,model_path=$(axs byquery bert_pruner_output,bert_squad,sparsity=0.5 , get_path) , get accuracy"
 ```
 
 Save model (Optional)
