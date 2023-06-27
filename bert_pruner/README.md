@@ -9,7 +9,7 @@ Download the [Dockerfile](Dockerfile).
 wget -O Axs_Dockerfile https://raw.githubusercontent.com/krai/axs2mlperf/master/bert_pruner/Dockerfile
 ```
 
-Build the Docker image.
+Build the Docker image. It takes ~6 minutes on our server and is ~5.7GB in size.
 ```
 time docker build --no-cache -t axs:bert_pruner -f Axs_Dockerfile .
 ```
@@ -26,7 +26,7 @@ docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs axs:be
 ```
 Or if you have axs installed and some local changes in axs2mlperf.
 ```
-docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs --volume $(axs byname axs2mlperf , get_path):/home/krai/work_collection/axs2mlperf axs:bert_pruner
+docker run -it --name axs_bert_pruner --volume ./axs_logs:/home/krai/logs --volume $(axs byname axs2mlperf , get_path):/home/krai/work_collection/axs2mlperf axs:bert_prunerdock
 ```
 
 Run.
