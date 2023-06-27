@@ -4,11 +4,11 @@
         [ [ "downloaded", "dataset=cnndm_mlperf" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,patch=number_of_beams" ],
 
-    "gptj_code_dir": [ "^^", "execute", [[
+    "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "gptj_code_dir" ]
+        [ "get_path_of", "gptj_cnndm_download_script" ]
     ]] ],
 
     "python_deps": [
@@ -29,7 +29,5 @@
 
     "extra_env": {
         "DATASET_CNNDM_PATH": [ "^^", "get", "output_entry_path" ]
-    },
-
-    "rel_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/download_cnndm.py" ]
+    }
 }

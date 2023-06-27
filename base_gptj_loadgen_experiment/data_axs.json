@@ -1,11 +1,12 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
 
-    "gptj_code_dir": [ "^^", "execute", [[
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,patch=number_of_beams" ],
+
+    "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "gptj_code_dir" ]
+        [ "get_path_of", "gptj_accuracy_script" ]
     ]] ],
-    "abs_script_path": [ "^^", "substitute", "#{gptj_code_dir}#/evaluation.py" ],
 
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
 
