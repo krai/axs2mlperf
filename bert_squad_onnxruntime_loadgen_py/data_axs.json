@@ -20,7 +20,7 @@
         [ "^", "byquery", [ [ "^^", "get", "onnxruntime_query" ] ], {}, ["onnxruntime_query"] ],
         [ "^", "byquery", [ [ "^^", "get", "loadgen_query" ] ], {}, ["loadgen_query"] ]
     ],
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,submodules+" ],
 
     "bert_code_root": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],

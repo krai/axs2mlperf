@@ -1,6 +1,8 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
 
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,submodules+" ],
+
     "bert_squad_code_dir": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "bert_squad_code_dir" ]
