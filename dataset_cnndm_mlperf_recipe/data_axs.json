@@ -4,7 +4,7 @@
         [ [ "downloaded", "dataset=cnndm_mlperf" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,patch=number_of_beams" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
