@@ -59,48 +59,39 @@
         [ "get_path" ]
     ]] ],
 
-    "output_file_name": "script_output.json",
     "framework": "onnx",
     "execution_device": "",
     "verbosity": 2,
 
-    "output_entry": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "plant", [
-                "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
-                "tags", [ "loadgen_output", "bert_squad" ]
-            ] ],
-        [ "plant", [ "^^", "slice", [
-                            "loadgen_scenario",
-                            "loadgen_mode",
-                            "loadgen_dataset_size",
-                            "loadgen_buffer_size",
-                            "loadgen_count_override",
-                            "loadgen_multistreamness",
-                            "loadgen_mlperf_conf_path",
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
+    "output_entry_tags": [ "loadgen_output", "bert_squad" ],
+    "output_entry_param_names": [
+        "loadgen_scenario",
+        "loadgen_mode",
+        "loadgen_dataset_size",
+        "loadgen_buffer_size",
+        "loadgen_count_override",
+        "loadgen_multistreamness",
+        "loadgen_mlperf_conf_path",
 
-                            "framework",
-                            "sut_name",
-                            "program_name",
-                            "verbosity",
-                            "batch_size",
+        "framework",
+        "sut_name",
+        "program_name",
+        "verbosity",
+        "batch_size",
 
-                            "model_name",
-                            "model_path",
-                            "model_input_layers_tms",
+        "model_name",
+        "model_path",
+        "model_input_layers_tms",
 
-                            "squad_dataset_original_path",
-                            "tokenized_squad_path",
+        "squad_dataset_original_path",
+        "tokenized_squad_path",
 
-                            "bert_code_root",
-                            "bert_squad_code_dir",
+        "bert_code_root",
+        "bert_squad_code_dir",
 
-                            "execution_device"
-                        ], { "plantable": true }
-            ] ],
-        [ "save" ]
-    ]] ],
+        "execution_device"
+    ],
 
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",
     "script_extra_params": [ "^^", "get", "input_parameters_file_path" ]

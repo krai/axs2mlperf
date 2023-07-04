@@ -58,43 +58,35 @@
     "verbosity": 2,
     "num_of_images": ["^^", "get", "loadgen_dataset_size" ],
 
-    "output_entry": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "plant", [
-                "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_imagenet_loadgen_experiment" ] ],
-                "tags", [ "loadgen_output", "classified_imagenet" ]
-            ] ],
-        [ "plant", [ "^^", "slice", [
-                            "loadgen_scenario",
-                            "loadgen_mode",
-                            "loadgen_dataset_size",
-                            "loadgen_buffer_size",
-                            "loadgen_count_override",
-                            "loadgen_multistreamness",
-                            "loadgen_mlperf_conf_path",
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_imagenet_loadgen_experiment" ] ],
+    "output_entry_tags": [ "loadgen_output", "classified_imagenet" ],
+    "output_entry_param_names": [
+        "loadgen_scenario",
+        "loadgen_mode",
+        "loadgen_dataset_size",
+        "loadgen_buffer_size",
+        "loadgen_count_override",
+        "loadgen_multistreamness",
+        "loadgen_mlperf_conf_path",
 
-                            "framework",
-                            "sut_name",
-                            "program_name",
-                            "verbosity",
+        "framework",
+        "sut_name",
+        "program_name",
+        "verbosity",
 
-                            "model_name",
-                            "model_path",
-                            "normalize_symmetric",
-                            "subtract_mean_bool",
-                            "given_channel_means",
-                            "output_layer_name",
-                            "preprocessed_images_dir",
-                            "input_file_list",
-                            "batch_size",
+        "model_name",
+        "model_path",
+        "normalize_symmetric",
+        "subtract_mean_bool",
+        "given_channel_means",
+        "output_layer_name",
+        "preprocessed_images_dir",
+        "input_file_list",
+        "batch_size",
 
-                            "execution_device",
-                            "cpu_threads"
-                        ], { "plantable": true }
-            ] ],
-        [ "save" ]
-    ]] ],
+        "execution_device",
+        "cpu_threads"
+    ],
 
     "rel_script_path": "onnx_loadgen_classifier.py",
     "script_extra_params": [ "^^", "get", "input_parameters_file_path" ]

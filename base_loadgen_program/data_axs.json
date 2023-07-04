@@ -30,6 +30,22 @@
         [ "get_path_of", "submission_compliance_tests_dir" ]
      ]] ],
 
+    "output_entry_parents": [ ],
+    "output_entry_tags": [ ],
+    "output_entry_param_names": [ ],
+
+    "output_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "plant", [
+                "_parent_entries", ["^^", "get", "output_entry_parents" ],
+                "tags", ["^^", "get", "output_entry_tags" ]
+            ] ],
+        [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_param_names" ], { "plantable": true }
+            ] ],
+        [ "save" ]
+    ]] ],
+
     "output_dir": [ "^^", "execute", [[
         [ "get", "output_entry" ],
         [ "get_path" ]

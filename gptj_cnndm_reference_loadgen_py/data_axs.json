@@ -37,40 +37,27 @@
     "dtype": "bfloat16",
     "num_beams": 2,
 
-    "output_entry": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "plant", [
-                "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_gptj_loadgen_experiment" ] ],
-                "tags", [ "loadgen_output", "gptj_cnndm" ]
-            ] ],
-        [ "plant", [ "^^", "slice", [
-                            "loadgen_scenario",
-                            "loadgen_mode",
-                            "loadgen_dataset_size",
-                            "loadgen_buffer_size",
-                            "loadgen_multistreamness",
-                            "loadgen_mlperf_conf_path",
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_gptj_loadgen_experiment" ] ],
+    "output_entry_tags": [ "loadgen_output", "gptj_cnndm" ],
+    "output_entry_param_names": [
+        "loadgen_scenario",
+        "loadgen_mode",
+        "loadgen_dataset_size",
+        "loadgen_buffer_size",
+        "loadgen_multistreamness",
+        "loadgen_mlperf_conf_path",
 
-                            "model_name",
-                            "model_path",
+        "model_name",
+        "model_path",
 
-                            "framework",
-                            "sut_name",
-                            "program_name",
+        "framework",
+        "sut_name",
+        "program_name",
 
-                            "gpu_id",
-                            "num_beams",
-                            "dtype"
-                        ], {"plantable": true }
-            ] ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "save" ]
-    ]] ],
-
-    "output_entry_path": [ "^^", "execute", [[
-        [ "get", "output_entry" ],
-        [ "get_path", "" ]
-    ]] ],
+        "gpu_id",
+        "num_beams",
+        "dtype"
+    ],
 
     "accuracy_flag": [ "^^", "case",[ ["^^", "get", "loadgen_mode"], "AccuracyOnly", "--accuracy" ], {"default_value": ""} ],
     "gpu": true,
@@ -79,7 +66,7 @@
 
     "extra_env": {
         "CUDA_VISIBLE_DEVICES": [ "^^", "get", "gpu_id" ],
-        "LOG_PATH": [ "^^", "get", "output_entry_path" ],
+        "LOG_PATH": [ "^^", "get", "output_dir" ],
         "GPTJ_BEAM_SIZE": [ "^^", "get", "num_beams" ]
     },
 

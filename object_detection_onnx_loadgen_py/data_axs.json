@@ -39,7 +39,6 @@
     "given_channel_means": [ "^^", "dig", "model_entry.given_channel_means" ],
     "given_channel_stds": [ "^^", "dig", "model_entry.given_channel_stds" ],
 
-
     "preprocessed_images_query": [ "preprocessed",
         [ "^^", "substitute", "dataset_name=#{dataset_name}#" ],
         [ "^^", "substitute", "resolution=#{model_resolution}#" ],
@@ -50,7 +49,6 @@
         [ "get_path" ]
     ]], {}, ["preprocessed_images_query"] ],
 
-    "output_file_name": "script_output.json",
     "framework": "onnx",
     "cpu_threads": 0,
     "batch_size": 1,
@@ -64,53 +62,45 @@
     "minimal_class_id": [ "^^", "dig", "dataset_entry.minimal_class_id" ],
     "labels_file_path": [ "^^", "dig", "dataset_entry.labels_file_path"],
 
-    "output_entry": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "plant", [
-                "_parent_entries", [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
-                "tags", [ "loadgen_output", "detected_coco" ]
-            ] ],
-        [ "plant", [ "^^", "slice", [
-                            "loadgen_scenario",
-                            "loadgen_mode",
-                            "loadgen_dataset_size",
-                            "loadgen_buffer_size",
-                            "loadgen_count_override",
-                            "loadgen_multistreamness",
-                            "loadgen_mlperf_conf_path",
-                            "loadgen_min_duration_s",
-                            "loadgen_max_duration_s",
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
+    "output_entry_tags": [ "loadgen_output", "detected_coco" ],
+    "output_entry_param_names": [
+        "loadgen_scenario",
+        "loadgen_mode",
+        "loadgen_dataset_size",
+        "loadgen_buffer_size",
+        "loadgen_count_override",
+        "loadgen_multistreamness",
+        "loadgen_mlperf_conf_path",
+        "loadgen_min_duration_s",
+        "loadgen_max_duration_s",
 
-                            "framework",
-                            "sut_name",
-                            "program_name",
-                            "verbosity",
+        "framework",
+        "sut_name",
+        "program_name",
+        "verbosity",
 
-                            "model_name",
-                            "model_path",
-                            "model_resolution",
-                            "model_output_scale",
-                            "model_input_layer_name",
-                            "model_output_layers_bls",
-                            "model_skipped_classes",
-                            "minimal_class_id",
-                            "labels_file_path",
+        "model_name",
+        "model_path",
+        "model_resolution",
+        "model_output_scale",
+        "model_input_layer_name",
+        "model_output_layers_bls",
+        "model_skipped_classes",
+        "minimal_class_id",
+        "labels_file_path",
 
-                            "normalize_symmetric",
-                            "subtract_mean_bool",
-                            "given_channel_means",
-                            "preprocessed_images_dir",
-                            "batch_size",
-                            "given_channel_stds",
-                            "dataset_name",
+        "normalize_symmetric",
+        "subtract_mean_bool",
+        "given_channel_means",
+        "preprocessed_images_dir",
+        "batch_size",
+        "given_channel_stds",
+        "dataset_name",
 
-                            "execution_device",
-                            "cpu_threads"
-                        ], { "plantable": true }
-            ] ],
-        [ "save" ]
-    ]] ],
+        "execution_device",
+        "cpu_threads"
+    ],
 
     "rel_script_path": "onnx_loadgen_detector.py",
     "script_extra_params": [ "^^", "get", "input_parameters_file_path" ]
