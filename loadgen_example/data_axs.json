@@ -33,6 +33,8 @@
             "loadgen_buffer_size", "#{loadgen_buffer_size}#",
             "loadgen_config_path", "#{loadgen_config_path}#",
 
+            "file_name", "#{file_name}#",
+
             "tags", [ "loadgen_output", "loadgen_example" ]
          ]] ] ],
          [ "save" ]
@@ -40,8 +42,14 @@
 
     "in_dir": [ "^^", "execute", [[
         [ "get", "output_entry" ],
+        [ "get_path" ],
+        1,
+        [ "func", "os.makedirs", { "exist_ok": true} ],
+        [ ],
+        [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
+
     "rel_script_path": "loadgen_example.py",
 
     "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# \"#{loadgen_config_path}#\" \"#{example_model_name}#\" #{example_latency_ms}#" ]
