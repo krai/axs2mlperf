@@ -1,0 +1,42 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_producer_rules": [
+        [ [ "power_loadgen_output" ], [["run"]], { "return_saved_record_entry": true } ]
+    ],
+
+    "power_server_address": "192.168.4.3",
+    "power_server_port": 4949,
+    "ntp_server_address": "time.google.com",
+
+    "mlperf_power_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_power_git" ],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_power_git_entry" ],
+        [ "get_path_of", "power_client_script" ]
+    ]] ],
+
+    "output_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "save" ]
+    ]] ],
+
+    "last_mlperf_logs_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "last_mlperf_logs" ]
+    ]] ],
+
+    "power_logs_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get_path", "power_logs" ]
+    ]] ],
+
+    "modified_query": [ "^^", "execute", [[
+        [ "get", "__query" ],
+        [ "replace", ["power_loadgen_output", "loadgen_output"] ]
+    ]] ],
+
+    "workload_command": [ "^^", "substitute", "axs byquery #{modified_query}#,_with_power+,symlink_to=#{last_mlperf_logs_path}#" ],
+
+    "script_extra_params": [ "^^", "substitute", "--run-workload \"#{workload_command}#\" --loadgen-logs \"#{last_mlperf_logs_path}#\" --output \"#{power_logs_path}#\" --addr #{power_server_address}# --port #{power_server_port}# --ntp #{ntp_server_address}# --no-timestamp-path" ]
+}

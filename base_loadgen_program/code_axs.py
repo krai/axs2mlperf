@@ -65,3 +65,20 @@ def generate_audit_conf( model_name, submission_compliance_tests_dir, target_aud
         raise Exception("Error: Missing compliance config file: '{}'".format(compliance_test_config_source_path))
 
     return target_audit_conf_path
+
+
+def link_to_power_client_entry(output_entry, symlink_to):
+    "A callback procedure to be activated when in power measurement mode"
+
+    power_workload_path = output_entry.get_path()
+    power_client_entry_path = os.path.dirname( symlink_to )
+
+    if os.path.exists( symlink_to ):
+        os.unlink( symlink_to )
+        os.symlink( power_workload_path, os.path.join(power_client_entry_path, "testing_logs" ), target_is_directory=True )
+    else:
+        os.symlink( power_workload_path, os.path.join(power_client_entry_path, "ranging_logs" ), target_is_directory=True )
+
+    os.symlink( power_workload_path, symlink_to, target_is_directory=True )
+
+    return output_entry

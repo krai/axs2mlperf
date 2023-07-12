@@ -14,6 +14,8 @@
     "loadgen_max_duration_s": null,
     "loadgen_compliance_test": null,
 
+    "_with_power": false,
+
     "compliance_test_config": "audit.config",
 
     "sut_name": ["^", "func", "socket.gethostname" ],
@@ -39,11 +41,19 @@
         [ "attach", [ "^", "work_collection" ] ],
         [ "plant", [
                 "_parent_entries", ["^^", "get", "output_entry_parents" ],
+                "with_power", [ "^^", "get", "_with_power" ],
                 "tags", ["^^", "get", "output_entry_tags" ]
             ] ],
         [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_param_names" ], { "plantable": true }
             ] ],
+        [ "pluck", "_with_power" ],
         [ "save" ]
+    ]] ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [],
+        [ "get", "output_entry" ]
     ]] ],
 
     "output_dir": [ "^^", "execute", [[
@@ -67,5 +77,9 @@
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
         [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
     ]],
-    "model_name_compliance_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert", "bert_99_9": "bert", "bert_99": "bert"}
+    "model_name_compliance_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert", "bert_99_9": "bert", "bert_99": "bert"},
+
+    "symlink_to": null,
+    "postprocess_on_success": [ "^^", "link_to_power_client_entry" ],
+    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], null ], { "default_value": "postprocess_on_success" } ]
 }
