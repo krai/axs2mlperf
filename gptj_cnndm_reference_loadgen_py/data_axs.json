@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "gptj_cnndm", "framework=torch" ], [["run"]], { "return_saved_record_entry": true } ]
+        [ [ "loadgen_output", "gptj_cnndm", "framework=torch" ], [["get", "pipeline"]] ]
     ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],

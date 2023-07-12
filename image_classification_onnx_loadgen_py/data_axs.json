@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "classified_imagenet", "framework=onnx" ], [["run"]], { "return_saved_record_entry": true } ]
+        [ [ "loadgen_output", "classified_imagenet", "framework=onnx" ], [["get", "pipeline"]] ]
     ],
 
     "resolution": 224,
