@@ -51,6 +51,10 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
             experiment_tags.append("qaic")
         common_attributes["loadgen_dataset_size"] = 10833
         common_attributes["loadgen_buffer_size"]  = 10833
+    elif program_name in ["resnet50_kilt_loadgen_qaic"]:
+        experiment_tags = [ "loadgen_output", "image_classifier", "device=qaic"]
+        common_attributes["loadgen_dataset_size"] = 50000
+        common_attributes["loadgen_buffer_size"]  = 1024
 
     common_attributes["framework"] = framework
     common_attributes["model_name"] = model_name
