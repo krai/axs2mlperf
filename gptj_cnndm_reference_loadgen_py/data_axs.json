@@ -32,7 +32,11 @@
     "loadgen_target_latency": 2000,
 
     "model_name": "gptj",
-    "model_path": "/data/gpt-j/model/",
+    "model_path_on_chai": "/data/gpt-j/model/",
+    "model_path": [ "^", "execute", [[
+        [ "byquery", "extracted,pytorch_model,model_name=gptj_cnndm" ],
+        [ "get_path" ]
+    ]] ],
 
     "dtype": "bfloat16",
     "num_beams": 2,
