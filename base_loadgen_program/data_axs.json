@@ -35,6 +35,7 @@
     "output_entry_parents": [ ],
     "output_entry_tags": [ ],
     "output_entry_param_names": [ ],
+    "output_entry_subs_listmap": [ ],
 
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
@@ -44,8 +45,8 @@
                 "with_power", [ "^^", "get", "_with_power" ],
                 "tags", ["^^", "get", "output_entry_tags" ]
             ] ],
-        [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_param_names" ], { "plantable": true }
-            ] ],
+        [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_param_names" ], { "plantable": true } ] ],
+        [ "plant", [ "^^", "substitute", [[ "^^", "get", "output_entry_subs_listmap" ]] ] ],
         [ "pluck", "_with_power" ],
         [ "save" ]
     ]] ],
