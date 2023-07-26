@@ -4,9 +4,21 @@
         [ [ "power_loadgen_output" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
 
-    "power_server_address": "192.168.4.3",
-    "power_server_port": 4949,
     "ntp_server_address": "time.google.com",
+
+    "set_device_id": "all",
+    "sut_query": ["^^", "substitute", ["sut_config,sut=#{sut_name}#,model=#{model_name}#,loadgen_scenario=#{loadgen_scenario}#,device_id=#{set_device_id}#"]],
+    "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
+    "sut_data_runtime": [ "^^", "execute", [[
+        [ "get", "sut_entry" ],
+        [ "get", "config_runtime" ]
+    ]] ],
+
+    "power_server_address_example": "192.168.4.3",
+    "power_server_port_example": 4949,
+    "power_server_address": [ "^^", "dig", "sut_data_runtime.power_server_address" ],
+    "power_server_port": [ "^^", "dig", "sut_data_runtime.power_server_port" ],
+
 
     "mlperf_power_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_power_git" ],
 
