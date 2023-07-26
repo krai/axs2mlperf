@@ -82,3 +82,24 @@ def link_to_power_client_entry(output_entry, symlink_to):
     os.symlink( power_workload_path, symlink_to, target_is_directory=True )
 
     return output_entry
+
+def get_config_from_sut(config=None, default_val=None, sut_data_runtime=None, sut_data_compiletime=None, sut_entry=None):
+    # Check if config is in sut_data_runtime
+    if sut_data_runtime and config in sut_data_runtime:
+        print(f"Setting {config} with {sut_entry.get_path()} from sut_data_runtime...")
+        return sut_data_runtime[config]
+
+    # If not in sut_data_runtime, check if config is in sut_data_compiletime
+    elif sut_data_compiletime:
+        if config in sut_data_compiletime:
+            print(f"Setting {config} with {sut_entry.get_path()} from sut_data_compiletime...")
+            return sut_data_compiletime[config]
+
+        # Special condition for ml_model_seq_length
+        elif config == "ml_model_seq_length" and "onnx_define_symbol" in sut_data_compiletime:
+            if "seg_length" in sut_data_compiletime["onnx_define_symbol"]:
+                return sut_data_compiletime["onnx_define_symbol"]["seg_length"]
+
+    # If config is not in either, return default_val
+    print(f"Bailing, set {config} to [{default_val}] ...")
+    return default_val
