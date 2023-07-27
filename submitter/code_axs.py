@@ -8,6 +8,23 @@ import subprocess
 import sys
 from typing import ( Dict, List, Tuple )
 from pathlib import Path
+
+# Define the attributes of different program types in a constant dictionary
+PROGRAM_ATTRIBUTES = {
+    "image_classification_onnx_loadgen_py": {"tags": ["loadgen_output", "classified_imagenet"], "dataset_size": 50000, "buffer_size": 1024},
+    "image_classification_torch_loadgen_py": {"tags": ["loadgen_output", "classified_imagenet"], "dataset_size": 50000, "buffer_size": 1024},
+    "bert_squad_kilt_loadgen_qaic": {"tags": ["loadgen_output", "bert_squad", "device=qaic"], "dataset_size": 10833, "buffer_size": 10833},
+    "bert_squad_kilt_loadgen_onnxrt": {"tags": ["loadgen_output", "bert_squad", "device=onnxrt"], "dataset_size": 10833, "buffer_size": 10833},
+    "resnet50_kilt_loadgen_qaic": {"tags": ["loadgen_output", "image_classifier", "device=qaic"], "dataset_size": 50000, "buffer_size": 1024},
+    "retinanet_kilt_loadgen_qaic": {"tags": ["loadgen_output", "object_detection", "device=qaic"], "dataset_size": 24781, "buffer_size": 64},
+    # old names
+    "object_detection_onnx_loadgen_py": {"tags": ["loadgen_output", "detected_coco"], "dataset_size": 24781, "buffer_size": 64, "retinanet_coco": {"dataset_size": 5000, "buffer_size": 64}},
+    "bert_squad_onnxruntime_loadgen_py": {"tags": ["loadgen_output", "bert_squad"], "dataset_size": 10833, "buffer_size": 10833},
+    "bert_squad_kilt_loadgen_c": {"tags": ["loadgen_output", "bert_squad", "device=qaic"], "dataset_size": 10833, "buffer_size": 10833},
+}
+
+
+SUPPORTED_MODELS = {"resnet50", "retinanet", "bert-99", "bert-99.9", "retinanet_coco"}
 compliance_test_list = []
 
 def store_json(data_structure, json_file_path):
@@ -22,100 +39,199 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+def get_scenarios(sut_system_type, model_name):
+    """
+    Based on the system type and model name, this function decides which scenarios should be used.
+    ----------------------------------------------
+    edge: Offline, SingleStream, MultiStream
+    datacenter: Offline, Server
+    ----------------------------------------------
+    Args:
+    sut_system_type: The type of system under test
+    model_name: The name of the model being used
 
+    Returns:
+    A list of scenarios
+    """
     if sut_system_type == "edge":
-        if model_name in ("resnet50", "retinanet_openimages"):
-            scenarios = ["Offline", "SingleStream", "MultiStream" ]
-        else:
-            scenarios = ["Offline", "SingleStream" ]
+        return ["Offline", "SingleStream", "MultiStream"] if model_name in ("resnet50", "retinanet_openimages") else ["Offline", "SingleStream"]
     elif sut_system_type == "datacenter":
-        scenarios = ["Offline", "Server" ]
-    common_attributes = {}
-    if program_name in ("image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py"):
-        experiment_tags = [ "loadgen_output", "classified_imagenet" ]
-        common_attributes["loadgen_dataset_size"] = 50000
-        common_attributes["loadgen_buffer_size"]  = 1024
-    elif program_name == "object_detection_onnx_loadgen_py":
-        experiment_tags = [ "loadgen_output", "detected_coco" ]
-        if model_name == "retinanet_openimages":
-            common_attributes["loadgen_dataset_size"] = 24781
-            common_attributes["loadgen_buffer_size"]  = 64
-        elif model_name == "retinanet_coco":
-            common_attributes["loadgen_dataset_size"] = 5000
-            common_attributes["loadgen_buffer_size"]  = 64
+        return ["Offline", "Server"]
 
-    elif  program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ]:
-        experiment_tags = [ "loadgen_output", "bert_squad" ]
-        if program_name == "bert_squad_kilt_loadgen_c":
-            experiment_tags.append("qaic")
-        common_attributes["loadgen_dataset_size"] = 10833
-        common_attributes["loadgen_buffer_size"]  = 10833
-    elif program_name in ["resnet50_kilt_loadgen_qaic"]:
-        experiment_tags = [ "loadgen_output", "image_classifier", "device=qaic"]
-        common_attributes["loadgen_dataset_size"] = 50000
-        common_attributes["loadgen_buffer_size"]  = 1024
+def get_common_attributes_and_experiment_tags(program_name, framework, model_name, sut_name):
+    """
+    This function fetches common attributes and experiment tags based on the given program name.
 
-    common_attributes["framework"] = framework
-    common_attributes["model_name"] = model_name
-    common_attributes["sut_name"] = sut_name
+    Args:
+    program_name: The name of the program
+    framework: The framework being used
+    model_name: The name of the model
+    sut_name: The name of the system under test
 
+    Returns:
+    A tuple containing a dictionary of common attributes and a list of experiment tags
+    """
+    # Modify the program_name if there's a mapping for the model_name
+    if model_name not in SUPPORTED_MODELS:
+        raise ValueError(f"Model {model_name} is not supported")
+
+    common_attributes = {"framework": framework, "model_name": model_name, "sut_name": sut_name}
+    if program_name in PROGRAM_ATTRIBUTES:
+        attributes = PROGRAM_ATTRIBUTES[program_name]
+        if program_name == "object_detection_onnx_loadgen_py" and model_name == "retinanet_coco":
+            attributes["dataset_size"] = attributes["retinanet_coco"]["dataset_size"]
+            attributes["buffer_size"] = attributes["retinanet_coco"]["buffer_size"]
+        common_attributes.update({
+            "loadgen_dataset_size": attributes["dataset_size"],
+            "loadgen_buffer_size": attributes["buffer_size"]
+        })
+        #TODO: so many conditons, remove find_n if it is possible in the future
+        if program_name == "retinanet_kilt_loadgen_qaic":
+            common_attributes["find_n"] = attributes["dataset_size"]
+        return common_attributes, attributes["tags"]
+
+def get_modes(division, model_name):
+    """
+    This function decides which modes should be used based on the division and the given program name.
+
+    Args:
+    division: The division of the experiment
+    model_name: The name of the model
+
+    Returns:
+    A list of modes
+    """
     modes = [
-        [ "loadgen_mode=AccuracyOnly" ],
-        [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test-" ],
+        ["loadgen_mode=AccuracyOnly"],
+        ["loadgen_mode=PerformanceOnly", "loadgen_compliance_test-"],
     ]
     if division == "closed":
-        if model_name == "resnet50":
-            compliance_test_list = [ 'TEST01', 'TEST04', 'TEST05' ]
-        elif program_name in ( "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ):
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
-        elif program_name == "object_detection_onnx_loadgen_py" and model_name == "retinanet_openimages":
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
+        compliance_tests_conditions = {
+            "resnet50": ['TEST01', 'TEST04', 'TEST05'],
+            "bert-99": ['TEST01', 'TEST05'],
+            "bert-99.9": ['TEST01', 'TEST05'],
+            "retinanet": ['TEST01', 'TEST05']
+        }
+        for name, tests in compliance_tests_conditions.items():
+            if name in model_name:
+                modes.extend([["loadgen_mode=PerformanceOnly", f"loadgen_compliance_test={test}"] for test in tests])
+                break
+    return modes
+
+def get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps):
+    """
+    This function generates scenario attributes.
+
+    Args:
+    scenario: The current scenario
+    mode_attribs: A list of mode attributes
+    __entry__: The current experiment entry
+    loadgen_server_target_qps: The target queries per second for the loadgen server
+
+    Returns:
+    A dictionary of scenario attributes
+    """
+    scenario_attributes = {"loadgen_scenario": scenario}
+
+    if "loadgen_mode=AccuracyOnly" in mode_attribs and scenario == "Server":
+        scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
+
+    elif "loadgen_mode=PerformanceOnly" in mode_attribs and scenario in ("Offline", "Server"):
+        if scenario == "Server":
+            scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
         else:
-            compliance_test_list = []
+            scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+            
+        if scenario in ("SingleStream", "MultiStream"):
+            scenario_attributes["loadgen_target_latency"] = __entry__["loadgen_target_latency"]
+        elif scenario == "MultiStream":
+            scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
 
-        for compliance_test_name in compliance_test_list:
-            modes.append( [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test="+compliance_test_name ] )
+    return scenario_attributes
 
+def get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes):
+    """
+    This function generates the experiment query.
+
+    Args:
+    experiment_tags: A list of experiment tags
+    common_attributes: A dictionary of common attributes
+    mode_attribs: A list of mode attributes
+    scenario_attributes: A dictionary of scenario attributes
+
+    Returns:
+    A string that is the joined query
+    """
+    # Convert dictionaries to list of strings
+    common_attr_list = [f"{k}={common_attributes[k]}" for k in common_attributes]
+    scenario_attr_list = [f"{k}={scenario_attributes[k]}" for k in scenario_attributes]
+
+    # Create a combined list
+    combined_list = experiment_tags + common_attr_list + mode_attribs + scenario_attr_list
+
+    # Join the list into a string
+    joined_query = ','.join(combined_list)
+    
+    return joined_query
+
+def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, loadgen_server_target_qps, experiment_entries):
+    """
+    This function constructs experiment entries and appends them to the provided list.
+
+    Args:
+    scenario: The scenario being tested (e.g. Offline, SingleStream, MultiStream, Server)
+    mode_attribs: Attributes of the mode (e.g. AccuracyOnly, PerformanceOnly)
+    experiment_tags: Tags associated with the experiment (e.g. loadgen_output, classified_imagenet)
+    common_attributes: Attributes common to all experiments (e.g. framework, model_name, sut_name)
+    __entry__: An object representing the current experiment
+    experiment_list_only: Boolean that determines whether to print or append the experiment
+    loadgen_server_target_qps: Target queries per second for the server
+    experiment_entries: List of experiment entries to append to
+
+    Returns:
+    None
+    """
+    scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps)
+    joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
+    
+    if experiment_list_only:
+        print("Generated query = axs byquery", joined_query)
+        print("")
+    else:
+        experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+
+def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+    """
+    This is the main function that generates experiment entries by calling the helper functions.
+
+    Args:
+    sut_name: The name of the system under test (e.g. q2_pro_dc)
+    sut_system_type: The type of system under test (e.g. edge, datacenter)
+    program_name: The name of the program (e.g. image_classification_onnx_loadgen_py)
+    division: The division of the experiment (e.g. closed, open)
+    framework: The framework being used (e.g. kilt)
+    model_name: The name of the model (e.g. resnet50, retinanet, bert-99, bert-99.9)
+    loadgen_dataset_size: The size of the dataset used by the loadgen
+    loadgen_buffer_size: The buffer size used by the loadgen
+    experiment_list_only: Boolean that determines whether to print or append the experiment
+    loadgen_server_target_qps: Target queries per second for the server (only used for Server scenario)
+    __entry__: An object representing the current experiment
+
+    Returns:
+    A list of experiment entries
+    """
+
+    scenarios = get_scenarios(sut_system_type, model_name)
+    common_attributes, experiment_tags = get_common_attributes_and_experiment_tags(program_name, framework, model_name, sut_name)
+    modes = get_modes(division, model_name)
     experiment_entries = []
-    for sc in scenarios:
-        scenario_attributes = { "loadgen_scenario": sc }
+    
+    for scenario in scenarios:
         for mode_attribs in modes:
-            list_output = []
-            if "loadgen_mode=AccuracyOnly" in mode_attribs:
-                if sc == "Server":
-                    if loadgen_server_target_qps is not None:
-                        scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                    else:
-                       scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-            elif "loadgen_mode=PerformanceOnly" in mode_attribs:
-                if sc in ("Offline", "Server"):
-                    if sc == "Server":
-                        if loadgen_server_target_qps is not None:
-                            scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                        else:
-                            scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-                    else:
-                        scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-
-                elif sc in ("SingleStream", "MultiStream"):
-                    scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
-                elif  sc == "MultiStream":
-                    scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
-
-            list_query = ( experiment_tags +
-                [ f"{k}={common_attributes[k]}" for k in common_attributes ] +
-                mode_attribs +
-                [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
-
-            joined_query = ','.join( list_query )
-            if experiment_list_only is True:
-                print("Generated query = ", joined_query )
-                print("")
-            else:
-                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
-
+            append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, loadgen_server_target_qps, experiment_entries)
+    
     return experiment_entries
+
 
 def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
 
