@@ -465,8 +465,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         if  ( mode== 'accuracy'):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+            print("\n\n\n")
+            print(mode, results_path_syll)
+            print("\n\n\n")
         elif ( mode == 'performance' and compliance_test_name is False ):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+            print("\n\n\n")
+            print(mode, results_path_syll)
+            print("\n\n\n")
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
@@ -474,7 +480,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
             else:
                 results_path = make_local_dir(results_path_syll)
-
+            print("\n\n\n")
+            print(mode, results_path_syll)
+            print("\n\n\n")
+            
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
