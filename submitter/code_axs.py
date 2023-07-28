@@ -463,7 +463,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             'PerformanceOnly': 'performance',
         }[ experiment_entry['loadgen_mode'] ]
 
-        if  ( mode== 'accuracy') or ( mode == 'performance' and compliance_test_name is False ):
+        if  ( mode== 'accuracy'):
+            results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+        elif ( mode == 'performance' and compliance_test_name is False ):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
