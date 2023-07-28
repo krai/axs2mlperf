@@ -498,7 +498,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c",  "bert_squad_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name in ["image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py"]:
+            elif experiment_program_name in ["image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py","resnet50_kilt_loadgen_qaic"]:
 
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             if mode == 'accuracy':
