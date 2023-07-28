@@ -490,9 +490,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             files_to_copy.append( 'mlperf_log_accuracy.json' )
         # if mode=='performance' and compliance_test_name is False:
         #     results_path_syll.append( 'run_1' )
-        # if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-        #     results_path_syll.extend(( mode, 'run_1' ))
-        if mode=='performance':
+        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
+            results_path_syll.extend(( mode, 'run_1' ))
+        elif mode=='performance':
             results_path_syll.extend(( '..', mode, 'run_1' ))
 
         results_path        = make_local_dir( results_path_syll )
