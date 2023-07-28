@@ -528,8 +528,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     "compliance_dir": compliance_dir,
                     "output_dir": output_dir
                         } )
-            if result_verify == "":
-                shutil.rmtree(tmp_dir, ignore_errors=True)
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            # if result_verify == "":
+                # shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
