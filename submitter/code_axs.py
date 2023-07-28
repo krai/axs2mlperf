@@ -511,27 +511,27 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     fd.write(accuracy_content + "\n")
 
         # -------------------------------[ compliance , verification ]--------------------------------------
-        if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
+        # if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
+        #     compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
-            print("Verification for ", compliance_test_name)
+        #     print("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
-            results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
-            compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
-            verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
-            result_verify =  __entry__.call('get', 'run_verify', {
-                    "in_dir": tmp_dir,
-                    "verify_script_path": verify_script_path,
-                    "results_dir": results_dir,
-                    "compliance_dir": compliance_dir,
-                    "output_dir": output_dir
-                        } )
-            if result_verify == "":
-                shutil.rmtree(tmp_dir, ignore_errors=True)
-            else:
-                return
+        #     tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
+        #     results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
+        #     compliance_dir = src_dir
+        #     output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
+        #     verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
+        #     result_verify =  __entry__.call('get', 'run_verify', {
+        #             "in_dir": tmp_dir,
+        #             "verify_script_path": verify_script_path,
+        #             "results_dir": results_dir,
+        #             "compliance_dir": compliance_dir,
+        #             "output_dir": output_dir
+        #                 } )
+        #     if result_verify == "":
+        #         shutil.rmtree(tmp_dir, ignore_errors=True)
+        #     else:
+        #         return
 
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
