@@ -470,6 +470,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             if compliance_test_name == "TEST01":
                 results_path_syll_TEST01_acc = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
+            else:
+                results_path = make_local_dir(results_path_syll)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
 
@@ -481,9 +483,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             results_path_syll.extend(( mode, 'run_1' ))
 
         results_path        = make_local_dir( results_path_syll )
-
+        
         for filename in files_to_copy:
             src_file_path = os.path.join(src_dir, filename)
+            print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
+            print("source file path", src_file_path)
 
             if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST01_acc, filename)
