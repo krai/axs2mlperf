@@ -11,6 +11,9 @@
     ]] ],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
 
+    "python_deps": [
+        [ "^", "byquery", [ [ "^^", "get", "tqdm" ] ], {}, ["tqdm"] ],
+    ],
     "division": "open",
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
@@ -39,6 +42,9 @@
     "run_verify": [ "^^", "execute", [[
         [ "get", "python_tool_entry" ],
         [ "run", [], {
+            "python_deps": [
+                [ "^", "byquery", "python_package,package_name=numpy" ]
+            ],
             "shell_cmd_with_subs": "\"#{tool_path}#\" #{verify_script_path}# --results_dir #{results_dir}# --compliance_dir #{compliance_dir}# --output_dir #{output_dir}#",
             "capture_output": false,
             "capture_stderr": true,

@@ -123,7 +123,7 @@ def get_modes(division, model_name):
                 break
     return modes
 
-def get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps):
+def get_scenario_attributes(scenario, mode_attribs, __entry__):
     """
     This function generates scenario attributes.
 
@@ -131,26 +131,25 @@ def get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_ta
     scenario: The current scenario
     mode_attribs: A list of mode attributes
     __entry__: The current experiment entry
-    loadgen_server_target_qps: The target queries per second for the loadgen server
 
     Returns:
     A dictionary of scenario attributes
     """
     scenario_attributes = {"loadgen_scenario": scenario}
 
-    if "loadgen_mode=AccuracyOnly" in mode_attribs and scenario == "Server":
-        scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
+    # if "loadgen_mode=AccuracyOnly" in mode_attribs and scenario == "Server":
+    #     scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
 
-    elif "loadgen_mode=PerformanceOnly" in mode_attribs and scenario in ("Offline", "Server"):
-        if scenario == "Server":
-            scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
-        else:
-            scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+    # elif "loadgen_mode=PerformanceOnly" in mode_attribs and scenario in ("Offline", "Server"):
+    #     if scenario == "Server":
+    #         scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
+    #     else:
+    #         scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
             
-        if scenario in ("SingleStream", "MultiStream"):
-            scenario_attributes["loadgen_target_latency"] = __entry__["loadgen_target_latency"]
-        elif scenario == "MultiStream":
-            scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
+    #     if scenario in ("SingleStream", "MultiStream"):
+    #         scenario_attributes["loadgen_target_latency"] = __entry__["loadgen_target_latency"]
+    #     elif scenario == "MultiStream":
+    #         scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
 
     return scenario_attributes
 
@@ -179,7 +178,7 @@ def get_experiment_query(experiment_tags, common_attributes, mode_attribs, scena
     
     return joined_query
 
-def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, loadgen_server_target_qps, experiment_entries):
+def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, experiment_entries):
     """
     This function constructs experiment entries and appends them to the provided list.
 
@@ -190,13 +189,12 @@ def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_at
     common_attributes: Attributes common to all experiments (e.g. framework, model_name, sut_name)
     __entry__: An object representing the current experiment
     experiment_list_only: Boolean that determines whether to print or append the experiment
-    loadgen_server_target_qps: Target queries per second for the server
     experiment_entries: List of experiment entries to append to
 
     Returns:
     None
     """
-    scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps)
+    scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__)
     joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
     
     if experiment_list_only:
@@ -206,7 +204,7 @@ def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_at
         experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
     return experiment_entries
 
-def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, __entry__=None):
     """
     This is the main function that generates experiment entries
 
@@ -220,7 +218,6 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
     loadgen_dataset_size: The size of the dataset used by the loadgen
     loadgen_buffer_size: The buffer size used by the loadgen
     experiment_list_only: Boolean that determines whether to print or append the experiment
-    loadgen_server_target_qps: Target queries per second for the server (only used for Server scenario)
     __entry__: An object representing the current experiment
 
     Returns:
@@ -234,7 +231,7 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
     
     for scenario in scenarios:
         for mode_attribs in modes:
-            scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps)
+            scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__)
             joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
 
             if experiment_list_only:
@@ -353,14 +350,11 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
 def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
-
-        joined_path  = __record_entry__.get_path( path_list )
+        joined_path = record_entry.get_path(path_list)
         print(f"Creating directory: {joined_path}", file=sys.stderr)
-        try:
-            os.makedirs( joined_path )
-        except:
-            pass
+        os.makedirs(joined_path, exist_ok=True)
         return joined_path
+
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
 
@@ -441,13 +435,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{experiment_program_name}_{scenario}.json") 
         print("measurements_meta_path", measurements_meta_path)
         # print("experiment_entry", experiment_entry)
-        
+
+        #TODO: rerun the experiments
         try:
             measurements_meta_data  = {
                 "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
                 "input_data_types": "int32", #experiment_entry.get("input_data_types"),
                 "weight_data_types":  "int8",#experiment_entry.get("weight_data_types"),
-                "starting_weights_filename": "https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #experiment_entry.get("starting_weights_filename"),
+                "starting_weights_filename": "https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #"https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #experiment_entry.get("starting_weights_filename"),
                 "weight_transformations": "quantized",#experiment_entry.get("weight_transformations"),
             }
         except KeyError as e:
