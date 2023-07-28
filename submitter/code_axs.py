@@ -495,7 +495,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
-            if compliance_test_name not in [ "TEST01", "TEST04", "TEST05" ]:
+            if mode=='performance' and compliance_test_name not in [ "TEST01", "TEST04", "TEST05" ]:
                 print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
                 print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
                 return
