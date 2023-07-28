@@ -9,6 +9,8 @@ import sys
 from typing import ( Dict, List, Tuple )
 from pathlib import Path
 import random
+from tqdm import tqdm
+
 random.seed(0)
 
 # Define the attributes of different program types in a constant dictionary
@@ -377,8 +379,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     # TO BE REMOVED!
     # experiment_entries = [__entry__.get_kernel().byname("generated_by_retinanet_kilt_loadgen_qaic_on_run_a21d52a914b64df1a2402fffe591fb87")]
     
-    for experiment_entry in experiment_entries:
-        print(experiment_entry.get_name())
+    for experiment_entry in tqdm(experiment_entries):
+
         experiment_parameters = []
 
         src_dir        = experiment_entry.get_path("")
@@ -530,7 +532,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 shutil.rmtree(tmp_dir, ignore_errors=True)
             else:
                 return
-        break
+
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
 
