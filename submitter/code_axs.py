@@ -528,6 +528,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     "compliance_dir": compliance_dir,
                     "output_dir": output_dir
                         } )
+            print("-----------------------")
+            print("result_verify", result_verify)
             shutil.rmtree(tmp_dir, ignore_errors=True)
             if result_verify == "":
                 shutil.rmtree(tmp_dir, ignore_errors=True)
