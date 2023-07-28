@@ -493,7 +493,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         # if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
         #     results_path_syll.extend(( mode, 'run_1' ))
         if mode=='performance':
-            results_path_syll.extend(( mode, 'run_1' ))
+            results_path_syll.extend(( '../',mode, 'run_1' ))
 
         results_path        = make_local_dir( results_path_syll )
         
