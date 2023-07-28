@@ -485,10 +485,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         results_path        = make_local_dir( results_path_syll )
         
         for filename in files_to_copy:
-            src_file_path = os.path.join(src_dir, filename)
-            print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
-            print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
 
+            src_file_path = os.path.join(src_dir, filename)
+            
             if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST01_acc, filename)
             else:
@@ -496,6 +495,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
+            if compliance_test_name not in [ "TEST01", "TEST04", "TEST05" ]:
+                print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
+                print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
         
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
