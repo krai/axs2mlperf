@@ -483,7 +483,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print("\n\n\n")
             print(mode, results_path_syll)
             print("\n\n\n")
-            
+
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
@@ -508,10 +508,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
-            if mode=='performance' and compliance_test_name not in [ "TEST01", "TEST04", "TEST05" ]:
-                print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
-                print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
-                return
+            
+            print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
+            print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
         
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
