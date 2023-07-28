@@ -514,7 +514,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
-            ("Verification for ", compliance_test_name)
+            print("Verification for ", compliance_test_name)
 
             tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
