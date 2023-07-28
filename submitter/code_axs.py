@@ -498,6 +498,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             if compliance_test_name not in [ "TEST01", "TEST04", "TEST05" ]:
                 print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
                 print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
+                break
         
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
