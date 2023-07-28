@@ -8,6 +8,8 @@ import subprocess
 import sys
 from typing import ( Dict, List, Tuple )
 from pathlib import Path
+import random
+random.seed(0)
 
 # Define the attributes of different program types in a constant dictionary
 PROGRAM_ATTRIBUTES = {
@@ -54,7 +56,7 @@ def get_scenarios(sut_system_type, model_name):
     A list of scenarios
     """
     if sut_system_type == "edge":
-        return ["Offline", "SingleStream", "MultiStream"] if model_name in ("resnet50", "retinanet_openimages") else ["Offline", "SingleStream"]
+        return ["Offline", "SingleStream", "MultiStream"] if model_name in ("resnet50", "retinanet") else ["Offline", "SingleStream"]
     elif sut_system_type == "datacenter":
         return ["Offline", "Server"]
 
@@ -85,9 +87,9 @@ def get_common_attributes_and_experiment_tags(program_name, framework, model_nam
             "loadgen_dataset_size": attributes["dataset_size"],
             "loadgen_buffer_size": attributes["buffer_size"]
         })
-        #TODO: so many conditons, remove find_n if it is possible in the future
+        #TODO: so many conditons, remove first_n if it is possible in the future
         if program_name == "retinanet_kilt_loadgen_qaic":
-            common_attributes["find_n"] = attributes["dataset_size"]
+            common_attributes["first_n"] = attributes["dataset_size"]
         return common_attributes, attributes["tags"]
 
 def get_modes(division, model_name):
@@ -199,10 +201,11 @@ def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_at
         print("")
     else:
         experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+    return experiment_entries
 
 def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
     """
-    This is the main function that generates experiment entries by calling the helper functions.
+    This is the main function that generates experiment entries
 
     Args:
     sut_name: The name of the system under test (e.g. q2_pro_dc)
@@ -228,12 +231,123 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
     
     for scenario in scenarios:
         for mode_attribs in modes:
-            append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, loadgen_server_target_qps, experiment_entries)
+            scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__, loadgen_server_target_qps)
+            joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
+
+            if experiment_list_only:
+                print("Generated query = axs byquery", joined_query)
+                print("")
+            else:
+                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+            # experiment_entries += append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, loadgen_server_target_qps, experiment_entries)
     
     return experiment_entries
 
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
+# import os
+# import sys
+# import shutil
+# import json
+
+# def make_local_dir(record_entry, path_list):
+#     joined_path = record_entry.get_path(path_list)
+#     print(f"Creating directory: {joined_path}", file=sys.stderr)
+#     os.makedirs(joined_path, exist_ok=True)
+#     return joined_path
+
+# def copy_files(src_file_path, dst_file_path):
+#     print(f"Copying: {src_file_path} --> {dst_file_path}", file=sys.stderr)
+#     shutil.copy(src_file_path, dst_file_path)
+
+# def write_to_file(path, content, mode='w'):
+#     with open(path, mode) as fd:
+#         fd.write(content)
+
+# # def store_json(data, path):
+# #     with open(path, 'w') as f:
+# #         json.dump(data, f, indent=4)
+
+# def run_verify(entry, in_dir, verify_script_path, results_dir, compliance_dir, output_dir):
+#     result_verify =  entry.call('get', 'run_verify', {
+#             "in_dir": in_dir,
+#             "verify_script_path": verify_script_path,
+#             "results_dir": results_dir,
+#             "compliance_dir": compliance_dir,
+#             "output_dir": output_dir
+#             } )
+#     return result_verify
+
+# def run_truncation_script(entry, log_truncation_script_path, submitted_tree_path, submitter, log_backup_path):
+#     result_trucation =  entry.call('get', 'run_truncation_script', {
+#             "log_truncation_script_path": log_truncation_script_path,
+#             "submitted_tree_path": submitted_tree_path,
+#             "submitter": submitter,
+#             "log_backup_path": log_backup_path
+#             } )
+#     return result_trucation
+
+# def process_experiment_entry(experiment_entry, division, submitter, readme_template_path, code_path, model_name_dict, __entry__, __record_entry__, sut_dictionary):
+#     experiment_name = experiment_entry['experiment_name']
+#     sut_name = experiment_entry['sut_name']
+
+#     model_name = model_name_dict.get(sut_name, sut_name)
+#     model_path = os.path.join(code_path, model_name)
+    
+#     experiment_readme_path = os.path.join(model_path, "README.md")
+#     shutil.copyfile(readme_template_path, experiment_readme_path)
+
+#     print(f"  Creating model description: {model_name}  -->  {model_path}", file=sys.stderr)
+
+#     sut_data = {
+#         'name': sut_name,
+#         'division': division,
+#         'submitter': submitter,
+#         'status': 'submitted',
+#         'details': {
+#             'code_path': model_path
+#         },
+#         'results': {}  # You can populate this with any results data you have
+#     }
+
+#     sut_dictionary[sut_name] = sut_data
+
+# def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, experiment_entry=None,  __entry__=None, __record_entry__=None):
+
+#     __record_entry__["tags"] = ["laid_out_submission"]
+#     __record_entry__.save(record_entry_name)
+
+#     submitted_tree_path = make_local_dir(__record_entry__, 'submitted_tree')
+#     submitter_path = make_local_dir(__record_entry__, ['submitted_tree', division, submitter])
+#     code_path = make_local_dir(__record_entry__, ['submitted_tree', division, submitter, 'code'])
+#     systems_path = make_local_dir(__record_entry__, ['submitted_tree', division, submitter, 'systems'])
+
+#     sut_dictionary = {}
+#     dest_dir = __record_entry__.get_path("")
+#     experiment_cmd_list = []
+#     readme_template_path = __entry__.get_path("README_template.md")
+
+#     for experiment_entry in experiment_entries:
+#         process_experiment_entry(experiment_entry, division, submitter, readme_template_path, code_path, model_name_dict, __entry__, __record_entry__, sut_dictionary)
+
+#     log_backup_path = os.path.join(submitted_tree_path, "accuracy_log.bak")
+#     result_truncation = run_truncation_script(__entry__, log_truncation_script_path, submitted_tree_path, submitter, log_backup_path)
+
+#     if result_truncation == 0:
+#         shutil.rmtree(log_backup_path, ignore_errors=True)
+#     else:
+#         return
+
+#     for sut_name in sut_dictionary:
+#         sut_data = sut_dictionary[sut_name]
+#         sut_data['division'] = division
+#         sut_data['submitter'] = submitter
+#         sut_path = os.path.join(systems_path, sut_name + '.json')
+#         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
+#         store_json(sut_data, sut_path)
+
+#     return __record_entry__
+
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
 
@@ -257,8 +371,13 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     dest_dir            = __record_entry__.get_path( "" )
     experiment_cmd_list = []
     readme_template_path = __entry__.get_path("README_template.md")
+    print(f"-------------------{len(experiment_entries)}-------------")
 
+    # TO BE REMOVED!
+    # experiment_entries = [__entry__.get_kernel().byname("generated_by_retinanet_kilt_loadgen_qaic_on_run_a21d52a914b64df1a2402fffe591fb87")]
+    
     for experiment_entry in experiment_entries:
+        print(experiment_entry.get_name())
         experiment_parameters = []
 
         src_dir        = experiment_entry.get_path("")
@@ -313,23 +432,24 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        program_name            = experiment_entry.get("program_name", experiment_program_name)
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
-
-        if not model_meta_data:
-            model_meta_data = experiment_entry["model_entry"]
-
+        # print("dsfdsf", experiment_entry.get("program_name"))
+        # print("experiment_program_name", experiment_program_name)
+        # program_name            = experiment_entry.get("program_name", experiment_program_name)
+        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{experiment_program_name}_{scenario}.json") 
+        print("measurements_meta_path", measurements_meta_path)
+        # print("experiment_entry", experiment_entry)
+        
         try:
             measurements_meta_data  = {
-                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
-                "input_data_types": model_meta_data["input_data_types"],
-                "weight_data_types": model_meta_data["weight_data_types"],
-                "starting_weights_filename": model_meta_data["url"],
-                "weight_transformations": model_meta_data["weight_transformations"],
+                "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
+                # "input_data_types": experiment_entry["input_data_types"],
+                # "weight_data_types": experiment_entry["weight_data_types"],
+                # "starting_weights_filename": experiment_entry["url"],
+                # "weight_transformations": experiment_entry["weight_transformations"],
             }
         except KeyError as e:
-            print(f"Key {e} is missing from model_meta_data or the model")
-            return
+            raise ValueError(f"\n\n\n ERROR: Key {e} is missing from experiment_entry \n\n")
+
         store_json(measurements_meta_data, measurements_meta_path)
 
         experiment_entry.parent_objects = None
@@ -371,11 +491,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             shutil.copy( src_file_path, dst_file_path)
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
-            if experiment_program_name == "object_detection_onnx_loadgen_py":
+            if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c"]:
+            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c",  "bert_squad_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py":
+            elif experiment_program_name in ["image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py"]:
 
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             if mode == 'accuracy':
@@ -409,6 +529,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 shutil.rmtree(tmp_dir, ignore_errors=True)
             else:
                 return
+        break
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
 
@@ -450,7 +571,7 @@ def run_checker(submission_checker_path, submitted_tree_path, submitter, divisio
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, __entry__=None, __record_entry__=None):
 
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
@@ -461,7 +582,7 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
         run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
     else:
         print("Run lay_out...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__, __record_entry__)
         print("Run checker...")
         run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__)
 
