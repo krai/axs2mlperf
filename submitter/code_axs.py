@@ -496,7 +496,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
-        break
+        
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
