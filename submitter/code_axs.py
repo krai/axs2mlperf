@@ -86,7 +86,7 @@ def get_common_attributes_and_experiment_tags(program_name, framework, model_nam
         common_attributes.update({
             # "loadgen_dataset_size": attributes["dataset_size"],
             # "loadgen_buffer_size": attributes["buffer_size"]
-            common_attributes["first_n"] = attributes["dataset_size"]
+            "first_n": attributes["dataset_size"]
         })
         #TODO: so many conditons, remove first_n if it is possible in the future
         if program_name == "retinanet_kilt_loadgen_qaic":
