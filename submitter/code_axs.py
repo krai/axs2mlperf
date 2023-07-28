@@ -445,10 +445,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         try:
             measurements_meta_data  = {
                 "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
-                # "input_data_types": experiment_entry["input_data_types"],
-                # "weight_data_types": experiment_entry["weight_data_types"],
-                # "starting_weights_filename": experiment_entry["url"],
-                # "weight_transformations": experiment_entry["weight_transformations"],
+                "input_data_types": experiment_entry["input_data_types"],
+                "weight_data_types": experiment_entry["weight_data_types"],
+                "starting_weights_filename": experiment_entry["url"],
+                "weight_transformations": experiment_entry["weight_transformations"],
             }
         except KeyError as e:
             raise ValueError(f"\n\n\n ERROR: Key {e} is missing from experiment_entry \n\n")
@@ -530,8 +530,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         #                 } )
         #     if result_verify == "":
         #         shutil.rmtree(tmp_dir, ignore_errors=True)
-        #     else:
-        #         return
+
 
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
