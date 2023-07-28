@@ -529,9 +529,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     "output_dir": output_dir
                         } )
             shutil.rmtree(tmp_dir, ignore_errors=True)
-            # if result_verify == "":
-                # shutil.rmtree(tmp_dir, ignore_errors=True)
-
+            if result_verify == "":
+                shutil.rmtree(tmp_dir, ignore_errors=True)
+            else:
+                return
 
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
