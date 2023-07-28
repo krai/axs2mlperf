@@ -445,10 +445,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         try:
             measurements_meta_data  = {
                 "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
-                "input_data_types": experiment_entry.get("input_data_types"),
-                "weight_data_types": experiment_entry.get("weight_data_types"),
-                "starting_weights_filename": experiment_entry.get("starting_weights_filename"),
-                "weight_transformations": experiment_entry.get("weight_transformations"),
+                "input_data_types": "int32", #experiment_entry.get("input_data_types"),
+                "weight_data_types":  "int8",#experiment_entry.get("weight_data_types"),
+                "starting_weights_filename": "https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #experiment_entry.get("starting_weights_filename"),
+                "weight_transformations": "quantized",#experiment_entry.get("weight_transformations"),
             }
         except KeyError as e:
             raise ValueError(f"\n\n\n ERROR: Key {e} is missing from experiment_entry \n\n")
