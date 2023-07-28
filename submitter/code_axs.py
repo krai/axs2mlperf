@@ -487,7 +487,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         for filename in files_to_copy:
             src_file_path = os.path.join(src_dir, filename)
             print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
-            print("source file path", src_file_path, "destination file path", dst_file_path)
+            print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
 
             if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST01_acc, filename)
@@ -532,7 +532,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     "compliance_dir": compliance_dir,
                     "output_dir": output_dir
                         } )
-            print("###############")
+            print("\n\n###############\n\n")
             print("result_verify", result_verify)
             print("result_verify", type(result_verify))
             print("-----------------------")
