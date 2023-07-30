@@ -22,15 +22,20 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries(sut_name, sut_system_type, program_name, division, framework, model_name, loadgen_dataset_size, loadgen_buffer_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, framework, model_name,  loadgen_dataset_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+    if power:
+        power_tag = "power_"
 
-    if sut_system_type == "edge":
-        if model_name in ("resnet50", "retinanet_openimages"):
-            scenarios = ["Offline", "SingleStream", "MultiStream" ]
-        else:
-            scenarios = ["Offline", "SingleStream" ]
-    elif sut_system_type == "datacenter":
-        scenarios = ["Offline", "Server" ]
+    if sut_name == "q5e_pro_dc":
+        scenarios = ["Offline", "SingleStream", "MultiStream" ]
+    else:
+        if sut_system_type == "edge":
+            if model_name in ("resnet50", "retinanet_openimages"):
+                scenarios = ["Offline", "SingleStream", "MultiStream" ]
+            else:
+                scenarios = ["Offline", "SingleStream" ]
+        elif sut_system_type == "datacenter":
+            scenarios = ["Offline", "Server" ]
     common_attributes = {}
     if program_name in ("image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py"):
         experiment_tags = [ "loadgen_output", "classified_imagenet" ]
@@ -53,8 +58,9 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
         common_attributes["loadgen_buffer_size"]  = 10833
     elif program_name in ["resnet50_kilt_loadgen_qaic"]:
         experiment_tags = [ "loadgen_output", "image_classifier", "device=qaic"]
-        common_attributes["loadgen_dataset_size"] = 50000
-        common_attributes["loadgen_buffer_size"]  = 1024
+        #common_attributes["loadgen_dataset_size"] = 50000
+        #common_attributes["loadgen_buffer_size"]  = 1024
+        common_attributes["first_n"] = 50000
 
     common_attributes["framework"] = framework
     common_attributes["model_name"] = model_name
@@ -64,6 +70,7 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
         [ "loadgen_mode=AccuracyOnly" ],
         [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test-" ],
     ]
+
     if division == "closed":
         if model_name == "resnet50":
             compliance_test_list = [ 'TEST01', 'TEST04', 'TEST05' ]
@@ -82,26 +89,32 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
         scenario_attributes = { "loadgen_scenario": sc }
         for mode_attribs in modes:
             list_output = []
-            if "loadgen_mode=AccuracyOnly" in mode_attribs:
-                if sc == "Server":
-                    if loadgen_server_target_qps is not None:
-                        scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                    else:
-                       scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-            elif "loadgen_mode=PerformanceOnly" in mode_attribs:
-                if sc in ("Offline", "Server"):
-                    if sc == "Server":
-                        if loadgen_server_target_qps is not None:
-                            scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                        else:
-                            scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-                    else:
-                        scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+            #if "loadgen_mode=AccuracyOnly" in mode_attribs:
+                #if sc == "Server":
+                    #if loadgen_server_target_qps is not None:
+                        #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
+                    #else:
+                       #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+            #elif "loadgen_mode=PerformanceOnly" in mode_attribs:
 
-                elif sc in ("SingleStream", "MultiStream"):
-                    scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
-                elif  sc == "MultiStream":
-                    scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
+                #if sc in ("Offline", "Server"):
+                    #if sc == "Server":
+                        #if loadgen_server_target_qps is not None:
+                            #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
+                        #else:
+                            #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+                    #else:
+                        #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+
+                #elif sc in ("SingleStream", "MultiStream"):
+                    #scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
+                #elif  sc == "MultiStream":
+                    #scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
+            if power:
+                if ("loadgen_mode=PerformanceOnly" in mode_attribs) and ("loadgen_compliance_test-") in mode_attribs:
+                    experiment_tags[0]="power_loadgen_output"
+                else:
+                    experiment_tags[0]="loadgen_output"
 
             list_query = ( experiment_tags +
                 [ f"{k}={common_attributes[k]}" for k in common_attributes ] +
@@ -144,20 +157,35 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
     for experiment_entry in experiment_entries:
         experiment_parameters = []
+        if "power_loadgen_output" in experiment_entry["tags"]:
+            power_experiment_entry = experiment_entry
+            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
+            origin_experiment_path = os.readlink(last_mlperf_logs_path)
+            origin_experiment_name = origin_experiment_path.split("/")[-1]
+            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
-        src_dir        = experiment_entry.get_path("")
+        src_dir = experiment_entry.get_path("")
         sut_name       = experiment_entry.get('sut_name')
         sut_data       = experiment_entry.get('sut_data')
         loadgen_mode   = experiment_entry.get('loadgen_mode')
-        readme_path    = experiment_entry.get('program_entry').get_path("README.md")
+
+        with_power = experiment_entry.get("with_power")
+
+        program_name    = experiment_entry.get('program_name')
+
+        program_entry = __entry__.get_kernel().byname(program_name)
+        readme_path    = program_entry.get_path("README.md")
         experiment_cmd = experiment_entry.get('produced_by')
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
         experiment_program_name  = experiment_entry.get('program_name')
-        benchmark_framework_list = experiment_entry.get('program_name').replace("_loadgen_py", "").split("_")
-
-        framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
-        benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
+        if "_loadgen_py" in experiment_program_name:
+            benchmark_framework_list = experiment_program_name.replace("_loadgen_py", "").split("_")
+            framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
+            benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
+        elif experiment_program_name == "resnet50_kilt_loadgen_qaic":
+            framework = experiment_entry.get('framework')
+            benchmark = "image_classification"
 
         mode = loadgen_mode.replace("Only", "")
 
@@ -172,7 +200,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         else:
             display_model_name  = model_name
 
-        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name ] )
+        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name.replace("resnet50", "image_classification") ] )
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
         if os.path.exists(readme_path):
@@ -180,7 +208,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         path_readme = os.path.join(code_model_program_path, "README.md")
 
         # ----------------------------[ measurements ]------------------------------------
+        measurement_general_path = make_local_dir ( ['submitted_tree', division, submitter, 'measurements', sut_name ] )
         measurement_path = make_local_dir( ['submitted_tree', division, submitter, 'measurements', sut_name, display_model_name, scenario] )
+
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path):
             with open(readme_template_path, "r") as input_fd:
@@ -192,16 +222,18 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
         print("")
         for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
+
             filename = os.path.basename( src_file_path )
             dst_file_path = os.path.join(measurement_path, filename)
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
         program_name            = experiment_entry.get("program_name", experiment_program_name)
+        program_name = program_name.replace("resnet50", "image_classification")
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
 
         if not model_meta_data:
-            model_meta_data = experiment_entry["model_entry"]
+            model_meta_data = experiment_entry["compiled_model_source_entry"]
 
         try:
             measurements_meta_data  = {
@@ -217,6 +249,18 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         store_json(measurements_meta_data, measurements_meta_path)
 
         experiment_entry.parent_objects = None
+
+        if experiment_entry['with_power'] is True:
+            analyzer_table_file = "analyzer_table.md"
+            power_settings_file = "power_settings.md"
+
+            analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
+            power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
+
+            with open(analyzer_table_file_path, "w") as output_file1:
+                output_file1.write( "TODO" )
+            with open(power_settings_file_path, "w") as output_file2:
+                output_file2.write( "TODO" )
 
         # --------------------------------[ results ]--------------------------------------
         mode        = {
@@ -237,7 +281,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if mode=='accuracy' or compliance_test_name == "TEST01":
             files_to_copy.append( 'mlperf_log_accuracy.json' )
         if mode=='performance' and compliance_test_name is False:
-            results_path_syll.append( 'run_1' )
+            if experiment_entry['with_power'] is not True:
+                results_path_syll.append( 'run_1' )
+
         if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll.extend(( mode, 'run_1' ))
 
@@ -251,15 +297,32 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             else:
                 dst_file_path = os.path.join(results_path, filename)
 
-            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
-            shutil.copy( src_file_path, dst_file_path)
+            if experiment_entry['with_power'] is None:
+                print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+                shutil.copy( src_file_path, dst_file_path)
+
+        if experiment_entry['with_power'] is True and mode=='performance' and compliance_test_name is False:
+             power_src_dir = power_experiment_entry.get_path("power_logs")
+             dir_list = ['power', 'ranging', 'run_1']
+
+             for elem in dir_list:
+                results_path_syll.append( elem )
+                src_file_path = power_src_dir + "/" + elem + "/"
+
+                results_path        = make_local_dir( results_path_syll )
+
+                for file_name in os.listdir(src_file_path):
+                    src_file_path_file = src_file_path + file_name
+                    results_path_file = results_path + "/" + file_name
+                    shutil.copy(src_file_path_file, results_path_file)
+                results_path_syll.remove(elem)
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name == "object_detection_onnx_loadgen_py":
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py":
+            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py" or experiment_program_name == "resnet50_kilt_loadgen_qaic":
 
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             if mode == 'accuracy':
