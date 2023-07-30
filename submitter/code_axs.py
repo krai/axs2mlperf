@@ -350,11 +350,14 @@ def generate_experiment_entries(sut_name, sut_system_type, program_name, divisio
 def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
-        joined_path = record_entry.get_path(path_list)
-        print(f"Creating directory: {joined_path}", file=sys.stderr)
-        os.makedirs(joined_path, exist_ok=True)
-        return joined_path
 
+        joined_path  = __record_entry__.get_path( path_list )
+        print(f"Creating directory: {joined_path}", file=sys.stderr)
+        try:
+            os.makedirs( joined_path )
+        except:
+            pass
+        return joined_path
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
 
@@ -435,14 +438,12 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{experiment_program_name}_{scenario}.json") 
         print("measurements_meta_path", measurements_meta_path)
         # print("experiment_entry", experiment_entry)
-
-        #TODO: rerun the experiments
         try:
             measurements_meta_data  = {
                 "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
                 "input_data_types": "int32", #experiment_entry.get("input_data_types"),
                 "weight_data_types":  "int8",#experiment_entry.get("weight_data_types"),
-                "starting_weights_filename": "https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #"https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #experiment_entry.get("starting_weights_filename"),
+                "starting_weights_filename": "https://www.dropbox.com/s/jo92dsoted1ha5q/resnet50_v1.pb", #experiment_entry.get("starting_weights_filename"),
                 "weight_transformations": "quantized",#experiment_entry.get("weight_transformations"),
             }
         except KeyError as e:

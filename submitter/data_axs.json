@@ -13,6 +13,7 @@
 
     "python_deps": [
         [ "^", "byquery", [ [ "^^", "get", "tqdm" ] ], {}, ["tqdm"] ],
+        [ "^", "byquery", [ [ "^^", "get", "numpy" ] ], {}, ["numpy"] ]
     ],
     "division": "open",
     "submitter": "Krai",
