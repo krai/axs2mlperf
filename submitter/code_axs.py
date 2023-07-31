@@ -22,9 +22,7 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, framework, model_name,  loadgen_dataset_size,  experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
-    if power:
-        power_tag = "power_"
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
 
     if sut_name == "q5e_pro_dc":
         scenarios = ["Offline", "SingleStream", "MultiStream" ]
@@ -36,35 +34,17 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
                 scenarios = ["Offline", "SingleStream" ]
         elif sut_system_type == "datacenter":
             scenarios = ["Offline", "Server" ]
-    common_attributes = {}
-    if program_name in ("image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py"):
-        experiment_tags = [ "loadgen_output", "classified_imagenet" ]
-        common_attributes["loadgen_dataset_size"] = 50000
-        common_attributes["loadgen_buffer_size"]  = 1024
-    elif program_name == "object_detection_onnx_loadgen_py":
-        experiment_tags = [ "loadgen_output", "detected_coco" ]
-        if model_name == "retinanet_openimages":
-            common_attributes["loadgen_dataset_size"] = 24781
-            common_attributes["loadgen_buffer_size"]  = 64
-        elif model_name == "retinanet_coco":
-            common_attributes["loadgen_dataset_size"] = 5000
-            common_attributes["loadgen_buffer_size"]  = 64
 
-    elif  program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ]:
-        experiment_tags = [ "loadgen_output", "bert_squad" ]
-        if program_name == "bert_squad_kilt_loadgen_c":
-            experiment_tags.append("qaic")
-        common_attributes["loadgen_dataset_size"] = 10833
-        common_attributes["loadgen_buffer_size"]  = 10833
-    elif program_name in ["resnet50_kilt_loadgen_qaic"]:
-        experiment_tags = [ "loadgen_output", "image_classifier", "device=qaic"]
-        #common_attributes["loadgen_dataset_size"] = 50000
-        #common_attributes["loadgen_buffer_size"]  = 1024
-        common_attributes["first_n"] = 50000
-
-    common_attributes["framework"] = framework
-    common_attributes["model_name"] = model_name
-    common_attributes["sut_name"] = sut_name
+    common_attributes = {
+        "sut_name":             sut_name,
+        "model_name":           model_name,
+        "framework":            framework,
+        "loadgen_dataset_size": loadgen_dataset_size,
+        "loadgen_buffer_size":  loadgen_buffer_size,
+    }
+    if framework=="kilt":
+        common_attributes["first_n"]    = loadgen_dataset_size
+        common_attributes["device"]     = device
 
     modes = [
         [ "loadgen_mode=AccuracyOnly" ],

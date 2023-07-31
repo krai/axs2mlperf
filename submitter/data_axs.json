@@ -1,7 +1,4 @@
 {
-    "loadgen_dataset_size": 100,
-    "framework": "onnx",
-
     "power": false,
 
     "sut_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
@@ -16,6 +13,31 @@
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
     "model_name_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
+
+    "model_name2dataset_size": {
+        "resnet50": 50000,
+        "retinanet_openimages": 24781,
+        "retinanet_coco": 5000,
+        "bert-99": 10833,
+        "bert-99.9": 10833
+    },
+    "model_name2buffer_size": {
+        "resnet50": 1024,
+        "retinanet_openimages": 64,
+        "retinanet_coco": 64,
+        "bert-99": 10833,
+        "bert-99.9": 10833
+    },
+
+    "program_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", [ "^^", "get", "program_name" ] ]
+    ]] ],
+    "loadgen_dataset_size": [ "^^", "dig", [["model_name2dataset_size", ["^^", "get", "model_name"] ]] ],
+    "loadgen_buffer_size": [ "^^", "dig", [["model_name2buffer_size", ["^^", "get", "model_name"] ]] ],
+    "experiment_tags": [ "^^", "dig", "program_entry.output_entry_tags" ],
+    "framework": [ "^^", "dig", "program_entry.framework" ],
+    "device": [ "^^", "dig", "program_entry.device" ],
 
     "experiment_entries": ["^^", "generate_experiment_entries" ],
 
