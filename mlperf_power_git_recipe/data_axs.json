@@ -4,7 +4,7 @@
         }, [ "url", "checkout", "contained_files" ] ]
     ],
     "url": "https://github.com/mlcommons/power-dev",
-    "checkout": "r3.0",
+    "checkout": "master",
     "contained_files": {
         "power_client_script": [ "ptd_client_server", "client.py" ]
     }
