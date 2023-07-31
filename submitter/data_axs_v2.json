@@ -1,7 +1,4 @@
 {
-    "loadgen_dataset_size": 100,
-    "framework": "onnx",
-
     "power": false,
 
     "sut_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
@@ -10,16 +7,41 @@
         [ "get", "sut_entry" ],
         [ "get", "data" ]
     ]] ],
-    "sut_path": [ "^^", "execute", [[
-	    [ "get", "sut_entry" ],
-	    [ "get_path",[]]
-    ]]],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
 
+    "python_deps": [
+        [ "^", "byquery", [ [ "^^", "get", "tqdm" ] ], {}, ["tqdm"] ],
+        [ "^", "byquery", [ [ "^^", "get", "numpy" ] ], {}, ["numpy"] ]
+    ],
     "division": "open",
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
     "model_name_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
+
+    "model_name2dataset_size": {
+        "resnet50": 50000,
+        "retinanet_openimages": 24781,
+        "retinanet_coco": 5000,
+        "bert-99": 10833,
+        "bert-99.9": 10833
+    },
+    "model_name2buffer_size": {
+        "resnet50": 1024,
+        "retinanet_openimages": 64,
+        "retinanet_coco": 64,
+        "bert-99": 10833,
+        "bert-99.9": 10833
+    },
+
+    "program_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", [ "^^", "get", "program_name" ] ]
+    ]] ],
+    "loadgen_dataset_size": [ "^^", "dig", [["model_name2dataset_size", ["^^", "get", "model_name"] ]] ],
+    "loadgen_buffer_size": [ "^^", "dig", [["model_name2buffer_size", ["^^", "get", "model_name"] ]] ],
+    "experiment_tags": [ "^^", "dig", "program_entry.output_entry_tags" ],
+    "framework": [ "^^", "dig", "program_entry.framework" ],
+    "device": [ "^^", "dig", "program_entry.device" ],
 
     "experiment_entries": ["^^", "generate_experiment_entries" ],
 
@@ -44,6 +66,9 @@
     "run_verify": [ "^^", "execute", [[
         [ "get", "python_tool_entry" ],
         [ "run", [], {
+            "python_deps": [
+                [ "^", "byquery", "python_package,package_name=numpy" ]
+            ],
             "shell_cmd_with_subs": "\"#{tool_path}#\" #{verify_script_path}# --results_dir #{results_dir}# --compliance_dir #{compliance_dir}# --output_dir #{output_dir}#",
             "capture_output": false,
             "capture_stderr": true,
