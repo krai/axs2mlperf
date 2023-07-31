@@ -8,6 +8,9 @@ import subprocess
 import sys
 from typing import ( Dict, List, Tuple )
 from pathlib import Path
+from tqdm import tqdm
+
+SUPPORTED_MODELS = {"resnet50", "retinanet_openimages", "bert-99", "bert-99.9", "retinanet_coco"}
 compliance_test_list = []
 
 def store_json(data_structure, json_file_path):
@@ -22,18 +25,38 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+def get_scenarios(sut_system_type, model_name):
+    """
+    Based on the system type and model name, this function decides which scenarios should be used.
+    ----------------------------------------------
+    edge: Offline, SingleStream, MultiStream
+    datacenter: Offline, Server
+    ----------------------------------------------
+    Args:
+    sut_system_type: The type of system under test
+    model_name: The name of the model being used
 
-    if sut_name == "q5e_pro_dc":
-        scenarios = ["Offline", "SingleStream", "MultiStream" ]
-    else:
-        if sut_system_type == "edge":
-            if model_name in ("resnet50", "retinanet_openimages"):
-                scenarios = ["Offline", "SingleStream", "MultiStream" ]
-            else:
-                scenarios = ["Offline", "SingleStream" ]
-        elif sut_system_type == "datacenter":
-            scenarios = ["Offline", "Server" ]
+    Returns:
+    A list of scenarios
+    """
+    if sut_system_type == "edge":
+        return ["Offline", "SingleStream", "MultiStream"] if model_name in ("resnet50", "retinanet") else ["Offline", "SingleStream"]
+    elif sut_system_type == "datacenter":
+        return ["Offline", "Server"]
+
+def get_common_attributes(sut_name, model_name, framework, loadgen_dataset_size, loadgen_buffer_size, device):
+    """
+    This function fetches common attributes and experiment tags based on the given program name.
+
+    Args:
+    program_name: The name of the program
+    framework: The framework being used
+    model_name: The name of the model (eg. resnet50, retinanet_openimages, retinanet_coco, bert-99, bert-99.9)
+    sut_name: The name of the system under test
+
+    Returns:
+    A tuple containing a dictionary of common attributes and a list of experiment tags
+    """
 
     common_attributes = {
         "sut_name":             sut_name,
@@ -46,71 +69,172 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         common_attributes["first_n"]    = loadgen_dataset_size
         common_attributes["device"]     = device
 
+
+    # Modify the program_name if there's a mapping for the model_name
+    if model_name not in SUPPORTED_MODELS:
+        raise ValueError(f"Model {model_name} is not supported")
+
+    return common_attributes
+
+def get_modes(division, model_name):
+    """
+    This function decides which modes should be used based on the division and the given program name.
+
+    Args:
+    division: The division of the experiment
+    model_name: The name of the model
+
+    Returns:
+    A list of modes
+    """
     modes = [
-        [ "loadgen_mode=AccuracyOnly" ],
-        [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test-" ],
+        ["loadgen_mode=AccuracyOnly"],
+        ["loadgen_mode=PerformanceOnly", "loadgen_compliance_test-"],
     ]
-
     if division == "closed":
-        if model_name == "resnet50":
-            compliance_test_list = [ 'TEST01', 'TEST04', 'TEST05' ]
-        elif program_name in ( "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ):
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
-        elif program_name == "object_detection_onnx_loadgen_py" and model_name == "retinanet_openimages":
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
-        else:
-            compliance_test_list = []
+        compliance_tests_conditions = {
+            "resnet50": ['TEST01', 'TEST04', 'TEST05'],
+            "bert-99": ['TEST01', 'TEST05'],
+            "bert-99.9": ['TEST01', 'TEST05'],
+            "retinanet": ['TEST01', 'TEST05']
+        }
+        for name, tests in compliance_tests_conditions.items():
+            if name in model_name:
+                modes.extend([["loadgen_mode=PerformanceOnly", f"loadgen_compliance_test={test}"] for test in tests])
+                break
+    return modes
 
-        for compliance_test_name in compliance_test_list:
-            modes.append( [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test="+compliance_test_name ] )
+def get_scenario_attributes(scenario, mode_attribs, __entry__):
+    """
+    This function generates scenario attributes.
 
+    Args:
+    scenario: The current scenario
+    mode_attribs: A list of mode attributes
+    __entry__: The current experiment entry
+    loadgen_server_target_qps: The target queries per second for the loadgen server
+
+    Returns:
+    A dictionary of scenario attributes
+    """
+    scenario_attributes = {"loadgen_scenario": scenario}
+
+    # if "loadgen_mode=AccuracyOnly" in mode_attribs and scenario == "Server":
+    #     scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
+
+    # elif "loadgen_mode=PerformanceOnly" in mode_attribs and scenario in ("Offline", "Server"):
+    #     if scenario == "Server":
+    #         scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps if loadgen_server_target_qps is not None else __entry__["loadgen_target_qps"]
+    #     else:
+    #         scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
+            
+    #     if scenario in ("SingleStream", "MultiStream"):
+    #         scenario_attributes["loadgen_target_latency"] = __entry__["loadgen_target_latency"]
+    #     elif scenario == "MultiStream":
+    #         scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
+
+    return scenario_attributes
+
+def get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes):
+    """
+    This function generates the experiment query.
+
+    Args:
+    experiment_tags: A list of experiment tags
+    common_attributes: A dictionary of common attributes
+    mode_attribs: A list of mode attributes
+    scenario_attributes: A dictionary of scenario attributes
+
+    Returns:
+    A string that is the joined query
+    """
+    # Convert dictionaries to list of strings
+    common_attr_list = [f"{k}={common_attributes[k]}" for k in common_attributes]
+    scenario_attr_list = [f"{k}={scenario_attributes[k]}" for k in scenario_attributes]
+
+    # Create a combined list
+    combined_list = experiment_tags + common_attr_list + mode_attribs + scenario_attr_list
+
+    # Join the list into a string
+    joined_query = ','.join(combined_list)
+    
+    return joined_query
+
+def append_experiment_entries(scenario, mode_attribs, experiment_tags, common_attributes, __entry__, experiment_list_only, experiment_entries):
+    """
+    This function constructs experiment entries and appends them to the provided list.
+
+    Args:
+    scenario: The scenario being tested (e.g. Offline, SingleStream, MultiStream, Server)
+    mode_attribs: Attributes of the mode (e.g. AccuracyOnly, PerformanceOnly)
+    experiment_tags: Tags associated with the experiment (e.g. loadgen_output, classified_imagenet)
+    common_attributes: Attributes common to all experiments (e.g. framework, model_name, sut_name)
+    __entry__: An object representing the current experiment
+    experiment_list_only: Boolean that determines whether to print or append the experiment
+    loadgen_server_target_qps: Target queries per second for the server
+    experiment_entries: List of experiment entries to append to
+
+    Returns:
+    None
+    """
+    scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__)
+    joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
+    
+    if experiment_list_only:
+        print("Generated query = axs byquery", joined_query)
+        print("")
+    else:
+        experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+    return experiment_entries
+
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, __entry__=None):
+
+    """
+    This is the main function that generates experiment entries
+
+    Args:
+    sut_name: The name of the system under test (e.g. q2_pro_dc)
+    sut_system_type: The type of system under test (e.g. edge, datacenter)
+    program_name: The name of the program (e.g. image_classification_onnx_loadgen_py)
+    division: The division of the experiment (e.g. closed, open)
+    framework: The framework being used (e.g. kilt)
+    model_name: The name of the model (e.g. resnet50, retinanet, bert-99, bert-99.9)
+    loadgen_dataset_size: The size of the dataset used by the loadgen
+    loadgen_buffer_size: The buffer size used by the loadgen
+    experiment_list_only: Boolean that determines whether to print or append the experiment
+    loadgen_server_target_qps: Target queries per second for the server (only used for Server scenario)
+    __entry__: An object representing the current experiment
+
+    Returns:
+    A list of experiment entries
+    """
+
+    scenarios = get_scenarios(sut_system_type, model_name)
+    common_attributes = get_common_attributes(sut_name, model_name, framework, loadgen_dataset_size, loadgen_buffer_size, device)
+    modes = get_modes(division, model_name)
     experiment_entries = []
-    for sc in scenarios:
-        scenario_attributes = { "loadgen_scenario": sc }
+
+
+    for scenario in scenarios:
         for mode_attribs in modes:
-            list_output = []
-            #if "loadgen_mode=AccuracyOnly" in mode_attribs:
-                #if sc == "Server":
-                    #if loadgen_server_target_qps is not None:
-                        #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                    #else:
-                       #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-            #elif "loadgen_mode=PerformanceOnly" in mode_attribs:
-
-                #if sc in ("Offline", "Server"):
-                    #if sc == "Server":
-                        #if loadgen_server_target_qps is not None:
-                            #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                        #else:
-                            #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-                    #else:
-                        #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-
-                #elif sc in ("SingleStream", "MultiStream"):
-                    #scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
-                #elif  sc == "MultiStream":
-                    #scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
             if power:
                 if ("loadgen_mode=PerformanceOnly" in mode_attribs) and ("loadgen_compliance_test-") in mode_attribs:
                     experiment_tags[0]="power_loadgen_output"
                 else:
                     experiment_tags[0]="loadgen_output"
 
-            list_query = ( experiment_tags +
-                [ f"{k}={common_attributes[k]}" for k in common_attributes ] +
-                mode_attribs +
-                [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
+            scenario_attributes = get_scenario_attributes(scenario, mode_attribs, __entry__)
+            joined_query = get_experiment_query(experiment_tags, common_attributes, mode_attribs, scenario_attributes)
 
-            joined_query = ','.join( list_query )
-            if experiment_list_only is True:
-                print("Generated query = ", joined_query )
+            if experiment_list_only:
+                print("Generated query = axs byquery", joined_query)
                 print("")
             else:
                 experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
-
+    
     return experiment_entries
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
 
@@ -135,8 +259,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     experiment_cmd_list = []
     readme_template_path = __entry__.get_path("README_template.md")
 
-    for experiment_entry in experiment_entries:
+    for experiment_entry in tqdm(experiment_entries):
+
         experiment_parameters = []
+
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
             last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
@@ -144,28 +270,20 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             origin_experiment_name = origin_experiment_path.split("/")[-1]
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
-        src_dir = experiment_entry.get_path("")
+        src_dir        = experiment_entry.get_path("")
         sut_name       = experiment_entry.get('sut_name')
         sut_data       = experiment_entry.get('sut_data')
         loadgen_mode   = experiment_entry.get('loadgen_mode')
-
-        with_power = experiment_entry.get("with_power")
-
-        program_name    = experiment_entry.get('program_name')
-
-        program_entry = __entry__.get_kernel().byname(program_name)
-        readme_path    = program_entry.get_path("README.md")
+        readme_path    = experiment_entry.get('program_entry').get_path("README.md") #merge
+        with_power = experiment_entry.get("with_power") #merge
         experiment_cmd = experiment_entry.get('produced_by')
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
         experiment_program_name  = experiment_entry.get('program_name')
-        if "_loadgen_py" in experiment_program_name:
-            benchmark_framework_list = experiment_program_name.replace("_loadgen_py", "").split("_")
-            framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
-            benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
-        elif experiment_program_name == "resnet50_kilt_loadgen_qaic":
-            framework = experiment_entry.get('framework')
-            benchmark = "image_classification"
+        benchmark_framework_list = experiment_entry.get('program_name').replace("_loadgen_py", "").split("_")
+
+        framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
+        benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title() #merge
 
         mode = loadgen_mode.replace("Only", "")
 
@@ -180,7 +298,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         else:
             display_model_name  = model_name
 
-        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name.replace("resnet50", "image_classification") ] )
+        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name ] )
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
         if os.path.exists(readme_path):
@@ -208,24 +326,20 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        program_name            = experiment_entry.get("program_name", experiment_program_name)
-        program_name = program_name.replace("resnet50", "image_classification")
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
-
-        if not model_meta_data:
-            model_meta_data = experiment_entry["compiled_model_source_entry"]
-
+        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{experiment_program_name}_{scenario}.json") 
+        print("measurements_meta_path", measurements_meta_path)
+        
         try:
             measurements_meta_data  = {
-                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
-                "input_data_types": model_meta_data["input_data_types"],
-                "weight_data_types": model_meta_data["weight_data_types"],
-                "starting_weights_filename": model_meta_data["url"],
-                "weight_transformations": model_meta_data["weight_transformations"],
+                "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
+                "input_data_types": experiment_entry.get("input_data_types"),
+                "weight_data_types":  experiment_entry.get("weight_data_types"),
+                "starting_weights_filename": experiment_entry.get("url"),
+                "weight_transformations": experiment_entry.get("weight_transformations"),
             }
         except KeyError as e:
-            print(f"Key {e} is missing from model_meta_data or the model")
-            return
+            raise ValueError(f"\n\n\n ERROR: Key {e} is missing from experiment_entry \n\n")
+
         store_json(measurements_meta_data, measurements_meta_path)
 
         experiment_entry.parent_objects = None
@@ -248,30 +362,39 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             'PerformanceOnly': 'performance',
         }[ experiment_entry['loadgen_mode'] ]
 
-        if  ( mode== 'accuracy') or ( mode == 'performance' and compliance_test_name is False ):
+        if  ( mode== 'accuracy'):
+            results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+        elif ( mode == 'performance' and compliance_test_name is False ):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
                 results_path_syll_TEST01_acc = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
+            else:
+                results_path = make_local_dir(results_path_syll)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
             files_to_copy.append( 'mlperf_log_accuracy.json' )
-        if mode=='performance' and compliance_test_name is False:
+        # if mode=='performance' and compliance_test_name is False:
+        #     results_path_syll.append( 'run_1' )
+        elif mode=='performance' and compliance_test_name is False: #merge
             if experiment_entry['with_power'] is not True:
                 results_path_syll.append( 'run_1' )
-
         if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll.extend(( mode, 'run_1' ))
 
+        elif mode=='performance':
+            results_path_syll.extend(( '..', mode, 'run_1' ))
+
         results_path        = make_local_dir( results_path_syll )
-
+        
         for filename in files_to_copy:
-            src_file_path = os.path.join(src_dir, filename)
 
+            src_file_path = os.path.join(src_dir, filename)
+            
             if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST01_acc, filename)
             else:
@@ -280,12 +403,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             if experiment_entry['with_power'] is None:
                 print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
                 shutil.copy( src_file_path, dst_file_path)
-
+            
+            print(f"-------------mode:{mode}-------compliance_test_name{compliance_test_name}-----------------")
+            print("\n\nsource file path", src_file_path, "\n\ndestination file path", dst_file_path,"\n\n")
         if experiment_entry['with_power'] is True and mode=='performance' and compliance_test_name is False:
-             power_src_dir = power_experiment_entry.get_path("power_logs")
-             dir_list = ['power', 'ranging', 'run_1']
+            power_src_dir = power_experiment_entry.get_path("power_logs")
+            dir_list = ['power', 'ranging', 'run_1']
 
-             for elem in dir_list:
+            for elem in dir_list:
                 results_path_syll.append( elem )
                 src_file_path = power_src_dir + "/" + elem + "/"
 
@@ -296,13 +421,12 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     results_path_file = results_path + "/" + file_name
                     shutil.copy(src_file_path_file, results_path_file)
                 results_path_syll.remove(elem)
-
         if mode=='accuracy' or compliance_test_name == "TEST01":
-            if experiment_program_name == "object_detection_onnx_loadgen_py":
+            if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c"]:
+            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c",  "bert_squad_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py" or experiment_program_name == "resnet50_kilt_loadgen_qaic":
+            elif experiment_program_name in ["image_classification_onnx_loadgen_py", "image_classification_torch_loadgen_py","resnet50_kilt_loadgen_qaic"]:
 
                 accuracy_content    = str(experiment_entry["accuracy_report"])
             if mode == 'accuracy':
@@ -318,7 +442,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
-            ("Verification for ", compliance_test_name)
+            print("Verification for ", compliance_test_name)
 
             tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
@@ -332,10 +456,16 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                     "compliance_dir": compliance_dir,
                     "output_dir": output_dir
                         } )
+            print("\n\n###############\n\n")
+            print("result_verify", result_verify)
+            print("result_verify", type(result_verify))
+            print("-----------------------")
+            # shutil.rmtree(tmp_dir, ignore_errors=True)
             if result_verify == "":
                 shutil.rmtree(tmp_dir, ignore_errors=True)
-            else:
-                return
+            # else:
+            #     return
+
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
 
@@ -377,7 +507,7 @@ def run_checker(submission_checker_path, submitted_tree_path, submitter, divisio
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, __entry__=None, __record_entry__=None):
 
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
@@ -388,7 +518,6 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
         run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
     else:
         print("Run lay_out...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__, __record_entry__)
         print("Run checker...")
         run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__)
-
