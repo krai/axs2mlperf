@@ -234,7 +234,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
     
     return experiment_entries
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
+def lay_out(experiment_entries, sut_path, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
 
@@ -328,7 +328,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{experiment_program_name}_{scenario}.json") 
         print("measurements_meta_path", measurements_meta_path)
-        
+
         try:
             measurements_meta_data  = {
                 "retraining": experiment_entry.get("retraining", ("yes" if experiment_entry.get('retrained', False) else "no")),
@@ -347,15 +347,17 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if experiment_entry['with_power'] is True:
             analyzer_table_file = "analyzer_table.md"
             power_settings_file = "power_settings.md"
+            
+            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
 
             analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
             power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
 
-            with open(analyzer_table_file_path, "w") as output_file1:
-                output_file1.write( "TODO" )
-            with open(power_settings_file_path, "w") as output_file2:
-                output_file2.write( "TODO" )
-
+            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+                shutil.copy2(sut_analyzer_table_path, power_settings_file_path)
+                shutil.copy2(sut_power_settings_path, analyzer_table_file_path)
         # --------------------------------[ results ]--------------------------------------
         mode        = {
             'AccuracyOnly': 'accuracy',
@@ -417,10 +419,12 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 results_path        = make_local_dir( results_path_syll )
 
                 for file_name in os.listdir(src_file_path):
-                    src_file_path_file = src_file_path + file_name
-                    results_path_file = results_path + "/" + file_name
-                    shutil.copy(src_file_path_file, results_path_file)
+                    if file_name != "ptd_out.txt": 
+                        src_file_path_file = src_file_path + file_name
+                        results_path_file = results_path + "/" + file_name
+                        shutil.copy(src_file_path_file, results_path_file)
                 results_path_syll.remove(elem)
+
         if mode=='accuracy' or compliance_test_name == "TEST01":
             if experiment_program_name in ["object_detection_onnx_loadgen_py", "retinanet_kilt_loadgen_qaic"]:
                 accuracy_content    = str(experiment_entry["accuracy_report"])

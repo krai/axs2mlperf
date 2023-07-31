@@ -7,7 +7,10 @@
         [ "get", "sut_entry" ],
         [ "get", "data" ]
     ]] ],
-    "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
+    "sut_path": [ "^^", "execute", [[
+	    [ "get", "sut_entry" ],
+	    [ "get_path",[]]
+    ]]],    "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
 
     "python_deps": [
         [ "^", "byquery", [ [ "^^", "get", "tqdm" ] ], {}, ["tqdm"] ],
