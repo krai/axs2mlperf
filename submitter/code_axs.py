@@ -151,21 +151,22 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         with_power      = experiment_entry.get("with_power")
 
-        program_name    = experiment_entry.get('program_name')
-
-        program_entry = __entry__.get_kernel().byname(program_name)
+        experiment_program_name  = experiment_entry.get('program_name')
+        program_entry = __entry__.get_kernel().byname(experiment_program_name)
         readme_path    = program_entry.get_path("README.md")
+
         experiment_cmd = experiment_entry.get('produced_by')
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
-        experiment_program_name  = experiment_entry.get('program_name')
+        framework       = experiment_entry.get('framework').upper()
+
         if "_loadgen_py" in experiment_program_name:
-            benchmark_framework_list = experiment_program_name.replace("_loadgen_py", "").split("_")
-            framework = benchmark_framework_list[2].upper().replace("RUNTIME","")
-            benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
-        elif experiment_program_name == "resnet50_kilt_loadgen_qaic":
-            framework = experiment_entry.get('framework')
-            benchmark = "image_classification"
+            benchmark_framework_list = experiment_program_name.split("_")
+            display_benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
+        elif experiment_program_name.startswith("resnet50_"):
+            display_benchmark = "Image Classification"
+        elif experiment_program_name.startswith("bert_squad_"):
+            display_benchmark = "BERT"
 
         mode = loadgen_mode.replace("Only", "")
 
@@ -180,7 +181,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         else:
             display_model_name  = model_name
 
-        code_model_program_path        = make_local_dir( [code_path, display_model_name , experiment_program_name.replace("resnet50", "image_classification") ] )
+        modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
+        code_model_program_path = make_local_dir( [code_path, display_model_name , modified_program_name ] )
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
         if os.path.exists(readme_path):
@@ -196,7 +198,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             with open(readme_template_path, "r") as input_fd:
                 template = input_fd.read()
             with open(path_model_readme, "w") as output_fd:
-                output_fd.write( template.format(benchmark=benchmark, framework=framework ) )
+                output_fd.write( template.format(benchmark=display_benchmark, framework=framework ) )
 
         with open(path_model_readme, "a") as fd:
             fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
@@ -208,9 +210,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        program_name            = experiment_entry.get("program_name", experiment_program_name)
-        program_name = program_name.replace("resnet50", "image_classification")
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{program_name}_{scenario}.json") 
+        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
 
         if not model_meta_data:
             model_meta_data = experiment_entry["compiled_model_source_entry"]
@@ -300,17 +300,13 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
                 results_path_syll.remove(elem)
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
-            if experiment_program_name == "object_detection_onnx_loadgen_py":
-                accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name in [ "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c"]:
-                accuracy_content    = str(experiment_entry["accuracy_report"])
-            elif experiment_program_name == "image_classification_onnx_loadgen_py" or experiment_program_name == "image_classification_torch_loadgen_py" or experiment_program_name == "resnet50_kilt_loadgen_qaic":
+            accuracy_content    = str(experiment_entry["accuracy_report"])
 
-                accuracy_content    = str(experiment_entry["accuracy_report"])
             if mode == 'accuracy':
                 dst_file_path       = os.path.join(results_path, "accuracy.txt")
             elif compliance_test_name == "TEST01":
                 dst_file_path       = os.path.join(results_path_TEST01_acc, "accuracy.txt")
+
             print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
             with open(dst_file_path, "w") as fd:
                 if mode=='accuracy':
