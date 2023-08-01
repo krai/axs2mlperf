@@ -11,19 +11,16 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, scenarios=None, __entry__=None):
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, scenarios=None, extra_common_attributes=None, __entry__=None):
 
     if not scenarios:
-        if sut_name == "q5e_pro_dc":
-            scenarios = ["Offline", "SingleStream", "MultiStream" ]
-        else:
-            if sut_system_type == "edge":
-                if model_name in ("resnet50", "retinanet_openimages"):
-                    scenarios = ["Offline", "SingleStream", "MultiStream" ]
-                else:
-                    scenarios = ["Offline", "SingleStream" ]
-            elif sut_system_type == "datacenter":
-                scenarios = ["Offline", "Server" ]
+        if sut_system_type == "edge":
+            if model_name in ("resnet50", "retinanet_openimages"):
+                scenarios = ["Offline", "SingleStream", "MultiStream" ]
+            else:
+                scenarios = ["Offline", "SingleStream" ]
+        elif sut_system_type == "datacenter":
+            scenarios = ["Offline", "Server" ]
 
     common_attributes = {
         "sut_name":             sut_name,
@@ -36,6 +33,8 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
     else:
         common_attributes["loadgen_dataset_size"]   = loadgen_dataset_size
         common_attributes["loadgen_buffer_size"]    = loadgen_buffer_size
+
+    extra_common_attributes = extra_common_attributes or {}
 
     modes = [
         [ "loadgen_mode=AccuracyOnly" ],
@@ -69,6 +68,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
 
             list_query = ( experiment_tags +
                 [ f"{k}={common_attributes[k]}" for k in common_attributes ] +
+                [ f"{k}={extra_common_attributes[k]}" for k in extra_common_attributes ] +
                 mode_attribs +
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
