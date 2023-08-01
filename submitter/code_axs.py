@@ -39,13 +39,13 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         "sut_name":             sut_name,
         "model_name":           model_name,
         "framework":            framework,
-        "loadgen_buffer_size":  loadgen_buffer_size,
     }
     if framework=="kilt":
         common_attributes["first_n"]    = loadgen_dataset_size
         common_attributes["device"]     = device
     else:
-        common_attributes["loadgen_dataset_size"] = loadgen_dataset_size
+        common_attributes["loadgen_dataset_size"]   = loadgen_dataset_size
+        common_attributes["loadgen_buffer_size"]    = loadgen_buffer_size
 
     modes = [
         [ "loadgen_mode=AccuracyOnly" ],
