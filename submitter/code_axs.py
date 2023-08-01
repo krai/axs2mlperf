@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
 
-
-import json
 import os
 import shutil
-import subprocess
 import sys
-from typing import ( Dict, List, Tuple )
-from pathlib import Path
-compliance_test_list = []
-
-def store_json(data_structure, json_file_path):
-    json_data   = json.dumps( data_structure , indent=4)
-
-    with open(json_file_path, "w") as json_fd:
-        json_fd.write( json_data+"\n" )
+from ufun import save_json
 
 def get_mlperf_model_name(model_name_dict, model_name):
     if model_name in model_name_dict.keys():
@@ -211,7 +200,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             print(f"Key {e} is missing from model_meta_data or the model")
             return
 
-        store_json(measurements_meta_data, measurements_meta_path)
+        save_json(measurements_meta_data, measurements_meta_path, indent=4)
 
         experiment_entry.parent_objects = None
 
@@ -343,7 +332,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         sut_path = os.path.join( systems_path, sut_name+'.json' )
 
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
-        store_json(sut_data, sut_path)
+        save_json(sut_data, sut_path, indent=4)
 
     return __record_entry__
 
