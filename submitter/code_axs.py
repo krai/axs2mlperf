@@ -70,27 +70,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         scenario_attributes = { "loadgen_scenario": sc }
         for mode_attribs in modes:
             list_output = []
-            #if "loadgen_mode=AccuracyOnly" in mode_attribs:
-                #if sc == "Server":
-                    #if loadgen_server_target_qps is not None:
-                        #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                    #else:
-                       #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-            #elif "loadgen_mode=PerformanceOnly" in mode_attribs:
 
-                #if sc in ("Offline", "Server"):
-                    #if sc == "Server":
-                        #if loadgen_server_target_qps is not None:
-                            #scenario_attributes["loadgen_target_qps"] = loadgen_server_target_qps
-                        #else:
-                            #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-                    #else:
-                        #scenario_attributes["loadgen_target_qps"] = __entry__["loadgen_target_qps"]
-
-                #elif sc in ("SingleStream", "MultiStream"):
-                    #scenario_attributes[ "loadgen_target_latency" ] = __entry__["loadgen_target_latency"]
-                #elif  sc == "MultiStream":
-                    #scenario_attributes["loadgen_multistreamness"] = __entry__["loadgen_multistreamness"]
             if power:
                 if ("loadgen_mode=PerformanceOnly" in mode_attribs) and ("loadgen_compliance_test-") in mode_attribs:
                     experiment_tags[0]="power_loadgen_output"
