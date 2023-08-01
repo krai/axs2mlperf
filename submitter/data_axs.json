@@ -10,6 +10,10 @@
         [ "get", "sut_entry" ],
         [ "get", "data" ]
     ]] ],
+    "sut_path": [ "^^", "execute", [[
+	    [ "get", "sut_entry" ],
+	    [ "get_path",[]]
+    ]]],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
 
     "division": "open",

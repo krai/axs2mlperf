@@ -130,7 +130,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
 
     return experiment_entries
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
+def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
 
     def make_local_dir( path_list ):
 
@@ -254,14 +254,15 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             analyzer_table_file = "analyzer_table.md"
             power_settings_file = "power_settings.md"
 
+            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
             analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
             power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
 
-            with open(analyzer_table_file_path, "w") as output_file1:
-                output_file1.write( "TODO" )
-            with open(power_settings_file_path, "w") as output_file2:
-                output_file2.write( "TODO" )
-
+            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
+                shutil.copy2(sut_power_settings_path, power_settings_file_path)
         # --------------------------------[ results ]--------------------------------------
         mode        = {
             'AccuracyOnly': 'accuracy',
@@ -312,9 +313,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 results_path        = make_local_dir( results_path_syll )
 
                 for file_name in os.listdir(src_file_path):
-                    src_file_path_file = src_file_path + file_name
-                    results_path_file = results_path + "/" + file_name
-                    shutil.copy(src_file_path_file, results_path_file)
+                    if file_name != "ptd_out.txt":
+                        src_file_path_file = src_file_path + file_name
+                        results_path_file = results_path + "/" + file_name
+                        shutil.copy(src_file_path_file, results_path_file)
                 results_path_syll.remove(elem)
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
@@ -397,7 +399,7 @@ def run_checker(submission_checker_path, submitted_tree_path, submitter, divisio
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
 
     __record_entry__["tags"] = ["laid_out_submission"]
     __record_entry__.save( record_entry_name )
@@ -408,7 +410,7 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
         run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
     else:
         print("Run lay_out...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
+        lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
         print("Run checker...")
         run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__)
 
