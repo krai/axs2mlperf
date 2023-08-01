@@ -122,7 +122,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
             joined_query = ','.join( list_query )
-            if experiment_list_only is True:
+            if experiment_list_only:
                 print("Generated query = ", joined_query )
                 print("")
             else:
@@ -164,12 +164,12 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             origin_experiment_name = origin_experiment_path.split("/")[-1]
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
-        src_dir = experiment_entry.get_path("")
-        sut_name       = experiment_entry.get('sut_name')
-        sut_data       = experiment_entry.get('sut_data')
-        loadgen_mode   = experiment_entry.get('loadgen_mode')
+        src_dir         = experiment_entry.get_path("")
+        sut_name        = experiment_entry.get('sut_name')
+        sut_data        = experiment_entry.get('sut_data')
+        loadgen_mode    = experiment_entry.get('loadgen_mode')
 
-        with_power = experiment_entry.get("with_power")
+        with_power      = experiment_entry.get("with_power")
 
         program_name    = experiment_entry.get('program_name')
 
@@ -195,7 +195,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         model_name  = experiment_entry['model_name']
         mlperf_model_name = get_mlperf_model_name(model_name_dict, model_name)
-        if mlperf_model_name is not None:
+        if mlperf_model_name:
             display_model_name = mlperf_model_name
         else:
             display_model_name  = model_name
@@ -250,7 +250,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         experiment_entry.parent_objects = None
 
-        if experiment_entry['with_power'] is True:
+        if with_power:
             analyzer_table_file = "analyzer_table.md"
             power_settings_file = "power_settings.md"
 
@@ -269,7 +269,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             'PerformanceOnly': 'performance',
         }[ experiment_entry['loadgen_mode'] ]
 
-        if  ( mode== 'accuracy') or ( mode == 'performance' and compliance_test_name is False ):
+        if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
             results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
@@ -281,8 +281,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
             files_to_copy.append( 'mlperf_log_accuracy.json' )
-        if mode=='performance' and compliance_test_name is False:
-            if experiment_entry['with_power'] is not True:
+        if mode=='performance' and not compliance_test_name:
+            if not with_power:
                 results_path_syll.append( 'run_1' )
 
         if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
@@ -298,11 +298,11 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             else:
                 dst_file_path = os.path.join(results_path, filename)
 
-            if experiment_entry['with_power'] is None:
+            if not with_power:
                 print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
                 shutil.copy( src_file_path, dst_file_path)
 
-        if experiment_entry['with_power'] is True and mode=='performance' and compliance_test_name is False:
+        if with_power and mode=='performance' and not compliance_test_name:
              power_src_dir = power_experiment_entry.get_path("power_logs")
              dir_list = ['power', 'ranging', 'run_1']
 
