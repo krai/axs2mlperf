@@ -186,7 +186,10 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         scenario    = experiment_entry['loadgen_scenario'].lower()
 
         if os.path.exists(readme_path):
+            print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
             shutil.copy(readme_path, code_model_program_path)         
+        else:
+            print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
         path_readme = os.path.join(code_model_program_path, "README.md")
 
         # ----------------------------[ measurements ]------------------------------------
@@ -212,8 +215,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
 
-        if not model_meta_data:
-            model_meta_data = experiment_entry["compiled_model_source_entry"]
+        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
+        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
 
         try:
             measurements_meta_data  = {
@@ -226,6 +229,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         except KeyError as e:
             print(f"Key {e} is missing from model_meta_data or the model")
             return
+
         store_json(measurements_meta_data, measurements_meta_path)
 
         experiment_entry.parent_objects = None
