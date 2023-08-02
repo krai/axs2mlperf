@@ -11,7 +11,21 @@ def get_mlperf_model_name(model_name_dict, model_name):
     else:
         return None
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, loadgen_server_target_qps=None, scenarios=None, extra_common_attributes=None, __entry__=None):
+def task_from_program_name(program_name):
+
+    if program_name.startswith("image_classification_") or program_name.startswith("resnet50_"):
+        return "image_classification"
+    elif program_name.startswith("object_detection_") or program_name.startswith("retinanet_"):
+        return "object_detection"
+    elif program_name.startswith("bert_squad_"):
+        return "bert_squad"
+    elif program_name.startswith("gptj_cnndm_"):
+        return "gptj_cnndm"
+    else:
+        return "UNKNOWN"
+
+
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, scenarios=None, extra_common_attributes=None, __entry__=None):
 
     if not scenarios:
         if sut_system_type == "edge":
@@ -42,14 +56,13 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
     ]
 
     if division == "closed":
-        if model_name == "resnet50":
-            compliance_test_list = [ 'TEST01', 'TEST04', 'TEST05' ]
-        elif program_name in ( "bert_squad_onnxruntime_loadgen_py", "bert_squad_kilt_loadgen_c" ):
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
-        elif program_name == "object_detection_onnx_loadgen_py" and model_name == "retinanet_openimages":
-            compliance_test_list = [ 'TEST01', 'TEST05' ]
-        else:
-            compliance_test_list = []
+        experiment_task = task_from_program_name(program_name)
+        compliance_test_list = {
+            "image_classification": [ 'TEST01', 'TEST04', 'TEST05' ],
+            "object_detection":     [ 'TEST01', 'TEST05' ],
+            "bert_squad":           [ 'TEST01', 'TEST05' ],
+            "gptj_cnndm":           [ ],
+        }[experiment_task]
 
         for compliance_test_name in compliance_test_list:
             modes.append( [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test="+compliance_test_name ] )
@@ -131,13 +144,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         framework       = experiment_entry.get('framework').upper()
 
-        if "_loadgen_py" in experiment_program_name:
-            benchmark_framework_list = experiment_program_name.split("_")
-            display_benchmark = benchmark_framework_list[0].title() + " " + benchmark_framework_list[1].title()
-        elif experiment_program_name.startswith("resnet50_"):
-            display_benchmark = "Image Classification"
-        elif experiment_program_name.startswith("bert_squad_"):
-            display_benchmark = "BERT"
+        experiment_task     = task_from_program_name(experiment_program_name)
+        display_benchmark   = experiment_task.replace("_", " ").title()
 
         mode = loadgen_mode.replace("Only", "")
 
