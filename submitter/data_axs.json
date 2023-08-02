@@ -41,7 +41,10 @@
     "loadgen_buffer_size": [ "^^", "dig", [["model_name2buffer_size", ["^^", "get", "model_name"] ]] ],
     "experiment_tags": [ "^^", "dig", "program_entry.output_entry_tags" ],
     "framework": [ "^^", "dig", "program_entry.framework" ],
-    "device": [ "^^", "dig", "program_entry.device" ],
+    "device": [ "^^", "execute", [[
+        [ "get", "program_entry" ],
+        [ "get", ["device", null] ]
+    ]] ],
 
     "experiment_entries": ["^^", "generate_experiment_entries" ],
 
