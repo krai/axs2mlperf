@@ -27,6 +27,8 @@ def task_from_program_name(program_name):
 
 def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, scenarios=None, extra_common_attributes=None, __entry__=None):
 
+    task = task_from_program_name(program_name)
+
     if not scenarios:
         if sut_system_type == "edge":
             if model_name in ("resnet50", "retinanet_openimages"):
@@ -42,8 +44,10 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         "framework":            framework,
     }
     if framework=="kilt":
-        common_attributes["first_n"]    = loadgen_dataset_size
         common_attributes["device"]     = device
+
+    if framework=="kilt" and task in ("image_classification", "object_detection"):
+        common_attributes["first_n"]    = loadgen_dataset_size
     else:
         common_attributes["loadgen_dataset_size"]   = loadgen_dataset_size
         common_attributes["loadgen_buffer_size"]    = loadgen_buffer_size
@@ -56,13 +60,12 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
     ]
 
     if division == "closed":
-        experiment_task = task_from_program_name(program_name)
         compliance_test_list = {
             "image_classification": [ 'TEST01', 'TEST04', 'TEST05' ],
             "object_detection":     [ 'TEST01', 'TEST05' ],
             "bert_squad":           [ 'TEST01', 'TEST05' ],
             "gptj_cnndm":           [ ],
-        }[experiment_task]
+        }[task]
 
         for compliance_test_name in compliance_test_list:
             modes.append( [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test="+compliance_test_name ] )
