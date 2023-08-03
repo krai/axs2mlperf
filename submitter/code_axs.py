@@ -25,7 +25,7 @@ def task_from_program_name(program_name):
         return "UNKNOWN"
 
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, scenarios=None, extra_common_attributes=None, __entry__=None):
+def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, scenarios=None, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
 
     task = task_from_program_name(program_name)
 
@@ -53,6 +53,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         common_attributes["loadgen_buffer_size"]    = loadgen_buffer_size
 
     extra_common_attributes = extra_common_attributes or {}
+    per_scenario_attributes = per_scenario_attributes or {}
 
     modes = [
         [ "loadgen_mode=AccuracyOnly" ],
@@ -72,6 +73,8 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
 
     experiment_entries = []
     for sc in scenarios:
+        scenario_specific_attributes = per_scenario_attributes.get(sc, {})
+
         scenario_attributes = { "loadgen_scenario": sc }
         for mode_attribs in modes:
             list_output = []
@@ -85,6 +88,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
             list_query = ( experiment_tags +
                 [ f"{k}={common_attributes[k]}" for k in common_attributes ] +
                 [ f"{k}={extra_common_attributes[k]}" for k in extra_common_attributes ] +
+                [ f"{k}={scenario_specific_attributes[k]}" for k in scenario_specific_attributes ] +
                 mode_attribs +
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
