@@ -90,7 +90,13 @@
         "bert_code_root",
         "bert_squad_code_dir",
 
-        "execution_device"
+        "execution_device",
+
+        "retrained",
+        "input_data_types",
+        "weight_data_types",
+        "weight_transformations",
+        "url"
     ],
 
     "rel_script_path": "bert_squad_onnxruntime_loadgen.py",

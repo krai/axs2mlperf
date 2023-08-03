@@ -67,7 +67,13 @@
         "model_path",
         "preprocessed_images_dir",
         "input_file_list",
-        "batch_size"
+        "batch_size",
+
+        "retrained",
+        "input_data_types",
+        "weight_data_types",
+        "weight_transformations",
+        "url"
     ],
 
     "rel_script_path": "torch_loadgen_classifier.py",

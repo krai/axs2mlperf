@@ -99,7 +99,13 @@
         "dataset_name",
 
         "execution_device",
-        "cpu_threads"
+        "cpu_threads",
+
+        "retrained",
+        "input_data_types",
+        "weight_data_types",
+        "weight_transformations",
+        "url"
     ],
 
     "rel_script_path": "onnx_loadgen_detector.py",

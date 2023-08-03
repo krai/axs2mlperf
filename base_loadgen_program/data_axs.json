@@ -32,6 +32,12 @@
         [ "get_path_of", "submission_compliance_tests_dir" ]
      ]] ],
 
+    "retrained": [ "^^", "dig", "model_entry.retrained" ],
+    "input_data_types": [ "^^", "dig", "model_entry.input_data_types" ],
+    "weight_data_types": [ "^^", "dig", "model_entry.weight_data_types" ],
+    "weight_transformations": [ "^^", "dig", "model_entry.weight_transformations" ],
+    "url": [ "^^", "dig", "model_entry.url" ],
+
     "output_entry_parents": [ ],
     "output_entry_tags": [ ],
     "output_entry_param_names": [ ],
