@@ -33,8 +33,9 @@
 
     "model_name": "gptj",
     "model_path_on_chai": "/data/gpt-j/model/",
-    "model_path": [ "^", "execute", [[
-        [ "byquery", "extracted,pytorch_model,model_name=gptj_cnndm" ],
+    "model_entry": [ "^", "byquery", "extracted,pytorch_model,model_name=gptj_cnndm" ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
         [ "get_path" ]
     ]] ],
 
