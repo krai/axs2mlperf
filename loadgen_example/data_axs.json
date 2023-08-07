@@ -11,8 +11,8 @@
         [ "^", "byquery", [ [ "^^", "get", "loadgen_query" ] ], {}, ["loadgen_query"] ]
     ],
 
-    "example_model_name": "this_model",
-    "example_latency_ms": 90,
+    "model_name": "this_model",
+    "latency_ms": 90,
     "file_name": "",
 
     "loadgen_scenario": "SingleStream",
@@ -29,13 +29,12 @@
         "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
-        "loadgen_mlperf_conf_path",
 
         "sut_name",
         "program_name",
 
-        "example_model_name",
-        "example_latency_ms",
+        "model_name",
+        "latency_ms",
         "file_name"
     ],
 
@@ -51,5 +50,5 @@
 
     "rel_script_path": "loadgen_example.py",
 
-    "script_extra_params": [ "^^", "substitute", "\"#{loadgen_scenario}#\" \"#{loadgen_mode}#\" #{loadgen_dataset_size}# #{loadgen_buffer_size}# \"#{loadgen_mlperf_conf_path}#\" \"#{example_model_name}#\" #{example_latency_ms}#" ]
+    "script_extra_params": [ "^^", "get", "input_parameters_file_path" ]
 }

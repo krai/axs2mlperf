@@ -22,10 +22,15 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "loadgen_mlperf_conf_path": [ "^^", "execute", [[
+    "original_loadgen_mlperf_conf_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "mlperf_conf_file" ]
     ]] ],
+
+    "loadgen_mlperf_conf_path": [ "^^", "func", [ "shutil.copyfile",
+        [ "^^", "get", "original_loadgen_mlperf_conf_path" ],
+        [ "^^", "get", "target_mlperf_conf_path" ]
+    ] ],
 
     "submission_compliance_tests_dir": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
@@ -67,6 +72,7 @@
         [ "get", "output_entry" ],
         [ "get_path" ]
     ]] ],
+    "target_mlperf_conf_path":  [ "^^", "func", [ "os.path.join", [ "^^", "get", "output_dir" ], "mlperf.conf" ] ],
     "target_user_conf_path":  [ "^^", "func", [ "os.path.join", [ "^^", "get", "output_dir" ], "user.conf" ] ],
     "target_audit_conf_path": [ "^^", "func", [ "os.path.join", [ "^^", "get", "output_dir" ], "audit.config" ] ],
     "in_dir": [ "^^", "get", "output_dir" ],
@@ -76,6 +82,7 @@
 
     "input_parameters_file_path": [ "^^", "execute", [[
         [ "get", "output_entry" ],
+        [ "plant", [ "loadgen_mlperf_conf_path",[ "^^", "get", "loadgen_mlperf_conf_path" ] ]],
         [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
         [ "save", [], { "deterministic": false } ],
         [ "get_path", "data_axs.json" ]

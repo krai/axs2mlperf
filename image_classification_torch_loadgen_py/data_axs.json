@@ -56,7 +56,6 @@
         "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
-        "loadgen_mlperf_conf_path",
 
         "framework",
         "sut_name",

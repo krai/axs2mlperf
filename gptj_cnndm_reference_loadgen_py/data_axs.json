@@ -50,7 +50,6 @@
         "loadgen_dataset_size",
         "loadgen_buffer_size",
         "loadgen_multistreamness",
-        "loadgen_mlperf_conf_path",
 
         "model_name",
         "model_path",

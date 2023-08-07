@@ -71,7 +71,6 @@
         "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
-        "loadgen_mlperf_conf_path",
         "loadgen_min_duration_s",
         "loadgen_max_duration_s",
 

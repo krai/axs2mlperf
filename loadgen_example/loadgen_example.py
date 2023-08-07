@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import array
+import json
 import random
 import sys
 import time
@@ -8,15 +9,20 @@ import time
 import numpy as np
 import mlperf_loadgen as lg
 
+input_parameters_file_path = sys.argv[1]
+input_parameters = {}
 
-scenario_str                = sys.argv[1]
-mode_str                    = sys.argv[2]
-dataset_size                = int(sys.argv[3])
-buffer_size                 = int(sys.argv[4])
-config_filepath             = sys.argv[5]
-model_name                  = sys.argv[6]
-latency_ms                  = int(sys.argv[7])
+with open(input_parameters_file_path) as f:
+    input_parameters = json.load(f)
 
+scenario_str                = input_parameters["loadgen_scenario"]
+mode_str                    = input_parameters["loadgen_mode"]
+dataset_size                = int( input_parameters["loadgen_dataset_size"] )
+buffer_size                 = int( input_parameters["loadgen_buffer_size"] )
+mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
+user_conf_path              = input_parameters["loadgen_user_conf_path"]
+model_name                  = input_parameters["model_name"]
+latency_ms                  = int( input_parameters["latency_ms"] )
 
 dataset         = [10*i for i in range(dataset_size)]
 labelset        = [10*i+random.randint(0,1) for i in range(dataset_size)]
@@ -82,8 +88,10 @@ def benchmark_using_loadgen():
     }[mode_str]
 
     ts = lg.TestSettings()
-    if(config_filepath):
-        ts.FromConfig(config_filepath, model_name, scenario_str)
+    if(mlperf_conf_path):
+        ts.FromConfig(mlperf_conf_path, model_name, scenario_str)
+    if(user_conf_path):
+        ts.FromConfig(user_conf_path, model_name, scenario_str)
     ts.scenario = scenario
     ts.mode     = mode
 
