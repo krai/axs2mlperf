@@ -29,6 +29,7 @@
 
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
+        [ "plant", ["_parent_entries", [ "AS^IS", [ "^", "byname", "base_power_measurement_experiment" ] ] ] ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "save" ]
     ]] ],
@@ -36,6 +37,11 @@
     "last_mlperf_logs_path": [ "^^", "execute", [[
         [ "get", "output_entry" ],
         [ "get_path", "last_mlperf_logs" ]
+    ]] ],
+
+    "power_client_entrydic_path": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "get", "output_json_file_path" ]
     ]] ],
 
     "power_logs_path": [ "^^", "execute", [[
@@ -48,7 +54,7 @@
         [ "replace", ["power_loadgen_output", "loadgen_output"] ]
     ]] ],
 
-    "workload_command": [ "^^", "substitute", "axs byquery #{modified_query}#,_with_power+,symlink_to=#{last_mlperf_logs_path}#" ],
+    "workload_command": [ "^^", "substitute", "axs byquery #{modified_query}#,_with_power+,symlink_to=#{last_mlperf_logs_path}#,power_client_entrydic_path=#{power_client_entrydic_path}#" ],
 
     "script_extra_params": [ "^^", "substitute", "--run-workload \"#{workload_command}#\" --loadgen-logs \"#{last_mlperf_logs_path}#\" --output \"#{power_logs_path}#\" --addr #{power_server_address}# --port #{power_server_port}# --ntp #{ntp_server_address}# --no-timestamp-path" ]
 }

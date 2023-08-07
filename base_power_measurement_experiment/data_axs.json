@@ -1,0 +1,13 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_experiment" ] ],
+
+    "ranging_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", [ "^^", "dig", "program_output.ranging_entry_name" ] ]
+    ]] ],
+
+    "testing_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", [ "^^", "dig", "program_output.testing_entry_name" ] ]
+    ]] ]
+}

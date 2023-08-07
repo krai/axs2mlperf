@@ -1,5 +1,6 @@
 import os
 from shutil import copy2
+from ufun import load_json, save_json
 
 
 def get_mlperf_model_name(model_name_compliance_dict, model_name):
@@ -67,21 +68,29 @@ def generate_audit_conf( model_name, submission_compliance_tests_dir, target_aud
     return target_audit_conf_path
 
 
-def link_to_power_client_entry(output_entry, symlink_to):
+def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_path):
     "A callback procedure to be activated when in power measurement mode"
 
     power_workload_path = output_entry.get_path()
+    power_workload_entry_name = output_entry.get_name()
+
     power_client_entry_path = os.path.dirname( symlink_to )
 
     if os.path.exists( symlink_to ):
         os.unlink( symlink_to )
         os.symlink( power_workload_path, os.path.join(power_client_entry_path, "testing_logs" ), target_is_directory=True )
+        entrydic = load_json( power_client_entrydic_path )
+        entrydic["testing_entry_name"] = power_workload_entry_name
     else:
         os.symlink( power_workload_path, os.path.join(power_client_entry_path, "ranging_logs" ), target_is_directory=True )
+        entrydic = { "ranging_entry_name": power_workload_entry_name }
+
+    save_json( entrydic, power_client_entrydic_path, indent=4 )
 
     os.symlink( power_workload_path, symlink_to, target_is_directory=True )
 
     return output_entry
+
 
 def get_config_from_sut(config=None, default_val=None, sut_data_runtime=None, sut_data_compiletime=None, sut_entry=None):
     # Check if config is in sut_data_runtime
