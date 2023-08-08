@@ -1,6 +1,13 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_experiment" ] ],
 
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "mlperf_log_parser_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [ [ "tools", "submission" ] ] ]
+    ]] ],
+
     "ranging_entry": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", [ "^^", "dig", "program_output.ranging_entry_name" ] ]
@@ -9,5 +16,33 @@
     "testing_entry": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", [ "^^", "dig", "program_output.testing_entry_name" ] ]
-    ]] ]
+    ]] ],
+
+    "contained_files": {
+        "power_server_json": [ "power_logs", "power", "server.json" ],
+        "power_client_json": [ "power_logs", "power", "client.json" ],
+        "testing_detail_log": [ "power_logs", "run_1", "mlperf_log_detail.txt" ],
+        "testing_power_sample_log": [ "power_logs", "run_1", "spl.txt" ],
+        "ranging_detail_log": [ "power_logs", "ranging", "mlperf_log_detail.txt" ],
+        "ranging_power_sample_log": [ "power_logs", "ranging", "spl.txt" ]
+    },
+
+    "server_timezone_sec": [ "^^", "execute", [[
+        [ "get_path_of", "power_server_json" ],
+        0,
+        [ "func", "ufun.load_json" ],
+        [ "__getitem__", "timezone" ]
+    ]] ],
+
+    "client_timezone_sec": [ "^^", "execute", [[
+        [ "get_path_of", "power_client_json" ],
+        0,
+        [ "func", "ufun.load_json" ],
+        [ "__getitem__", "timezone" ]
+    ]] ],
+
+    "run": "testing",
+
+    "detail_log_path": [ "^^", "get_path_of", [ "^^", "substitute", "#{run}#_detail_log" ] ],
+    "power_sample_log_path": [ "^^", "get_path_of", [ "^^", "substitute", "#{run}#_power_sample_log" ] ]
 }
