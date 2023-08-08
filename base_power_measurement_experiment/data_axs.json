@@ -44,5 +44,8 @@
     "run": "testing",
 
     "detail_log_path": [ "^^", "get_path_of", [ "^^", "substitute", "#{run}#_detail_log" ] ],
-    "power_sample_log_path": [ "^^", "get_path_of", [ "^^", "substitute", "#{run}#_power_sample_log" ] ]
+    "power_sample_log_path": [ "^^", "get_path_of", [ "^^", "substitute", "#{run}#_power_sample_log" ] ],
+
+    "summary": [ "^^", "dig", [ "^^", "substitute", "#{run}#_entry.summary" ] ],
+    "performance": [ "^^", "dig", [ "^^", "substitute", "#{run}#_entry.performance" ] ]
 }
