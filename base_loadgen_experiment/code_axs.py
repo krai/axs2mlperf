@@ -15,18 +15,22 @@ def parse_summary(abs_log_summary_path):
     return parsed_summary
 
 
-def parse_performance(summary):
+def parse_performance(summary, raw=False):
 
     if summary["Result_is"] == "INVALID":
-        return None
+        return None if raw else "INVALID"
+
     elif summary["Scenario"] == "Offline":
-        return summary["Samples_per_second"]
+        return summary["Samples_per_second"] if raw else f'{summary["Samples_per_second"]} (samples_per_second)'
+
     elif summary["Scenario"] == "SingleStream":
-        return summary["_Early_stopping_90th_percentile_estimate"]
+        return summary["_Early_stopping_90th_percentile_estimate"] if raw else f'{summary["_Early_stopping_90th_percentile_estimate"]/1e6:.3f} (milliseconds)'
+
     elif summary["Scenario"] == "MultiStream":
-        return summary["_Early_stopping_99th_percentile_estimate"]
+        return summary["_Early_stopping_99th_percentile_estimate"] if raw else f'{summary["_Early_stopping_99th_percentile_estimate"]/1e6:.3f} (milliseconds)'
+
     elif summary["Scenario"] == "Server":
-        return summary["Scheduled_samples_per_second"]
+        return summary["Scheduled_samples_per_second"] if raw else f'{summary["Scheduled_samples_per_second"]} (samples_per_second)'
 
 
 def unpack_accuracy_log(raw_accuracy_log):
