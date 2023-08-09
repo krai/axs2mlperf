@@ -209,8 +209,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
                 "weight_transformations": model_meta_data["weight_transformations"],
             }
         except KeyError as e:
-            print(f"Key {e} is missing from model_meta_data or the model")
-            return
+            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
 
         save_json(measurements_meta_data, measurements_meta_path, indent=4)
 
@@ -319,7 +318,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
             if result_verify == "":
                 shutil.rmtree(tmp_dir, ignore_errors=True)
             else:
-                return
+                raise RuntimeError(f"[get run_verify] failed to execute: {result_verify}")
+
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
 
@@ -333,7 +333,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
     if  result_trucation == 0:
         shutil.rmtree(log_backup_path, ignore_errors=True)
     else:
-        return
+        raise RuntimeError(f"[get run_truncation_script] failed to execute, and returned {result_trucation}")
+
     # -------------------------------[ systems ]--------------------------------------
     for sut_name in sut_descriptions_dictionary:
         sut_description = sut_descriptions_dictionary[sut_name]
