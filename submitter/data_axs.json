@@ -46,7 +46,7 @@
         [ "get", ["device", null] ]
     ]] ],
 
-    "experiment_entries": ["^^", "generate_experiment_entries" ],
+    "experiment_entries": ["^^", "list_experiment_entries", [], { "generate": true } ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 

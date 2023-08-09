@@ -25,7 +25,7 @@ def task_from_program_name(program_name):
         return "UNKNOWN"
 
 
-def generate_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, experiment_list_only=False, scenarios=None, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, program_name, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, generate=False, scenarios=None, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
 
     task = task_from_program_name(program_name)
 
@@ -89,13 +89,14 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
             joined_query = ','.join( list_query )
-            if experiment_list_only:
+            if generate:
+                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+            else:
                 print("Generated query = ", joined_query )
                 print("")
-            else:
-                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
 
     return experiment_entries
+
 
 def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
 
