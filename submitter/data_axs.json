@@ -1,14 +1,14 @@
 {
     "power": false,
 
-    "sut_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
-    "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
+    "sut_description_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
+    "sut_description_entry": [ "^", "byquery", [[ "^^", "get", "sut_description_query" ]], {}, ["sut_description_query"] ],
     "sut_description": [ "^^", "execute", [[
-        [ "get", "sut_entry" ],
+        [ "get", "sut_description_entry" ],
         [ "get", "data" ]
     ]] ],
     "sut_path": [ "^^", "execute", [[
-	    [ "get", "sut_entry" ],
+	    [ "get", "sut_description_entry" ],
 	    [ "get_path",[]]
     ]]],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
