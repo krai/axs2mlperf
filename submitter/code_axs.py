@@ -121,7 +121,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
     code_path           = make_local_dir( ['submitted_tree', division, submitter, 'code'] )
     systems_path        = make_local_dir( ['submitted_tree', division, submitter, 'systems'] )
 
-    sut_dictionary      = {}
+    sut_descriptions_dictionary      = {}
     dest_dir            = __record_entry__.get_path( "" )
     experiment_cmd_list = []
     readme_template_path = __entry__.get_path("README_template.md")
@@ -137,7 +137,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
-        sut_data        = experiment_entry.get('sut_data')
+        sut_description = experiment_entry.get('sut_description')
         loadgen_mode    = experiment_entry.get('loadgen_mode')
 
         with_power      = experiment_entry.get("with_power")
@@ -156,7 +156,7 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         mode = loadgen_mode.replace("Only", "")
 
-        sut_dictionary[sut_name] = sut_data
+        sut_descriptions_dictionary[sut_name] = sut_description
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
 
@@ -339,16 +339,16 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
     else:
         return
     # -------------------------------[ systems ]--------------------------------------
-    for sut_name in sut_dictionary:
-        sut_data = sut_dictionary[sut_name]
+    for sut_name in sut_descriptions_dictionary:
+        sut_description = sut_descriptions_dictionary[sut_name]
 
-        sut_data['division']    = division
-        sut_data['submitter']   = submitter
+        sut_description['division']    = division
+        sut_description['submitter']   = submitter
 
         sut_path = os.path.join( systems_path, sut_name+'.json' )
 
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
-        save_json(sut_data, sut_path, indent=4)
+        save_json(sut_description, sut_path, indent=4)
 
     return __record_entry__
 

@@ -19,9 +19,10 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "sut_query": [ "sut", [ "^^", "substitute", "sut_name=#{sut_name}#" ] ],
-
-    "sut_entry": [ "^", "byquery", [[ "^^", "get", "sut_query" ]], {}, ["sut_query"] ],
-
-    "sut_data":  [ "^^", "dig", "sut_entry.data" ]
+    "sut_description_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
+    "sut_description_entry": [ "^", "byquery", [[ "^^", "get", "sut_description_query" ]], {}, ["sut_description_query"] ],
+    "sut_description": [ "^^", "execute", [[
+        [ "get", "sut_description_entry" ],
+        [ "get", "data" ]
+    ]] ]
 }
