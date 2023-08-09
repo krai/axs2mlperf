@@ -42,15 +42,11 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
         "sut_name":             sut_name,
         "model_name":           model_name,
         "framework":            framework,
+        "loadgen_dataset_size": loadgen_dataset_size,
+        "loadgen_buffer_size":  loadgen_buffer_size,
     }
     if framework=="kilt":
         common_attributes["device"]     = device
-
-    if framework=="kilt" and task in ("image_classification", "object_detection"):
-        common_attributes["first_n"]    = loadgen_dataset_size
-    else:
-        common_attributes["loadgen_dataset_size"]   = loadgen_dataset_size
-        common_attributes["loadgen_buffer_size"]    = loadgen_buffer_size
 
     extra_common_attributes = extra_common_attributes or {}
     per_scenario_attributes = per_scenario_attributes or {}
