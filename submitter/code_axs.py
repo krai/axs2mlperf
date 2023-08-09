@@ -35,7 +35,7 @@ def generate_experiment_entries( power, sut_name, sut_system_type, program_name,
                 scenarios = ["Offline", "SingleStream", "MultiStream" ]
             else:
                 scenarios = ["Offline", "SingleStream" ]
-        elif sut_system_type == "datacenter":
+        elif sut_system_type in ("dc", "datacenter"):
             scenarios = ["Offline", "Server" ]
 
     common_attributes = {
@@ -344,6 +344,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         sut_description['division']    = division
         sut_description['submitter']   = submitter
+        if sut_description['system_type'] == 'dc':
+            sut_description['system_type'] = 'datacenter'
 
         sut_path = os.path.join( systems_path, sut_name+'.json' )
 
