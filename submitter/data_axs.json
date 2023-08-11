@@ -80,8 +80,8 @@
             "output_dir": [ "^^", "get", "output_dir" ]
         } ]
         ]]
-        ],
-        "run_truncation_script": [ "^^", "execute", [[
+    ],
+    "run_truncation_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
             "shell_cmd_with_subs": "\"#{tool_path}#\" #{log_truncation_script_path}# --input #{submitted_tree_path}# --submitter #{submitter}# --backup #{log_backup_path}#",
@@ -93,8 +93,8 @@
             "log_backup_path": [ "^^", "get", "log_backup_path" ]
             } ]
         ]]
-        ],
-        "run_checker_script": [ "^^", "execute", [[
+    ],
+    "run_checker_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
             "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --csv /dev/null",
@@ -104,5 +104,5 @@
             "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
             } ]
        ]]
-       ]
+   ]
 }
