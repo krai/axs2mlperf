@@ -5,6 +5,12 @@
 
     "performance": ["^^", "parse_performance"],
 
+    "accuracy": [ "^^", "execute", [[
+        [ "plant", ["accuracy", [ "^^", "get", "extract_accuracy" ]] ],
+        [ "save" ],
+        [ "get", "accuracy" ]
+    ]] ],
+
     "accuracy_log_file_name": "mlperf_log_accuracy.json",
     "raw_accuracy_log": [ "^^", "execute", [[
         [ "get_path_from", "accuracy_log_file_name" ],

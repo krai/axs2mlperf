@@ -1,7 +1,6 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
 
-
     "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
@@ -46,5 +45,5 @@
         [ "func", "float"]
     ]], {} ],
 
-    "accuracy": [ "^^", "get", "mAP" ]
+    "extract_accuracy": [ "^^", "get", "mAP" ]
 }

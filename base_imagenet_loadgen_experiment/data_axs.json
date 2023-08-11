@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "base_imagenet_experiment" ], [ "^", "byname", "base_loadgen_experiment" ] ],
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "base_imagenet_experiment" ] ],
 
     "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
 
@@ -23,7 +23,7 @@
             } ]
     ]], {} ],
 
-    "accuracy": [ "^^", "execute", [[
+    "extract_accuracy": [ "^^", "execute", [[
         [ "get", "accuracy_report" ],
         ["split", ","],
         [ "__getitem__", 0 ],

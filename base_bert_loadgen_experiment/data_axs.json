@@ -51,5 +51,5 @@
      ]], {} ],
     "f1": [ "^^" , "dig","accuracy_dict.f1" ],
     "exact_match": [ "^^" , "dig","accuracy_dict.exact_match" ],
-    "accuracy": [ "^^" , "get","f1" ]
+    "extract_accuracy": [ "^^" , "get", "f1" ]
 }
