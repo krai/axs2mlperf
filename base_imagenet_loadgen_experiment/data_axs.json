@@ -12,7 +12,7 @@
         [ "get_path_of", "classification_accuracy_script" ]
     ]] ],
 
-    "accuracy_report": [ "^^", "execute", [[
+    "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
@@ -23,7 +23,7 @@
             } ]
     ]], {} ],
 
-    "extract_accuracy": [ "^^", "execute", [[
+    "accuracy": [ "^^", "execute", [[
         [ "get", "accuracy_report" ],
         ["split", ","],
         [ "__getitem__", 0 ],

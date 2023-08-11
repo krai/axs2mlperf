@@ -21,7 +21,7 @@
 
     "detections_path": ["^^", "get_path", "detections.json"],
 
-    "accuracy_report": [ "^^", "execute", [[
+    "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
@@ -45,5 +45,5 @@
         [ "func", "float"]
     ]], {} ],
 
-    "extract_accuracy": [ "^^", "get", "mAP" ]
+    "accuracy": [ "^^", "get", "mAP" ]
 }

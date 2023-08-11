@@ -28,7 +28,7 @@
     "model_query": [ "^^", "substitute", "downloaded,#{framework}#_model,model_name=#{model_name}#" ],
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
-    "accuracy_report": [ "^^", "execute", [[
+    "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
@@ -51,5 +51,5 @@
      ]], {} ],
     "f1": [ "^^" , "dig","accuracy_dict.f1" ],
     "exact_match": [ "^^" , "dig","accuracy_dict.exact_match" ],
-    "extract_accuracy": [ "^^" , "get", "f1" ]
+    "accuracy": [ "^^" , "get", "f1" ]
 }

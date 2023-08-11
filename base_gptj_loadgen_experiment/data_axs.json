@@ -15,7 +15,7 @@
         [ "get_path" ]
     ]] ],
 
-    "accuracy_report": [ "^^", "execute", [[
+    "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
