@@ -20,6 +20,7 @@
 
     "model_name2dataset_size": {
         "resnet50": 50000,
+        "retinanet": 24781,
         "retinanet_openimages": 24781,
         "retinanet_coco": 5000,
         "bert-99": 10833,
@@ -27,6 +28,7 @@
     },
     "model_name2buffer_size": {
         "resnet50": 1024,
+        "retinanet": 64,
         "retinanet_openimages": 64,
         "retinanet_coco": 64,
         "bert-99": 10833,

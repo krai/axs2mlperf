@@ -31,7 +31,7 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, div
 
     if not scenarios:
         if sut_system_type == "edge":
-            if model_name in ("resnet50", "retinanet_openimages"):
+            if task in ("image_classification", "object_detection"):
                 scenarios = ["Offline", "SingleStream", "MultiStream" ]
             else:
                 scenarios = ["Offline", "SingleStream" ]
