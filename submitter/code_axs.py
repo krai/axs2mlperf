@@ -286,17 +286,24 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
                 results_path_syll.remove(elem)
 
         if mode=='accuracy' or compliance_test_name == "TEST01":
-            accuracy_content    = str(experiment_entry["accuracy_report"])
+            accuracy_content    = experiment_entry["accuracy_report"]
+            if type(accuracy_content)==list:
+                accuracy_content    = "\n".join( accuracy_content )
+            elif type(accuracy_content)!=str:
+                accuracy_content    = str( accuracy_content )
 
             if mode == 'accuracy':
                 dst_file_path       = os.path.join(results_path, "accuracy.txt")
             elif compliance_test_name == "TEST01":
                 dst_file_path       = os.path.join(results_path_TEST01_acc, "accuracy.txt")
 
-            print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
             with open(dst_file_path, "w") as fd:
                 if mode=='accuracy':
-                    fd.write(accuracy_content + "\n")
+                    print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
+                    fd.write(accuracy_content)
+                    fd.write("\n")
+                else:
+                    print(f"    Creating empty file -->  {dst_file_path}", file=sys.stderr)
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
