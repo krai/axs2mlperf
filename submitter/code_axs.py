@@ -89,10 +89,15 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, div
                 [ f"{k}={scenario_attributes[k]}" for k in scenario_attributes ]   )
 
             joined_query = ','.join( list_query )
+
+            candidate_entry = __entry__.get_kernel().byquery(joined_query, generate)
+
             if generate:
-                experiment_entries.append(__entry__.get_kernel().byquery(joined_query, True))
+                experiment_entries.append( candidate_entry )
             else:
-                print("Generated query = ", joined_query )
+                presence_msg = "Present" if candidate_entry else "Missing"
+
+                print(f"[{presence_msg}]\t\taxs byquery {joined_query}")
                 print("")
 
     return experiment_entries
