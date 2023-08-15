@@ -113,7 +113,8 @@
         [ "attach", [ "^", "work_collection" ] ],
         [ "plant", [
             "tags", [ "laid_out_submission" ]
-          ] ]
+          ] ],
+        [ "save" ]
     ]] ],
     "submitted_tree_path": [ "^^", "execute", [[
         [ "get", "submission_entry" ],

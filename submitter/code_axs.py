@@ -103,7 +103,9 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, div
     return experiment_entries
 
 
-def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, submission_entry=None, __entry__=None):
+
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
     def make_local_dir( path_list ):
 
@@ -357,6 +359,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
 
+    return submission_entry.save()
+
 
 def run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__):
 
@@ -371,7 +375,9 @@ def run_checker(submission_checker_path, submitted_tree_path, submitter, divisio
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, model_meta_data=None, submission_entry=None, __entry__=None):
+
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
     if not os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
