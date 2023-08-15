@@ -379,11 +379,11 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
-    if not os.path.exists(submitted_tree_path):
+    if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data, submitted_tree_path, __entry__)
+        lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
