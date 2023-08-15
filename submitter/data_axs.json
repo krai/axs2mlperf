@@ -104,5 +104,19 @@
             "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
             } ]
        ]]
-   ]
+    ],
+
+    "submission_entry_name": [ "^^", "substitute", "laid_out_submission_#{division}#_#{program_name}#_on_#{sut_name}#" ],
+    "submission_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "set_path", [ "^^", "get", "submission_entry_name" ] ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "plant", [
+            "tags", [ "laid_out_submission" ]
+          ] ]
+    ]] ],
+    "submitted_tree_path": [ "^^", "execute", [[
+        [ "get", "submission_entry" ],
+        [ "get_path", "submitted_tree" ]
+    ]] ]
 }

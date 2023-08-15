@@ -42,8 +42,8 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, div
         "sut_name":             sut_name,
         "model_name":           model_name,
         "framework":            framework,
-        "loadgen_dataset_size": loadgen_dataset_size,
-        "loadgen_buffer_size":  loadgen_buffer_size,
+#        "loadgen_dataset_size": loadgen_dataset_size,
+#        "loadgen_buffer_size":  loadgen_buffer_size,
     }
     if framework=="kilt":
         common_attributes["device"]     = device
@@ -103,28 +103,23 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, div
     return experiment_entries
 
 
-def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None,  __entry__=None, __record_entry__=None):
+def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data=None, submitted_tree_path=None, __entry__=None):
 
     def make_local_dir( path_list ):
 
-        joined_path  = __record_entry__.get_path( path_list )
+        joined_path  = os.path.join( submitted_tree_path, *path_list )
         print(f"Creating directory: {joined_path}", file=sys.stderr)
         try:
             os.makedirs( joined_path )
         except:
             pass
         return joined_path
-    __record_entry__["tags"] = ["laid_out_submission"]
-    __record_entry__.save( record_entry_name )
 
-    submitted_tree_path = make_local_dir('submitted_tree')
-
-    submitter_path      = make_local_dir( ['submitted_tree', division, submitter ] )
-    code_path           = make_local_dir( ['submitted_tree', division, submitter, 'code'] )
-    systems_path        = make_local_dir( ['submitted_tree', division, submitter, 'systems'] )
+    submitter_path      = make_local_dir( [ division, submitter ] )
+    code_path           = make_local_dir( [ division, submitter, 'code'] )
+    systems_path        = make_local_dir( [ division, submitter, 'systems'] )
 
     sut_descriptions_dictionary      = {}
-    dest_dir            = __record_entry__.get_path( "" )
     experiment_cmd_list = []
     readme_template_path = __entry__.get_path("README_template.md")
 
@@ -181,8 +176,8 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         path_readme = os.path.join(code_model_program_path, "README.md")
 
         # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( ['submitted_tree', division, submitter, 'measurements', sut_name ] )
-        measurement_path = make_local_dir( ['submitted_tree', division, submitter, 'measurements', sut_name, display_model_name, scenario] )
+        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, display_model_name, scenario] )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path):
@@ -241,11 +236,11 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         }[ experiment_entry['loadgen_mode'] ]
 
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
-            results_path_syll   = ['submitted_tree', division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+            results_path_syll   = [ division, submitter, 'results', sut_name, display_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-            results_path_syll = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
-                results_path_syll_TEST01_acc = ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -312,11 +307,11 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( ['submitted_tree', division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
             results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
@@ -362,7 +357,6 @@ def lay_out(experiment_entries, division, submitter, sut_path, record_entry_name
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
 
-    return __record_entry__
 
 def run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__):
 
@@ -377,18 +371,14 @@ def run_checker(submission_checker_path, submitted_tree_path, submitter, divisio
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, model_meta_data=None, __entry__=None, __record_entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, model_meta_data=None, submitted_tree_path=None, __entry__=None):
 
-    __record_entry__["tags"] = ["laid_out_submission"]
-    __record_entry__.save( record_entry_name )
-    submitted_tree_path  = __record_entry__.get_path( ['submitted_tree'] )
-
-    if os.path.exists(submitted_tree_path):
-        print("Run checker...")
-        run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
+    if not os.path.exists(submitted_tree_path):
+        print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
-        print("Run lay_out...")
-        lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data,  __entry__, __record_entry__)
-        print("Run checker...")
-        run_checker(submission_checker_path, submitted_tree_path, submitter, division, __entry__)
+        print("Run lay_out in {submitted_tree_path} ...")
+        lay_out(experiment_entries, division, submitter, sut_path, record_entry_name, log_truncation_script_path, submission_checker_path, compliance_path, model_name_dict, model_meta_data, submitted_tree_path, __entry__)
+
+    print("Run checker...")
+    run_checker(submission_checker_path, submitted_tree_path,  submitter, division, __entry__)
 
