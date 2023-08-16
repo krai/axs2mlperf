@@ -68,19 +68,25 @@
 
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
     "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],
+
     "run_verify": [ "^^", "execute", [[
-        [ "get", "python_tool_entry" ],
+        [ "get_kernel" ],
+        [ "byname", "python_script" ],
         [ "run", [], {
-            "shell_cmd_with_subs": "\"#{tool_path}#\" #{verify_script_path}# --results_dir #{results_dir}# --compliance_dir #{compliance_dir}# --output_dir #{output_dir}#",
+            "desired_python_version": [ "^^", "get", "desired_python_version" ],
+            "python_deps": [
+                [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy" ]
+            ],
+            "abs_script_path": ["^^", "get", "verify_script_path"],
+            "script_extra_params": [ "^^", "substitute", "--results_dir \"#{results_dir}#\" --compliance_dir \"#{compliance_dir}#\" --output_dir \"#{output_dir}#\" " ],
             "capture_output": false,
             "capture_stderr": true,
-            "verify_script_path": [ "^^", "get", "verify_script_path" ],
             "results_dir": [ "^^", "get", "results_dir" ],
             "compliance_dir": [ "^^", "get", "compliance_dir" ],
             "output_dir": [ "^^", "get", "output_dir" ]
         } ]
-        ]]
-    ],
+    ]] ],
+
     "run_truncation_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
