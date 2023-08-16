@@ -12,6 +12,8 @@
 	    [ "get_path",[]]
     ]]],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
+    "task": [ "^^", "task_from_program_name" ],
+    "scenarios": [ "^^", "scenarios_from_sut_type_and_task" ],
 
     "division": "open",
     "submitter": "Krai",
