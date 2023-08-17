@@ -148,7 +148,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
-            experiment_entry, target_scenario = experiment_entry    # unpacking a pair
+            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
         else:
             target_scenario = experiment_entry['loadgen_scenario']
 
@@ -334,28 +334,28 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 else:
                     print(f"    Creating empty file -->  {dst_file_path}", file=sys.stderr)
 
-            # -------------------------------[ compliance , verification ]--------------------------------------
-            if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-                compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
+        # -------------------------------[ compliance , verification ]--------------------------------------
+        if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
 
-                ("Verification for ", compliance_test_name)
+            ("Verification for ", compliance_test_name)
 
-                tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
-                results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
-                compliance_dir = src_dir
-                output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
-                verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
-                result_verify =  __entry__.call('get', 'run_verify', {
-                        "in_dir": tmp_dir,
-                        "verify_script_path": verify_script_path,
-                        "results_dir": results_dir,
-                        "compliance_dir": compliance_dir,
-                        "output_dir": output_dir
-                            } )
-                if result_verify == "":
-                    shutil.rmtree(tmp_dir, ignore_errors=True)
-                else:
-                    raise RuntimeError(f"[get run_verify] failed to execute: {result_verify}")
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
+            results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
+            compliance_dir = src_dir
+            output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
+            verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
+            result_verify =  __entry__.call('get', 'run_verify', {
+                    "in_dir": tmp_dir,
+                    "verify_script_path": verify_script_path,
+                    "results_dir": results_dir,
+                    "compliance_dir": compliance_dir,
+                    "output_dir": output_dir
+                        } )
+            if result_verify == "":
+                shutil.rmtree(tmp_dir, ignore_errors=True)
+            else:
+                raise RuntimeError(f"[get run_verify] failed to execute: {result_verify}")
 
     print(f"Truncating logs in:  {src_dir}", file=sys.stderr)
     log_backup_path     = os.path.join(submitted_tree_path, "accuracy_log.bak")
