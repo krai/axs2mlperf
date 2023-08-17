@@ -95,14 +95,19 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, tas
             candidate_entry = __entry__.get_kernel().byquery(joined_query, False)
             inferrable_case = infer_from_ss and sc!="SingleStream"
 
-            if generate and not inferrable_case:
-                if candidate_entry:
-                    print(f"Entry {joined_query} was already PRESENT, adding it to the list\n")
-                if not candidate_entry:
-                    print(f"Entry {joined_query} was MISSING and not inferrable, generating it now\n")
-                    candidate_entry = candidate_entry or __entry__.get_kernel().byquery(joined_query, True)    # now generating for real
+            if generate:
+                if inferrable_case and not candidate_entry:
+                    print(f"Entry {joined_query} is missing, but INFERRABLE, adding it as a mapping\n")
+                    ss_entry = __entry__.get_kernel().byquery(joined_query.replace(f"loadgen_scenario={sc}","loadgen_scenario=SingleStream"), True)
+                    experiment_entries.append( [ss_entry, sc] )
+                else:
+                    if candidate_entry:
+                        print(f"Entry {joined_query} was already PRESENT, adding it to the list\n")
+                    else:
+                        print(f"Entry {joined_query} was MISSING and not inferrable, generating it now\n")
+                        candidate_entry = candidate_entry or __entry__.get_kernel().byquery(joined_query, True)    # now generating for real
 
-                experiment_entries.append( candidate_entry )
+                    experiment_entries.append( candidate_entry )
 
             else:
                 if candidate_entry:
@@ -141,6 +146,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     readme_template_path = __entry__.get_path("README_template.md")
 
     for experiment_entry in experiment_entries:
+
+        if type(experiment_entry)==list:
+            experiment_entry, target_scenario = experiment_entry    # unpacking a pair
+        else:
+            target_scenario = experiment_entry['loadgen_scenario']
+
+        scenario = target_scenario.lower()
+
         experiment_parameters = []
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
@@ -191,140 +204,135 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
         path_readme = os.path.join(code_model_program_path, "README.md")
 
-        experiment_scenario = experiment_entry['loadgen_scenario'].lower()
-        target_scenarios = scenarios if infer_from_ss else [ experiment_scenario ]
+        # ----------------------------[ measurements ]------------------------------------
+        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, display_model_name, scenario] )
 
-        for scenario in target_scenarios:
+        path_model_readme = os.path.join(measurement_path, "README.md")
+        if os.path.exists(readme_template_path):
+            with open(readme_template_path, "r") as input_fd:
+                template = input_fd.read()
+            with open(path_model_readme, "w") as output_fd:
+                output_fd.write( template.format(benchmark=display_benchmark, framework=framework ) )
 
-            # ----------------------------[ measurements ]------------------------------------
-            measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
-            measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, display_model_name, scenario] )
+        with open(path_model_readme, "a") as fd:
+            fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+        print("")
+        for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
 
-            path_model_readme = os.path.join(measurement_path, "README.md")
-            if os.path.exists(readme_template_path):
-                with open(readme_template_path, "r") as input_fd:
-                    template = input_fd.read()
-                with open(path_model_readme, "w") as output_fd:
-                    output_fd.write( template.format(benchmark=display_benchmark, framework=framework ) )
+            filename = os.path.basename( src_file_path )
+            dst_file_path = os.path.join(measurement_path, filename)
+            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+            shutil.copy( src_file_path, dst_file_path)
 
-            with open(path_model_readme, "a") as fd:
-                fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-            print("")
-            for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
+        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
 
-                filename = os.path.basename( src_file_path )
-                dst_file_path = os.path.join(measurement_path, filename)
+        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
+        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
+
+        try:
+            measurements_meta_data  = {
+                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
+                "input_data_types": model_meta_data["input_data_types"],
+                "weight_data_types": model_meta_data["weight_data_types"],
+                "starting_weights_filename": model_meta_data["url"],
+                "weight_transformations": model_meta_data["weight_transformations"],
+            }
+        except KeyError as e:
+            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
+
+        save_json(measurements_meta_data, measurements_meta_path, indent=4)
+
+        experiment_entry.parent_objects = None
+
+        if with_power:
+            analyzer_table_file = "analyzer_table.md"
+            power_settings_file = "power_settings.md"
+
+            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
+            analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
+            power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
+
+            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
+                shutil.copy2(sut_power_settings_path, power_settings_file_path)
+        # --------------------------------[ results ]--------------------------------------
+        mode        = {
+            'AccuracyOnly': 'accuracy',
+            'PerformanceOnly': 'performance',
+        }[ experiment_entry['loadgen_mode'] ]
+
+        if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
+            results_path_syll   = [ division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+        elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
+            results_path_syll = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
+            if compliance_test_name == "TEST01":
+                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
+
+        files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
+
+        if mode=='accuracy' or compliance_test_name == "TEST01":
+            files_to_copy.append( 'mlperf_log_accuracy.json' )
+        if mode=='performance' and not compliance_test_name:
+            if not with_power:
+                results_path_syll.append( 'run_1' )
+
+        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
+            results_path_syll.extend(( mode, 'run_1' ))
+
+        results_path        = make_local_dir( results_path_syll )
+
+        for filename in files_to_copy:
+            src_file_path = os.path.join(src_dir, filename)
+
+            if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
+                dst_file_path = os.path.join(results_path_TEST01_acc, filename)
+            else:
+                dst_file_path = os.path.join(results_path, filename)
+
+            if not with_power:
                 print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
                 shutil.copy( src_file_path, dst_file_path)
 
-            measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
+        if with_power and mode=='performance' and not compliance_test_name:
+             power_src_dir = power_experiment_entry.get_path("power_logs")
+             dir_list = ['power', 'ranging', 'run_1']
 
-            # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
-            model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
+             for elem in dir_list:
+                results_path_syll.append( elem )
+                src_file_path = power_src_dir + "/" + elem + "/"
 
-            try:
-                measurements_meta_data  = {
-                    "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
-                    "input_data_types": model_meta_data["input_data_types"],
-                    "weight_data_types": model_meta_data["weight_data_types"],
-                    "starting_weights_filename": model_meta_data["url"],
-                    "weight_transformations": model_meta_data["weight_transformations"],
-                }
-            except KeyError as e:
-                raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
+                results_path        = make_local_dir( results_path_syll )
 
-            save_json(measurements_meta_data, measurements_meta_path, indent=4)
+                for file_name in os.listdir(src_file_path):
+                    if file_name != "ptd_out.txt":
+                        src_file_path_file = src_file_path + file_name
+                        results_path_file = results_path + "/" + file_name
+                        shutil.copy(src_file_path_file, results_path_file)
+                results_path_syll.remove(elem)
 
-            experiment_entry.parent_objects = None
+        if mode=='accuracy' or compliance_test_name == "TEST01":
+            accuracy_content    = experiment_entry["accuracy_report"]
+            if type(accuracy_content)==list:
+                accuracy_content    = "\n".join( accuracy_content )
+            elif type(accuracy_content)!=str:
+                accuracy_content    = str( accuracy_content )
 
-            if with_power:
-                analyzer_table_file = "analyzer_table.md"
-                power_settings_file = "power_settings.md"
+            if mode == 'accuracy':
+                dst_file_path       = os.path.join(results_path, "accuracy.txt")
+            elif compliance_test_name == "TEST01":
+                dst_file_path       = os.path.join(results_path_TEST01_acc, "accuracy.txt")
 
-                sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
-                sut_power_settings_path = os.path.join(sut_path, power_settings_file)
-
-                analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
-                power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
-
-                if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
-                    shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
-                    shutil.copy2(sut_power_settings_path, power_settings_file_path)
-            # --------------------------------[ results ]--------------------------------------
-            mode        = {
-                'AccuracyOnly': 'accuracy',
-                'PerformanceOnly': 'performance',
-            }[ experiment_entry['loadgen_mode'] ]
-
-            if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
-                results_path_syll   = [ division, submitter, 'results', sut_name, display_model_name, scenario, mode]
-            elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-                results_path_syll = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
-                if compliance_test_name == "TEST01":
-                    results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
-                    results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
-
-            files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
-
-            if mode=='accuracy' or compliance_test_name == "TEST01":
-                files_to_copy.append( 'mlperf_log_accuracy.json' )
-            if mode=='performance' and not compliance_test_name:
-                if not with_power:
-                    results_path_syll.append( 'run_1' )
-
-            if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-                results_path_syll.extend(( mode, 'run_1' ))
-
-            results_path        = make_local_dir( results_path_syll )
-
-            for filename in files_to_copy:
-                src_file_path = os.path.join(src_dir, filename)
-
-                if (compliance_test_name == "TEST01" and filename == 'mlperf_log_accuracy.json'):
-                    dst_file_path = os.path.join(results_path_TEST01_acc, filename)
+            with open(dst_file_path, "w") as fd:
+                if mode=='accuracy':
+                    print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
+                    fd.write(accuracy_content)
+                    fd.write("\n")
                 else:
-                    dst_file_path = os.path.join(results_path, filename)
-
-                if not with_power:
-                    print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
-                    shutil.copy( src_file_path, dst_file_path)
-
-            if with_power and mode=='performance' and not compliance_test_name:
-                 power_src_dir = power_experiment_entry.get_path("power_logs")
-                 dir_list = ['power', 'ranging', 'run_1']
-
-                 for elem in dir_list:
-                    results_path_syll.append( elem )
-                    src_file_path = power_src_dir + "/" + elem + "/"
-
-                    results_path        = make_local_dir( results_path_syll )
-
-                    for file_name in os.listdir(src_file_path):
-                        if file_name != "ptd_out.txt":
-                            src_file_path_file = src_file_path + file_name
-                            results_path_file = results_path + "/" + file_name
-                            shutil.copy(src_file_path_file, results_path_file)
-                    results_path_syll.remove(elem)
-
-            if mode=='accuracy' or compliance_test_name == "TEST01":
-                accuracy_content    = experiment_entry["accuracy_report"]
-                if type(accuracy_content)==list:
-                    accuracy_content    = "\n".join( accuracy_content )
-                elif type(accuracy_content)!=str:
-                    accuracy_content    = str( accuracy_content )
-
-                if mode == 'accuracy':
-                    dst_file_path       = os.path.join(results_path, "accuracy.txt")
-                elif compliance_test_name == "TEST01":
-                    dst_file_path       = os.path.join(results_path_TEST01_acc, "accuracy.txt")
-
-                with open(dst_file_path, "w") as fd:
-                    if mode=='accuracy':
-                        print(f"    Storing accuracy -->  {dst_file_path}", file=sys.stderr)
-                        fd.write(accuracy_content)
-                        fd.write("\n")
-                    else:
-                        print(f"    Creating empty file -->  {dst_file_path}", file=sys.stderr)
+                    print(f"    Creating empty file -->  {dst_file_path}", file=sys.stderr)
 
             # -------------------------------[ compliance , verification ]--------------------------------------
             if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
