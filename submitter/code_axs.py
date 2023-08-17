@@ -9,7 +9,7 @@ def get_mlperf_model_name(model_name_dict, model_name):
     if model_name in model_name_dict.keys():
         return model_name_dict[model_name]
     else:
-        return None
+        return model_name
 
 def task_from_program_name(program_name):
 
@@ -188,11 +188,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
 
         model_name  = experiment_entry['model_name']
-        mlperf_model_name = get_mlperf_model_name(model_name_dict, model_name)
-        if mlperf_model_name:
-            display_model_name = mlperf_model_name
-        else:
-            display_model_name  = model_name
+        display_model_name = get_mlperf_model_name(model_name_dict, model_name)
 
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, display_model_name , modified_program_name ] )
