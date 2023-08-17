@@ -15,22 +15,21 @@ def parse_summary(abs_log_summary_path):
     return parsed_summary
 
 
-def parse_performance(summary, raw=False):
+def parse_performance(summary, scenario_performance_map, raw=False):
 
-    if summary["Result_is"] == "INVALID":
-        return None if raw else "INVALID"
+    scenario = summary["Scenario"]
+    validity = summary["Result_is"]
 
-    elif summary["Scenario"] == "Offline":
-        return summary["Samples_per_second"] if raw else f'{summary["Samples_per_second"]} (samples_per_second)'
+    if raw and validity == "INVALID":
+        return None
 
-    elif summary["Scenario"] == "SingleStream":
-        return summary["_Early_stopping_90th_percentile_estimate"] if raw else f'{summary["_Early_stopping_90th_percentile_estimate"]/1e6:.3f} (milliseconds)'
-
-    elif summary["Scenario"] == "MultiStream":
-        return summary["_Early_stopping_99th_percentile_estimate"] if raw else f'{summary["_Early_stopping_99th_percentile_estimate"]/1e6:.3f} (milliseconds)'
-
-    elif summary["Scenario"] == "Server":
-        return summary["Scheduled_samples_per_second"] if raw else f'{summary["Scheduled_samples_per_second"]} (samples_per_second)'
+    key_name, multiplier, formatting, units = scenario_performance_map[scenario][validity]
+    if raw:
+        return summary[key_name]
+    else:
+        formatted_value = ('{:'+formatting+'}').format(summary[key_name]*multiplier)
+        display_key_name = key_name.replace('_ns', '')
+        return '{} : {}={}{}'.format(validity, display_key_name, formatted_value, units)
 
 
 def unpack_accuracy_log(raw_accuracy_log):
