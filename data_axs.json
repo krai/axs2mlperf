@@ -1,14 +1,6 @@
 {
     "_parent_entries": [
-        [
-            "^",
-            "core_collection"
-        ],
-        [
-            "^",
-            "byname",
-            "git"
-        ]
+        [ "^", "core_collection" ]
     ],
     "tags": [
         "git_repo",
@@ -41,6 +33,5 @@
         "base_power_measurement_experiment": "base_power_measurement_experiment"
     },
     "repo_name": "axs2mlperf",
-    "checkout": "master",
     "submodules": false
 }
