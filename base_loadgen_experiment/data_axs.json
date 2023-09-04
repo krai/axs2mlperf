@@ -49,5 +49,10 @@
     "sut_description": [ "^^", "execute", [[
         [ "get", "sut_description_entry" ],
         [ "get", "data" ]
+    ]] ],
+    "internal_to_mlperf_model_name": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
+    "mlperf_model_name": [ "^^", "execute", [[
+            [ "get", "internal_to_mlperf_model_name" ],
+            [ "get", [ [ "^^", "get", "model_name" ], [ "^^", "get", "model_name" ] ] ]
     ]] ]
 }

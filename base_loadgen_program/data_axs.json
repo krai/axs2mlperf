@@ -91,7 +91,16 @@
     "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
         [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
     ]],
-    "model_name_compliance_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert", "bert_99_9": "bert", "bert_99": "bert"},
+    "internal_to_mlperf_model_name": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
+    "mlperf_model_name": [ "^^", "execute", [[
+	    [ "get", "internal_to_mlperf_model_name" ],
+	    [ "get", [ [ "^^", "get", "model_name" ], [ "^^", "get", "model_name" ] ] ]
+    ]] ],
+    "full_to_shortened_mlperf_model_name": { "bert-99.9": "bert", "bert-99": "bert" },
+    "shortened_mlperf_model_name": [ "^^", "execute", [[
+	    [ "get", "full_to_shortened_mlperf_model_name" ],
+	    [ "get", [ [ "^^", "get", "mlperf_model_name" ], [ "^^", "get", "mlperf_model_name" ] ] ]
+    ]] ],
 
     "symlink_to": null,
     "postprocess_on_success": [ "^^", "link_to_power_client_entry" ],

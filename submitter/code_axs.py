@@ -5,12 +5,6 @@ import shutil
 import sys
 from ufun import save_json
 
-def get_mlperf_model_name(model_name_dict, model_name):
-    if model_name in model_name_dict.keys():
-        return model_name_dict[model_name]
-    else:
-        return model_name
-
 def task_from_program_name(program_name):
 
     if program_name.startswith("image_classification_") or program_name.startswith("resnet50_"):
@@ -123,7 +117,7 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, tas
     return experiment_entries
 
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -188,10 +182,10 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
 
         model_name  = experiment_entry['model_name']
-        display_model_name = get_mlperf_model_name(model_name_dict, model_name)
+        mlperf_model_name = experiment_entry['mlperf_model_name']
 
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
-        code_model_program_path = make_local_dir( [code_path, display_model_name , modified_program_name ] )
+        code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ] )
 
         if os.path.exists(readme_path):
             print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
@@ -202,7 +196,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         # ----------------------------[ measurements ]------------------------------------
         measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, display_model_name, scenario] )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario] )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path):
@@ -261,11 +255,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         }[ experiment_entry['loadgen_mode'] ]
 
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
-            results_path_syll   = [ division, submitter, 'results', sut_name, display_model_name, scenario, mode]
+            results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-            results_path_syll = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
-                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , display_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -332,14 +326,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, compliance_test_name ] )
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ] )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , display_model_name, scenario, 'tmp' ] )
-            results_dir = os.path.join(submitter_path , 'results', sut_name, display_model_name, scenario)
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ] )
+            results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , display_model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             result_verify =  __entry__.call('get', 'run_verify', {
                     "in_dir": tmp_dir,
@@ -398,7 +392,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -406,7 +400,7 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, model_name_dict, scenarios, infer_from_ss, model_meta_data, submission_entry, __entry__)
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)

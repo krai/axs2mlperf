@@ -18,7 +18,6 @@
     "division": "open",
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
-    "model_name_dict": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
 
     "model_name2dataset_size": {
         "resnet50": 50000,

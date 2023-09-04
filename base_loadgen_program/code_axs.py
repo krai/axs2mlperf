@@ -3,17 +3,8 @@ from shutil import copy2
 from ufun import load_json, save_json
 
 
-def get_mlperf_model_name(model_name_compliance_dict, model_name):
-    if model_name in model_name_compliance_dict.keys():
-        print("DEBUG: model_name_dict[model_name] = ", model_name_compliance_dict[model_name])
-        return model_name_compliance_dict[model_name]
-    else:
-        return None
+def generate_user_conf(loadgen_param_dictionary, shortened_mlperf_model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config):
 
-
-def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
-    if model_name in [ "bert-99", "bert-99.9"]:
-        model_name = "bert"
     param_to_conf_pair = {
         "loadgen_count_override_min":   ("min_query_count", 1),
         "loadgen_count_override_max":   ("max_query_count", 1),
@@ -35,28 +26,24 @@ def generate_user_conf(loadgen_param_dictionary, model_name, loadgen_scenario, t
             if orig_value is not None:
                 (config_category_name, multiplier) = param_to_conf_pair[param_name]
                 new_value = orig_value if multiplier==1 else float(orig_value)*multiplier
-                user_conf.append("{}.{}.{} = {}\n".format(model_name, loadgen_scenario, config_category_name, new_value))
+                user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
 
     with open(target_user_conf_path, 'w') as user_conf_file:
          user_conf_file.writelines(user_conf)
 
     if loadgen_compliance_test:
-        target_audit_conf_path = generate_audit_conf( model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict)
+        target_audit_conf_path = generate_audit_conf( shortened_mlperf_model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config )
 
     return target_user_conf_path
 
 
-def generate_audit_conf( model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config, model_name_compliance_dict):
+def generate_audit_conf( shortened_mlperf_model_name, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config ):
 
     # Copy 'audit.config' for compliance testing into the current directory.
-    mlperf_model_name = get_mlperf_model_name(model_name_compliance_dict, model_name)
-    if mlperf_model_name is not None:
-        model_name = mlperf_model_name
-
     path_parts = [ submission_compliance_tests_dir, loadgen_compliance_test ]
 
     if loadgen_compliance_test in [ 'TEST01' ]:
-        path_parts.append(model_name)
+        path_parts.append(shortened_mlperf_model_name)
 
     path_parts.append(compliance_test_config)
     compliance_test_config_source_path = os.path.join(*path_parts)
