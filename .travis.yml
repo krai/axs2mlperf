@@ -27,23 +27,25 @@ matrix:
     - language: python
       python: 3.8
       env:
+        - ONNX_DETECTION_SSD_COCO=on
         - PYTHON_EXE=python
 
     - language: python
       python: 3.9
       env:
-        - ONNX_DETECTION=on
+        - ONNX_DETECTION_RETINANET_OPENIMAGES=on
         - PYTHON_EXE=python
 
     - language: python
       python: 3.6
       env:
-        - ONNX_DETECTION=on
+        - ONNX_DETECTION_RETINANET_OPENIMAGES=on
         - PYTHON_EXE=python
 
     - language: python
       python: 3.7
       env:
+        - ONNX_DETECTION_SSD_COCO=on
         - PYTHON_EXE=python
       before-install:
         - ${PYTHON_EXE} -m pip install --ignore-installed --verbose pip setuptools importlib-metadata
