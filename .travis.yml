@@ -27,18 +27,21 @@ matrix:
     - language: python
       python: 3.8
       env:
+        - TORCH_CLASSIFY=on
         - ONNX_DETECTION_RETINANET_OPENIMAGES=on
         - PYTHON_EXE=python
 
     - language: python
       python: 3.9
       env:
+        - TORCH_CLASSIFY=on
         - ONNX_BERT_SQUAD=on
         - PYTHON_EXE=python
 
     - language: python
       python: 3.6
       env:
+        - TORCH_CLASSIFY=on
         - ONNX_DETECTION_SSD_COCO=on
         - PYTHON_EXE=python
 
