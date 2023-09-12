@@ -72,6 +72,7 @@ if [ "$ONNX_CLASSIFY" == "on" ] || [ "$TORCH_CLASSIFY" == "on" ] ; then
 fi
 
 if [ "$ONNX_BERT_SQUAD" == "on" ]; then
+    axs byquery tokenized,squad_v1_1
     axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,execution_device=cpu
     export ACCURACY_OUTPUT=`axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,execution_device=cpu , get accuracy_dict`
     echo "Accuracy: $ACCURACY_OUTPUT"
