@@ -61,20 +61,11 @@
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_imagenet_loadgen_experiment" ] ],
     "output_entry_tags": [ "loadgen_output", "classified_imagenet" ],
     "output_entry_param_names": [
-        "loadgen_scenario",
-        "loadgen_mode",
-        "loadgen_dataset_size",
-        "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
 
-        "framework",
-        "sut_name",
-        "program_name",
         "verbosity",
 
-        "model_name",
-        "model_path",
         "normalize_symmetric",
         "subtract_mean_bool",
         "given_channel_means",

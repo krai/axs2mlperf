@@ -66,21 +66,12 @@
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
     "output_entry_tags": [ "loadgen_output", "bert_squad" ],
     "output_entry_param_names": [
-        "loadgen_scenario",
-        "loadgen_mode",
-        "loadgen_dataset_size",
-        "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
 
-        "framework",
-        "sut_name",
-        "program_name",
         "verbosity",
         "batch_size",
 
-        "model_name",
-        "model_path",
         "model_input_layers_tms",
 
         "squad_dataset_original_path",

@@ -45,6 +45,7 @@
 
     "output_entry_parents": [ ],
     "output_entry_tags": [ ],
+    "output_entry_common_param_names": [ "model_name", "mlperf_model_name", "model_path", "framework", "sut_name", "program_name", "loadgen_scenario", "loadgen_mode", "loadgen_dataset_size", "loadgen_buffer_size" ],
     "output_entry_param_names": [ ],
     "output_entry_subs_listmap": [ ],
 
@@ -56,6 +57,7 @@
                 "with_power", [ "^^", "get", "_with_power" ],
                 "tags", ["^^", "get", "output_entry_tags" ]
             ] ],
+        [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_common_param_names" ], { "plantable": true } ] ],
         [ "plant", [ "^^", "slice", ["^^", "get", "output_entry_param_names" ], { "plantable": true } ] ],
         [ "plant", [ "^^", "substitute", [[ "^^", "get", "output_entry_subs_listmap" ]] ] ],
         [ "pluck", "_with_power" ],

@@ -65,22 +65,13 @@
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
     "output_entry_tags": [ "loadgen_output", "detected_coco" ],
     "output_entry_param_names": [
-        "loadgen_scenario",
-        "loadgen_mode",
-        "loadgen_dataset_size",
-        "loadgen_buffer_size",
         "loadgen_count_override",
         "loadgen_multistreamness",
         "loadgen_min_duration_s",
         "loadgen_max_duration_s",
 
-        "framework",
-        "sut_name",
-        "program_name",
         "verbosity",
 
-        "model_name",
-        "model_path",
         "model_resolution",
         "model_output_scale",
         "model_input_layer_name",
