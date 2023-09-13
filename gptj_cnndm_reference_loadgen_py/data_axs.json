@@ -45,18 +45,7 @@
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_gptj_loadgen_experiment" ] ],
     "output_entry_tags": [ "loadgen_output", "gptj_cnndm" ],
     "output_entry_param_names": [
-        "loadgen_scenario",
-        "loadgen_mode",
-        "loadgen_dataset_size",
-        "loadgen_buffer_size",
         "loadgen_multistreamness",
-
-        "model_name",
-        "model_path",
-
-        "framework",
-        "sut_name",
-        "program_name",
 
         "gpu_id",
         "num_beams",
