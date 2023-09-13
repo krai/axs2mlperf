@@ -27,6 +27,7 @@ if [ "$ONNX_DETECTION_SSD_COCO" == "on" ] || [ "$ONNX_DETECTION_RETINANET_COCO" 
         export ACCURACY_OUTPUT=`axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,model_name=retinanet_openimages,loadgen_dataset_size=20,loadgen_buffer_size=100,execution_device=cpu , get accuracy`
         echo "Accuracy: $ACCURACY_OUTPUT"
         assert "echo $ACCURACY_OUTPUT" '52.98'
+        #assert "echo $ACCURACY_OUTPUT" '52.939' # for python3.6
         axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,model_name=retinanet_openimages,loadgen_dataset_size=20,loadgen_buffer_size=100,execution_device=cpu --- , remove
         axs byquery downloaded,openimages_mlperf --- , remove
         axs byquery extracted,openimages_annotations,v2_1 --- , remove
