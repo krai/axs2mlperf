@@ -1,6 +1,7 @@
 {
         "tags": [ "inference_ready", "pytorch_model" ],
         "model_name": "resnet50",
+        "dataset_name": "imagenet",
         "retrained": false,
         "input_data_types": "fp32",
         "weight_data_types": "fp32",
