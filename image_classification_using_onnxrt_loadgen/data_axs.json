@@ -58,7 +58,7 @@
     "verbosity": 2,
     "num_of_images": ["^^", "get", "loadgen_dataset_size" ],
 
-    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_imagenet_loadgen_experiment" ] ],
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_image_classification_loadgen_experiment" ] ],
     "output_entry_tags": [ "loadgen_output", "classified_imagenet" ],
     "output_entry_param_names": [
         "loadgen_count_override",
