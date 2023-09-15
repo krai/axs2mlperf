@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ]  ],
     "_producer_rules": [
-        [ [ "loadgen_output", "detected_coco", "framework=onnx" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=object_detection", "framework=onnx" ], [["get", "pipeline"]] ]
     ],
 
     "num_gpus": [ "^", "execute", [[
@@ -63,7 +63,6 @@
     "labels_file_path": [ "^^", "dig", "dataset_entry.labels_file_path"],
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
-    "output_entry_tags": [ "loadgen_output", "detected_coco" ],
     "output_entry_param_names": [
         "loadgen_count_override",
         "loadgen_multistreamness",
@@ -86,7 +85,6 @@
         "preprocessed_images_dir",
         "batch_size",
         "given_channel_stds",
-        "dataset_name",
 
         "execution_device",
         "cpu_threads",

@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "bert_squad", "framework=onnx" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=bert", "framework=onnx" ], [["get", "pipeline"]] ]
     ],
 
     "num_gpus": [ "^", "execute", [[
@@ -52,7 +52,7 @@
     "batch_size": 1,
 
     "dataset_max_seq_length": 384,
-    "tokenized_squad_query":[ "tokenized", "squad_v1_1","calibration=no" , [ "^^", "substitute", "dataset_max_seq_length=#{dataset_max_seq_length}#" ] ],
+    "tokenized_squad_query":[ "preprocessed", "dataset_name=squad_v1_1","calibration=no" , [ "^^", "substitute", "dataset_max_seq_length=#{dataset_max_seq_length}#" ] ],
     "tokenized_squad_entry": [ "^", "byquery", [[ "^^", "get", "tokenized_squad_query" ]], {}, ["tokenized_squad_query"] ],
     "tokenized_squad_path": [ "^^", "execute", [[
         [ "get", "tokenized_squad_entry" ],
@@ -64,7 +64,6 @@
     "verbosity": 2,
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
-    "output_entry_tags": [ "loadgen_output", "bert_squad" ],
     "output_entry_param_names": [
         "loadgen_count_override",
         "loadgen_multistreamness",

@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "gptj_cnndm", "framework=torch" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=gptj", "framework=torch" ], [["get", "pipeline"]] ]
     ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
@@ -43,7 +43,6 @@
     "num_beams": 2,
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_gptj_loadgen_experiment" ] ],
-    "output_entry_tags": [ "loadgen_output", "gptj_cnndm" ],
     "output_entry_param_names": [
         "loadgen_multistreamness",
 
@@ -63,8 +62,12 @@
         "GPTJ_BEAM_SIZE": [ "^^", "get", "num_beams" ]
     },
 
+    "dataset_name": "cnndm_v3_0_0",
+    "dataset_query": [ "downloaded", [ "^^", "substitute", "dataset_name=#{dataset_name}#" ]],
+    "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
+
     "dataset_path": [ "^", "execute", [[
-        [ "byquery", "downloaded,dataset=cnndm_mlperf"],
+        [ "get", "dataset_entry" ],
         [ "get_path" ]
     ]] ],
 

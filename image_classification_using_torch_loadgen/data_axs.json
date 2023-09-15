@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "classified_imagenet", "framework=pytorch" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=image_classification", "framework=pytorch" ], [["get", "pipeline"]] ]
     ],
 
     "resolution": 224,
@@ -9,7 +9,7 @@
     "index_file": null,
     "preprocessed_images_query": [
         "preprocessed",
-        "dataset_name=imagenet",
+        [ "^^", "substitute", "dataset_name=#{dataset_name}#"],
         [ "^^", "substitute", "resolution=#{resolution}#"],
         [ "^^", "substitute", "first_n=#{num_of_images}#"],
         [ "index_file", [ "^^", "get", "index_file" ]]
@@ -42,13 +42,13 @@
         [ "get", "model_entry" ],
         [ "get_path" ]
     ]] ],
+    "dataset_name": [ "^^", "dig", "model_entry.dataset_name" ],
     "batch_size": 1,
     "framework": "pytorch",
     "verbosity": 2,
     "num_of_images": ["^^", "get", "loadgen_dataset_size" ],
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_image_classification_loadgen_experiment" ] ],
-    "output_entry_tags": [ "loadgen_output", "classified_imagenet" ],
     "output_entry_param_names": [
         "loadgen_count_override",
         "loadgen_multistreamness",
