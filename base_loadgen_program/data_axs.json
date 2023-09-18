@@ -44,7 +44,6 @@
     "url": [ "^^", "dig", "model_entry.url" ],
 
     "output_entry_parents": [ ],
-    "output_entry_tags": [ ],
     "output_entry_common_param_names": [ "model_name", "mlperf_model_name", "model_path", "framework", "dataset_name", "sut_name", "program_name", "task", "loadgen_scenario", "loadgen_mode", "loadgen_dataset_size", "loadgen_buffer_size" ],
     "output_entry_param_names": [ ],
     "output_entry_subs_listmap": [ ],
