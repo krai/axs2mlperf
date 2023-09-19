@@ -12,38 +12,36 @@
 	    [ "get_path",[]]
     ]]],
     "sut_system_type": [ "^^", "dig", "sut_description.system_type" ],
-    "task": [ "^^", "task_from_program_name" ],
     "scenarios": [ "^^", "scenarios_from_sut_type_and_task" ],
 
     "division": "open",
     "submitter": "Krai",
     "record_entry_name": "laid_out_submission",
 
-    "model_name2dataset_size": {
-        "resnet50": 50000,
-        "retinanet": 24781,
-        "retinanet_openimages": 24781,
-        "retinanet_coco": 5000,
-        "bert-99": 10833,
-        "bert-99.9": 10833
+    "dataset_name2dataset_size": {
+        "imagenet": 50000,
+        "openimages": 24781,
+        "coco": 5000,
+        "squad_v1_1": 10833,
+        "cnndailymail": 13368
     },
-    "model_name2buffer_size": {
-        "resnet50": 1024,
-        "retinanet": 64,
-        "retinanet_openimages": 64,
-        "retinanet_coco": 64,
-        "bert-99": 10833,
-        "bert-99.9": 10833
+    "task2buffer_size": {
+        "image_classification": 1024,
+        "object_detection": 64,
+        "bert": 10833,
+        "gptj": 13368
     },
 
     "program_entry": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", [ "^^", "get", "program_name" ] ]
     ]] ],
-    "loadgen_dataset_size": [ "^^", "dig", [["model_name2dataset_size", ["^^", "get", "model_name"] ]] ],
-    "loadgen_buffer_size": [ "^^", "dig", [["model_name2buffer_size", ["^^", "get", "model_name"] ]] ],
+    "loadgen_dataset_size": [ "^^", "dig", [["dataset_name2dataset_size", ["^^", "get", "dataset_name"] ]] ],
+    "loadgen_buffer_size": [ "^^", "dig", [["task2buffer_size", ["^^", "get", "task"] ]] ],
     "experiment_tags": [ "^^", "dig", "program_entry.output_entry_tags" ],
     "framework": [ "^^", "dig", "program_entry.framework" ],
+    "task": [ "^^", "dig", "program_entry.task" ],
+    "dataset_name": [ "^^", "dig", "program_entry.dataset_name" ],
     "device": [ "^^", "execute", [[
         [ "get", "program_entry" ],
         [ "get", ["device", null] ]

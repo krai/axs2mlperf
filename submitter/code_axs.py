@@ -5,20 +5,6 @@ import shutil
 import sys
 from ufun import save_json
 
-def task_from_program_name(program_name):
-
-    if program_name.startswith("image_classification_") or program_name.startswith("resnet50_"):
-        return "image_classification"
-    elif program_name.startswith("object_detection_") or program_name.startswith("retinanet_"):
-        return "object_detection"
-    elif program_name.startswith("bert_squad_"):
-        return "bert_squad"
-    elif program_name.startswith("gptj_cnndm_"):
-        return "gptj_cnndm"
-    else:
-        return "UNKNOWN"
-
-
 def scenarios_from_sut_type_and_task(sut_system_type, task):
 
     if sut_system_type == "edge":
@@ -35,6 +21,7 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
 def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
 
     common_attributes = {
+        "task":                 task,
         "sut_name":             sut_name,
         "model_name":           model_name,
         "framework":            framework,
@@ -56,8 +43,8 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, tas
         compliance_test_list = {
             "image_classification": [ 'TEST01', 'TEST04', 'TEST05' ],
             "object_detection":     [ 'TEST01', 'TEST05' ],
-            "bert_squad":           [ 'TEST01', 'TEST05' ],
-            "gptj_cnndm":           [ ],
+            "bert":                 [ 'TEST01', 'TEST05' ],
+            "gptj":                 [ ],
         }[task]
 
         for compliance_test_name in compliance_test_list:
@@ -171,9 +158,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
         framework       = experiment_entry.get('framework').upper()
-
-        experiment_task     = task_from_program_name(experiment_program_name)
-        display_benchmark   = experiment_task.replace("_", " ").title()
+        task = experiment_entry.get('task')
+        display_benchmark   = task.replace("_", " ").title()
 
         mode = loadgen_mode.replace("Only", "")
 
