@@ -34,11 +34,11 @@ ENV PATH="$PATH:/home/krai/axs"
 RUN axs byquery git_repo,collection,repo_name=axs2mlperf
 
 # Download model/dataset/runtime dependencies and perform two quick accuracy runs on SSD-ResNet34 and RetinaNet.
-RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , get accuracy
-RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy
+RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , get accuracy
+RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy
 
 # Remove the generated experiments to start at a clean state
-RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20 , remove
-RUN axs byquery loadgen_output,detected_coco,framework=onnx,loadgen_dataset_size=20,model_name=retinanet_coco , remove
+RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , remove
+RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , remove
 
 CMD [ "/bin/bash" ]
