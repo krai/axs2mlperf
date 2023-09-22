@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ]  ],
     "_producer_rules": [
-        [ [ "loadgen_output", "task=object_detection", "framework=onnx" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=object_detection", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
 
     "num_gpus": [ "^", "execute", [[
@@ -49,10 +49,9 @@
         [ "get_path" ]
     ]], {}, ["preprocessed_images_query"] ],
 
-    "framework": "onnx",
+    "framework": "onnxrt",
     "cpu_threads": 0,
     "batch_size": 1,
-    "framework": "onnx",
     "execution_device": "",
     "verbosity": 2,
 

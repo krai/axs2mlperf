@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "task=bert", "framework=onnx" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=bert", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
 
     "num_gpus": [ "^", "execute", [[
@@ -59,7 +59,7 @@
         [ "get_path" ]
     ]] ],
 
-    "framework": "onnx",
+    "framework": "onnxrt",
     "execution_device": "",
     "verbosity": 2,
 

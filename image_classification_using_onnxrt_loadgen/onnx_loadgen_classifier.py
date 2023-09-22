@@ -5,7 +5,7 @@
 Usage examples  :
 
                     # full Accuracy run (query mode) :
-                axs byquery loadgen_output,classified_imagenet,framework=onnx,preprocessed_imagenet_dir=/datasets/imagenet/pillow_sq.224_cropped_resized_imagenet50000,loadgen_scenario=Offline,loadgen_dataset_size=50000,loadgen_buffer_size=1000,batch_size=1000 , get accuracy
+                axs byquery loadgen_output,task=image_classification,framework=onnxrt,preprocessed_imagenet_dir=/datasets/imagenet/pillow_sq.224_cropped_resized_imagenet50000,loadgen_scenario=Offline,loadgen_dataset_size=50000,loadgen_buffer_size=1000,batch_size=1000 , get accuracy
 """
 
 import array

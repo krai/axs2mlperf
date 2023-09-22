@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "task=image_classification", "framework=onnx" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=image_classification", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
 
     "resolution": 224,
@@ -54,7 +54,7 @@
 
     "cpu_threads": 0,
     "batch_size": 1,
-    "framework": "onnx",
+    "framework": "onnxrt",
     "execution_device": "",
     "verbosity": 2,
     "num_of_images": ["^^", "get", "loadgen_dataset_size" ],
