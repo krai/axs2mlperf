@@ -50,7 +50,7 @@ axs byquery git_repo,collection,repo_name=axs2mlperf
 
 The following test run should trigger downloading and installation of the necessary Python packages, the default model (resnet50), the ImageNet dataset and the default dataset size(loadgen_dataset_size=20):
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline , get accuracy
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline , get accuracy
 ```
 
 
@@ -58,7 +58,7 @@ axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=Accur
 
 The following test run should trigger downloading and installation of the necessary Python packages, the default model (resnet50), the ImageNet dataset and a short partial resized subset of 20 images:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20 , get accuracy
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20 , get accuracy
 ```
 The accuracy value should be printed after a successful run.
 
@@ -67,7 +67,7 @@ The accuracy value should be printed after a successful run.
 
 The following test run should trigger (in addition to the above) downloading and installation of the resnet50 model:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20,model_name=resnet50 , get accuracy
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20,model_name=resnet50 , get accuracy
 ```
 The accuracy value should be printed after a successful run.
 
@@ -79,7 +79,7 @@ The following command will run on the whole dataset of 50000 images used by the 
 
 Example for 500 images:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy_report
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy_report
 ```
 The accuracy value should be printed after a successful run.
 <details><pre>
@@ -89,7 +89,7 @@ accuracy=75.200%, good=376, total=500
 </pre></details>
 
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024 , get accuracy
 ```
 The accuracy value should be printed after a successful run.
 <details><pre>
@@ -106,7 +106,7 @@ You need to "guess" the `loadgen_target_qps` parameter, from which the testing r
 
 So `TargetQPS` is the input, whereas `QPS` is the output of this benchmark:
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024,loadgen_target_qps=346 , get performance
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024,loadgen_target_qps=346 , get performance
 ```
 Measured QPS:
 ```
@@ -118,7 +118,7 @@ Measured QPS:
 
 You need to set the `loadgen_target_latency` parameter.
 ```
-axs byquery loadgen_output,classified_imagenet,framework=onnx,loadgen_mode=PerformanceOnly,loadgen_scenario=SingleStream,loadgen_dataset_size=500,loadgen_buffer_size=1024,loadgen_target_latency=3 , get performance
+axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=SingleStream,loadgen_dataset_size=500,loadgen_buffer_size=1024,loadgen_target_latency=3 , get performance
 ```
 
 ```
