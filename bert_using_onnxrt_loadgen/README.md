@@ -50,7 +50,7 @@ axs byquery git_repo,collection,repo_name=axs2mlperf
 
 The following test run should trigger downloading and installation of the necessary Python packages, the default model (bert_large), the SQUAD dataset and the default dataset size(loadgen_dataset_size=20):
 ```
-axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline , get accuracy
+axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline , get accuracy
 ```
 
 
@@ -58,7 +58,7 @@ axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,l
 
 The following test run should trigger downloading and installation of the necessary Python packages, the default model (bert_large), the SQUAD dataset and a short partial resized subset of 20 images:
 ```
-axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20 , get accuracy
+axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20 , get accuracy
 ```
 The accuracy value should be printed after a successful run.
 
@@ -67,7 +67,7 @@ The accuracy value should be printed after a successful run.
 
 The following test run should trigger (in addition to the above) downloading and installation of the bert_large model:
 ```
-axs byquery loadgen_output,bert_squad,framework=onnx,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20,model_name=bert_large , get accuracy
+axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=20,model_name=bert_large , get accuracy
 ```
 The f1 value should be printed after a successful run.
 
@@ -77,7 +77,7 @@ The f1 value should be printed after a successful run.
 The following command will run on the whole dataset of 10833 images used by the bert_large model. Please note that depending on whether both the hardware and the software supports running on the GPU, the run may be performed either on the GPU or on the CPU. For running on the CPU it is necessary to add execution_device=cpu to the command.
 (There are ways to constrain this to the CPU only.)
 ```
-time axs byquery loadgen_output,bert_squad,framework=onnx,model_name=bert_large,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=10833,loadgen_buffer_size=100 , get accuracy
+time axs byquery loadgen_output,task=bert,framework=onnxrt,model_name=bert_large,loadgen_mode=AccuracyOnly,loadgen_scenario=Offline,loadgen_dataset_size=10833,loadgen_buffer_size=100 , get accuracy
 ```
 The f1 value and running time should be printed after a successful run.
 <details><pre>
@@ -97,7 +97,7 @@ Two important changes for performance mode should be taken into account:
 
 So `TargetQPS` is the input, whereas `QPS` is the output of this benchmark:
 ```
-axs byquery loadgen_output,bert_squad,framework=onnx,model_name=bert_large,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,loadgen_target_qps=65,loadgen_dataset_size=10833,loadgen_buffer_size=10833 , get performance
+axs byquery loadgen_output,task=bert,framework=onnxrt,model_name=bert_large,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,loadgen_target_qps=65,loadgen_dataset_size=10833,loadgen_buffer_size=10833 , get performance
 ```
 Measured QPS:
 ```
@@ -109,7 +109,7 @@ Measured QPS:
 
 You need to set the `loadgen_target_latency` parameter.
 ```
-axs byquery loadgen_output,bert_squad,framework=onnx,model_name=bert_large,loadgen_scenario=SingleStream,loadgen_mode=PerformanceOnly,loadgen_latency_qps=15,loadgen_dataset_size=10833,loadgen_buffer_size=10833 , get performance
+axs byquery loadgen_output,task=bert,framework=onnxrt,model_name=bert_large,loadgen_scenario=SingleStream,loadgen_mode=PerformanceOnly,loadgen_latency_qps=15,loadgen_dataset_size=10833,loadgen_buffer_size=10833 , get performance
 ```
 ```
 ...
