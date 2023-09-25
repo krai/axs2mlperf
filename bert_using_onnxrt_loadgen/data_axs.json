@@ -1,16 +1,8 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ], [ "^", "byname", "nvidia_gpu_support" ] ],
     "_producer_rules": [
         [ [ "loadgen_output", "task=bert", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
-
-    "num_gpus": [ "^", "execute", [[
-                       [ "byquery", "shell_tool,can_gpu" ],
-                       [ "run" ]
-                ]] ],
-
-    "onnxruntime_name": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "onnxruntime" ], {"default_value": "onnxruntime-gpu"}, ["num_gpus"]],
-    "onnxruntime_query": [ "python_package", ["package_name", ["^^", "get", "onnxruntime_name"]] ],
 
     "tensorflow_query": ["python_package", "package_name=tensorflow"],
     "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],

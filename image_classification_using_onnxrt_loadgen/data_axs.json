@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ], [ "^", "byname", "nvidia_gpu_support" ] ],
     "_producer_rules": [
         [ [ "loadgen_output", "task=image_classification", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
@@ -20,13 +20,6 @@
         [ "get_path" ]
     ]] ],
     "input_file_list": [ "^^", "dig", "preprocessed_images_entry.input_file_list" ],
-
-    "num_gpus": [ "^", "execute", [[
-                       [ "byquery", "shell_tool,can_gpu" ],
-                       [ "run" ]
-                ]] ],
-    "onnxruntime_name": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "onnxruntime" ], {"default_value": "onnxruntime-gpu"}, ["num_gpus"]],
-    "onnxruntime_query": [ "python_package", ["package_name", ["^^", "get", "onnxruntime_name"]] ],
 
     "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
 
