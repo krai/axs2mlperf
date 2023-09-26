@@ -14,7 +14,7 @@
     "dataset_query": [ "downloaded", [ "^^", "substitute", "dataset_name=#{dataset_name}#" ]],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
 
-    "dataset_path": [ "^", "execute", [[
+    "dataset_path": [ "^^", "execute", [[
         [ "get", "dataset_entry" ],
         [ "get_path" ]
     ]] ],
