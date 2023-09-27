@@ -52,11 +52,11 @@ subtract_mean_bool          = eval(input_parameters["subtract_mean_bool"])
 given_channel_means         = eval(input_parameters["given_channel_means"])
 given_channel_stds          = eval(input_parameters["given_channel_means"])
 
-preprocessed_coco_dir       = input_parameters["preprocessed_images_dir"]
-coco_labels_file_path       = input_parameters["labels_file_path"]
-execution_device            = input_parameters["execution_device"]          # if empty, it will be autodetected
-batch_size                  = input_parameters["batch_size"]
-cpu_threads                 = input_parameters["cpu_threads"]
+preprocessed_coco_dir         = input_parameters["preprocessed_images_dir"]
+coco_labels_file_path         = input_parameters["labels_file_path"]
+supported_execution_providers = input_parameters["supported_execution_providers"]          # if empty, it will be autodetected
+batch_size                    = input_parameters["batch_size"]
+cpu_threads                   = input_parameters["cpu_threads"]
 
 minimal_class_id            = input_parameters["minimal_class_id"]
 min_duration                = input_parameters["loadgen_min_duration_s"]
@@ -105,14 +105,7 @@ if cpu_threads > 0:
     sess_options.enable_sequential_execution = False
     sess_options.session_thread_pool_size = cpu_threads
 
-if execution_device == "cpu":
-    requested_provider = "CPUExecutionProvider"
-elif execution_device in ["gpu", "cuda"]:
-    requested_provider = "CUDAExecutionProvider"
-elif execution_device in ["tensorrt", "trt"]:
-    requested_provider = "TensorrtExecutionProvider"
-
-sess = rt.InferenceSession(model_path, sess_options, providers= [requested_provider] if execution_device else rt.get_available_providers())
+sess = rt.InferenceSession(model_path, sess_options, providers = list(set(supported_execution_providers) & set(rt.get_available_providers())))
 
 session_execution_provider=sess.get_providers()
 print("Session execution provider: ", sess.get_providers(), file=sys.stderr)

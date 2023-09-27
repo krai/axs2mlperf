@@ -78,7 +78,7 @@
         "batch_size",
         "given_channel_stds",
 
-        "execution_device",
+        "supported_execution_providers",
         "cpu_threads",
 
         "retrained",
