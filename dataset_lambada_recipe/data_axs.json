@@ -1,0 +1,15 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "dataset_name=lambada" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "file_path": "lambada-dataset.tar.gz",
+            "url": "https://zenodo.org/record/2630551/files/lambada-dataset.tar.gz"
+        } ],
+
+        [ [ "extracted", "dataset_name=lambada" ], [["get_kernel"],["byname","extractor"],["extract"]], {
+            "archive_path": [ "^", "execute", [[
+                [ "byquery", [[ "^^", "substitute", "downloaded,dataset_name=lambada" ]] ],
+                [ "get_path" ]
+            ]] ]
+        } ]
+    ]
+}
