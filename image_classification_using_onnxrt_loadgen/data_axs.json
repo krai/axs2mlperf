@@ -67,7 +67,7 @@
         "input_file_list",
         "batch_size",
 
-        "execution_device",
+        "supported_execution_providers",
         "cpu_threads",
 
         "retrained",

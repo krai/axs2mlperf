@@ -34,26 +34,26 @@ input_parameters = {}
 with open(input_parameters_file_path) as f:
     input_parameters = json.load(f)
 
-scenario_str                = input_parameters["loadgen_scenario"]
-mode_str                    = input_parameters["loadgen_mode"]
-dataset_size                = input_parameters["loadgen_dataset_size"]
-buffer_size                 = input_parameters["loadgen_buffer_size"]
-count_override              = input_parameters["loadgen_count_override"]
-multistreamness             = input_parameters["loadgen_multistreamness"]
-mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
-user_conf_path              = input_parameters["loadgen_user_conf_path"]
-verbosity                   = input_parameters["verbosity"]
-model_path                  = input_parameters["model_path"]
-model_name                  = input_parameters["model_name"]
-normalize_symmetric         = eval(input_parameters["normalize_symmetric"])
-subtract_mean_bool          = eval(input_parameters["subtract_mean_bool"])
-given_channel_means         = eval(input_parameters["given_channel_means"])
-output_layer_name           = input_parameters["output_layer_name"]
-execution_device            = input_parameters["execution_device"]         # if empty, it will be autodetected
-batch_size                  = input_parameters["batch_size"]
-cpu_threads                 = input_parameters["cpu_threads"]
-preprocessed_imagenet_dir   = input_parameters["preprocessed_images_dir"]
-input_file_list             = input_parameters["input_file_list"]
+scenario_str                  = input_parameters["loadgen_scenario"]
+mode_str                      = input_parameters["loadgen_mode"]
+dataset_size                  = input_parameters["loadgen_dataset_size"]
+buffer_size                   = input_parameters["loadgen_buffer_size"]
+count_override                = input_parameters["loadgen_count_override"]
+multistreamness               = input_parameters["loadgen_multistreamness"]
+mlperf_conf_path              = input_parameters["loadgen_mlperf_conf_path"]
+user_conf_path                = input_parameters["loadgen_user_conf_path"]
+verbosity                     = input_parameters["verbosity"]
+model_path                    = input_parameters["model_path"]
+model_name                    = input_parameters["model_name"]
+normalize_symmetric           = eval(input_parameters["normalize_symmetric"])
+subtract_mean_bool            = eval(input_parameters["subtract_mean_bool"])
+given_channel_means           = eval(input_parameters["given_channel_means"])
+output_layer_name             = input_parameters["output_layer_name"]
+supported_execution_providers = input_parameters["supported_execution_providers"]         # if empty, it will be autodetected
+batch_size                    = input_parameters["batch_size"]
+cpu_threads                   = input_parameters["cpu_threads"]
+preprocessed_imagenet_dir     = input_parameters["preprocessed_images_dir"]
+input_file_list               = input_parameters["input_file_list"]
 
 given_channel_stds          = []
 
@@ -67,14 +67,7 @@ if cpu_threads > 0:
     sess_options.enable_sequential_execution = False
     sess_options.session_thread_pool_size = cpu_threads
 
-if execution_device == "cpu":
-    requested_provider = "CPUExecutionProvider"
-elif execution_device in ["gpu", "cuda"]:
-    requested_provider = "CUDAExecutionProvider"
-elif execution_device in ["tensorrt", "trt"]:
-    requested_provider = "TensorrtExecutionProvider"
-
-sess = rt.InferenceSession(model_path, sess_options, providers= [requested_provider] if execution_device else rt.get_available_providers())
+sess = rt.InferenceSession(model_path, sess_options, providers = list(set(supported_execution_providers) & set(rt.get_available_providers())))
 
 session_execution_provider=sess.get_providers()
 print("Session execution provider: ", sess.get_providers(), file=sys.stderr)
