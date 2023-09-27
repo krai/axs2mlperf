@@ -71,7 +71,7 @@
         "bert_code_root",
         "bert_squad_code_dir",
 
-        "execution_device",
+        "supported_execution_providers",
 
         "retrained",
         "input_data_types",
