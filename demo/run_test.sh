@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh
+wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh
 source assert.sh
 
 _IMAGE_NAME=${IMAGE_NAME:-axs:benchmarks.test}
@@ -10,18 +10,29 @@ run_docker () {
 }
 
 cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , get accuracy")
-echo "Accuracy: ${cmd}"
-assert "echo ${cmd}" '22.852'
+echo "Accuracy(20 samples): ${cmd}"
+num=${cmd:0:2}
+assert "echo ${num}" "22"
+assert_end object_detection_retinanet_benchmark
 
-# cmd=$(run_docker "time axs byquery loadgen_output,bert_squad,framework=onnxrt,loadgen_dataset_size=20  , get accuracy")
-# assert "echo ${cmd}" "85.0"
 
-# cmd=$(run_docker "time axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get mAP")
-# assert "echo ${cmd}" "34.671"
+cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy")
+echo "Accuracy(20 samples): ${cmd}"
+num=${cmd:0:2}
+assert "echo ${num}" "34"
+assert_end object_detection_retinanet_coco_benchmark
 
-# cmd=$(run_docker "time axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , get mAP")
-# assert "echo ${cmd}" "22.852"
 
-assert_end benchmarks
+cmd=$(run_docker "axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_dataset_size=20 , get accuracy")
+echo "Accuracy(20 samples): ${cmd}"
+num=${cmd:0:2}
+assert "echo ${num}" "85"
+assert_end image_classification_benchmark
 
-#rm assert.sh
+cmd=$(run_docker "axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_dataset_size=20 , get accuracy")
+echo "Accuracy(20 samples): ${cmd}"
+num=${cmd:0:2}
+assert "echo ${num}" "85"
+assert_end bert_benchmark
+
+rm assert.sh

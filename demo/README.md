@@ -17,7 +17,7 @@ time docker build --no-cache -t axs:benchmarks -f Axs_Dockerfile .
 ### ResNet50
 Launch a short accuracy run of the ResNet50 model.
 ```
-docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20  , get accuracy"
+docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_dataset_size=20  , get accuracy"
 ```
 <details>
 accuracy and run time
@@ -33,7 +33,7 @@ sys     0m2.685s
 ### Bert Large
 Launch a short accuracy run of the Bert Large model.
 ```
-docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,bert_squad,framework=onnxrt,loadgen_dataset_size=20  , get accuracy"
+docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_dataset_size=20  , get accuracy"
 ```
 <details>
 accuracy and run time
@@ -91,7 +91,7 @@ Below details the steps of launching a performance run for the ResNet50 model, i
 
 First, get an idea of the performance of the System-Under-Test (SUT).
 ```
-docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1 , get performance"
+docker run -it --rm axs:benchmarks -c "time axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1 , get performance"
 ```
 
 For an average CPU SUT, it will start printing the latency. `Ctr-C` after we get an idea about the latency of the system.
@@ -111,7 +111,7 @@ docker run -it --rm --privileged --gpus all axs:benchmarks -c "nvidia-smi"
 
 To run with GPU:
 <pre>
-docker run -it --rm --privileged --gpus all axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1,verbosity=1,execution_device=gpu,num_gpus=1 , get performance"
+docker run -it --rm --privileged --gpus all axs:benchmarks -c "time axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_dataset_size=20,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_target_qps=1,verbosity=1,execution_device=gpu,num_gpus=1 , get performance"
 </pre>
 </details>
 
@@ -124,7 +124,7 @@ mkdir axs_logs && sudo chmod 777 axs_logs
 
 Run.
 ```
-docker run -it --name axs --volume ./axs_logs:/home/krai/logs axs:benchmarks -c "time axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024,verbosity=1,loadgen_target_qps=143 , get performance"
+docker run -it --name axs --volume ./axs_logs:/home/krai/logs axs:benchmarks -c "time axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline,loadgen_dataset_size=500,loadgen_buffer_size=1024,verbosity=1,loadgen_target_qps=143 , get performance"
 ```
 
 Output.
@@ -151,9 +151,9 @@ Enter the container.
 docker run -it --rm -v ./axs_logs:/home/krai/logs --privileged --entrypoint /bin/bash axs:imageclassification
 ```
 
-The MLPerf logs are stored in `$(axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path)`, to view the summary log:
+The MLPerf logs are stored in `$(axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path)`, to view the summary log:
 ```
-krai@3342049c8b4d:~/work_collection$ vi $(axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path)/mlperf_log_summary.txt
+krai@3342049c8b4d:~/work_collection$ vi $(axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path)/mlperf_log_summary.txt
 ...
 
 ================================================
@@ -178,5 +178,5 @@ Max latency (ns)                : 841276794720
 
 Save the logs to the host machine.
 ```
-cp -r $(axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path) /home/krai/logs
+cp -r $(axs byquery loadgen_output,task=image_classification,framework=onnxrt,loadgen_mode=PerformanceOnly,loadgen_scenario=Offline , get_path) /home/krai/logs
 ```
