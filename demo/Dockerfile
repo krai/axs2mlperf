@@ -12,7 +12,7 @@ RUN apt update -y\
  && apt install -y\
  git wget zip libz-dev\
  python3 python3-pip\
- vim sudo curl\
+ vim sudo curl cmake\
  && apt clean
 
 # Create user 'krai' in group 'kraig'.
@@ -33,23 +33,23 @@ RUN git clone --branch ${BRANCH} https://github.com/krai/axs
 ENV PATH="$PATH:/home/krai/axs"
 
 # Import this repository into your work_collection
-RUN axs byquery git_repo,collection,repo_name=axs2mlperf,checkout=${BRANCH}
+RUN axs byquery git_repo,collection,repo_name=axs2mlperf,checkout=${BRANCH} && pip install pybind11
 
 # Download model/dataset/runtime dependencies and perform two quick accuracy runs on SSD-ResNet34, RetinaNet, ResNet50, Bert Large.
 # Object Detection
 RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , get accuracy
-RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy
+#RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy
 # Image Classification
-RUN axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20 , get accuracy
+#RUN axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20 , get accuracy
 # Large Language Model
-RUN axs byquery tokenized,squad_v1_1,calibration=no
-RUN axs byquery loadgen_output,bert_squad,framework=onnxrt , get accuracy
+#RUN axs byquery tokenized,squad_v1_1,calibration=no
+#RUN axs byquery loadgen_output,bert_squad,framework=onnxrt , get accuracy
 
 # Remove the generated experiments to start at a clean state
-RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , remove
-RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , remove
-RUN axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20 , remove
-RUN axs byquery loadgen_output,bert_squad,framework=onnxrt , remove
+#RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , remove
+#RUN axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , remove
+#RUN axs byquery loadgen_output,classified_imagenet,framework=onnxrt,loadgen_dataset_size=20 , remove
+#RUN axs byquery loadgen_output,bert_squad,framework=onnxrt , remove
 
 # Provide a place for exporting files to host
 RUN mkdir /home/krai/logs
