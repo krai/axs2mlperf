@@ -9,11 +9,11 @@ run_docker () {
     docker run -it --rm ${_IMAGE_NAME} -c "$1"
 }
 
-cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20 , get accuracy")
+cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_openimages , get accuracy")
 echo "Accuracy(20 samples): ${cmd}"
 num=${cmd:0:2}
-assert "echo ${num}" "22"
-assert_end object_detection_retinanet_benchmark
+assert "echo ${num}" "52"
+assert_end object_detection_retinanet_openimages_benchmark
 
 
 cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_coco , get accuracy")
