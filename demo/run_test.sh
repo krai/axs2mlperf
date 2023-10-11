@@ -25,7 +25,7 @@ run_docker () {
 }
 
 
-cmd=$(docker exec git_bot "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_openimages , get accuracy")
+cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_openimages , get accuracy")
 echo "Accuracy(20 samples): ${cmd}"
 num=${cmd:0:2}
 assert "echo ${num}" "52"
