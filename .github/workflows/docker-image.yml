@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "master" ]
 
 jobs:
 
@@ -13,12 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Update the Docker image
-      run: cd demo && docker build --build-arg="BRANCH=master" --build-arg="CLEAN=false" -t axs:benchmarks.test -f Dockerfile .
+      run: cd demo && docker build --no-cache --build-arg="BRANCH=master" --build-arg="CLEAN=false" -t axs:benchmarks.test -f Dockerfile .
 
     - name: Run Test
-      run: cd demo && IS_SERVER=true ./run_test.sh
+      run: cd demo && ./run_test.sh
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
-        branch: test-stable
+        branch: stable
