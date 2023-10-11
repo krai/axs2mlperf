@@ -14,9 +14,9 @@ def generate_user_conf(loadgen_param_dictionary, shortened_mlperf_model_name, lo
         "loadgen_samples_per_query":    ("samples_per_query", 1),
         "loadgen_target_latency":       ("target_latency", 1),
         "loadgen_target_qps":           ("target_qps", 1),
-        "loadgen_max_duration_s":       ("max_duration_ms", 1000),
+        "loadgen_max_duration_s":       ("max_duration", 1000),
+        "loadgen_min_duration_s":       ("min_duration", 1000),
         "loadgen_offline_expected_qps": ("offline_expected_qps", 1),
-        "loadgen_min_duration_s":       ( "min_duration_ms", 1000),
     }
 
     user_conf   = []

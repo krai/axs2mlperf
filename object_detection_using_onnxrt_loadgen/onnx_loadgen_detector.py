@@ -252,10 +252,6 @@ def benchmark_using_loadgen():
     if count_override is not None:
         ts.min_query_count = count_override
         ts.max_query_count = count_override
-    if min_duration is not None:
-        ts.min_duration_ms = min_duration
-    if max_duration is not None:
-        ts.max_duration_ms = max_duration
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)
