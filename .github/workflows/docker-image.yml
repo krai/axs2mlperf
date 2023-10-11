@@ -17,3 +17,8 @@ jobs:
 
     - name: Run Test
       run: cd demo && IS_SERVER=true ./run_test.sh
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: test-stable
