@@ -8,7 +8,7 @@ _IMAGE_NAME=${IMAGE_NAME:-axs:benchmarks.test}
 IS_SERVER=${IS_SERVER:-false}
 
 
-docker run --name git_bot --entrypoint tail --privileged -t ${_IMAGE_NAME} -f /dev/null &
+docker run --name git_bot --entrypoint tail --privileged -t ${_IMAGE_NAME} -f /dev/null & || true
 
 run_docker () {
     if [[ ${IS_SERVER} = true ]]
