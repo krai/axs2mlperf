@@ -5,8 +5,15 @@ source assert.sh
 
 _IMAGE_NAME=${IMAGE_NAME:-axs:benchmarks.test}
 
+IS_SERVER=${IS_SERVER:-false}
+
 run_docker () {
-    docker run -it --rm ${_IMAGE_NAME} -c "$1"
+    if [[ ${IS_SERVER} = true ]]
+    then 
+	    docker run --rm --name git_bot ${_IMAGE_NAME} -f /dev/null -c "$1"
+    else
+            docker run -it --rm ${_IMAGE_NAME} -c "$1"
+    fi
 }
 
 cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_openimages , get accuracy")
