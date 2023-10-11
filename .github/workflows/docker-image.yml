@@ -1,0 +1,19 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "test" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: cd demo && docker build --no-cache --build-arg="BRANCH=master" --build-arg="CLEAN=false" -t axs:benchmarks.test -f Dockerfile .
+
+    - name: Run Test
+      run: ./run_test.sh
