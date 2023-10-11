@@ -20,7 +20,7 @@ run_docker () {
 
 if [[ ${IS_SERVER} = true ]]
 then
-	docker run --name git_bot --privileged -t -d -f /dev/null
+	docker run --name git_bot --privileged -t -d  tail -f /dev/null ${_IMAGE_NAME}
 fi
 
 cmd=$(run_docker "axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_dataset_size=20,model_name=retinanet_openimages , get accuracy")
