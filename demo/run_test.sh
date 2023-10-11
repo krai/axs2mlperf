@@ -10,7 +10,7 @@ IS_SERVER=${IS_SERVER:-false}
 run_docker () {
     if [[ ${IS_SERVER} = true ]]
     then 
-	    docker run --dt --rm ${_IMAGE_NAME} -c "$1"
+	    docker run -dt --rm ${_IMAGE_NAME} -c "$1"
     else
             docker run -it --rm ${_IMAGE_NAME} -c "$1"
     fi
