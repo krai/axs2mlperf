@@ -21,7 +21,7 @@ _IMAGE_NAME=${IMAGE_NAME:-axs:benchmarks.test}
 # }
 
 run_docker () {
-    docker run --rm --privileged ${_IMAGE_NAME}:latest -c "$1"
+    docker run --rm --privileged ${_IMAGE_NAME} -c "$1"
 }
 
 
