@@ -15,4 +15,9 @@ Run tests
 ./run_test.sh
 ```
 
-
+# Self-Hosting Server
+Start the test server on chai if the machine is rebooted.
+```
+cd /home/elim/actions-runner && sudo ./svc.sh start
+```
+Maintain the docker image on chai with the docker build command from above as frequent as possible. The CI only does the bare minimum (building with cache), building without cache is needed for accurate testings.
