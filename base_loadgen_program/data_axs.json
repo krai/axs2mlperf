@@ -14,6 +14,20 @@
     "loadgen_max_duration_s": null,
     "loadgen_compliance_test": null,
 
+    "param_to_conf_pair": {
+        "loadgen_count_override_min":   ["min_query_count", 1],
+        "loadgen_count_override_max":   ["max_query_count", 1],
+        "loadgen_multistreamness":      ["samples_per_query", 1],
+        "loadgen_max_query_count":      ["max_query_count", 1],
+        "loadgen_buffer_size":          ["performance_sample_count_override", 1],
+        "loadgen_samples_per_query":    ["samples_per_query", 1],
+        "loadgen_target_latency":       ["target_latency", 1],
+        "loadgen_target_qps":           ["target_qps", 1],
+        "loadgen_max_duration_s":       ["max_duration", 1000],
+        "loadgen_min_duration_s":       ["min_duration", 1000],
+        "loadgen_offline_expected_qps": ["offline_expected_qps", 1]
+    },
+
     "_with_power": false,
 
     "compliance_test_config": "audit.config",

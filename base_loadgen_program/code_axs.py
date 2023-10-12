@@ -3,21 +3,8 @@ from shutil import copy2
 from ufun import load_json, save_json
 
 
-def generate_user_conf(loadgen_param_dictionary, shortened_mlperf_model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config):
+def generate_user_conf(loadgen_param_dictionary, param_to_conf_pair, shortened_mlperf_model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config):
 
-    param_to_conf_pair = {
-        "loadgen_count_override_min":   ("min_query_count", 1),
-        "loadgen_count_override_max":   ("max_query_count", 1),
-        "loadgen_multistreamness":      ("samples_per_query", 1),
-        "loadgen_max_query_count":      ("max_query_count", 1),
-        "loadgen_buffer_size":          ("performance_sample_count_override", 1),
-        "loadgen_samples_per_query":    ("samples_per_query", 1),
-        "loadgen_target_latency":       ("target_latency", 1),
-        "loadgen_target_qps":           ("target_qps", 1),
-        "loadgen_max_duration_s":       ("max_duration", 1000),
-        "loadgen_min_duration_s":       ("min_duration", 1000),
-        "loadgen_offline_expected_qps": ("offline_expected_qps", 1),
-    }
 
     user_conf   = []
     for param_name in loadgen_param_dictionary.keys():
@@ -25,12 +12,9 @@ def generate_user_conf(loadgen_param_dictionary, shortened_mlperf_model_name, lo
             orig_value = loadgen_param_dictionary[param_name]
             if orig_value is not None:
                 (config_category_name, multiplier) = param_to_conf_pair[param_name]
-                if multiplier==1:
-                    new_value = orig_value
-                elif type(orig_value) is int and type(multiplier) is int:
-                    new_value = int(orig_value)*multiplier
-                else:
-                    new_value = float(orig_value)*multiplier
+                new_value = float(orig_value * multiplier)
+                if float(int(new_value)) == new_value:
+                    new_value = int(new_value)
                 user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
 
     with open(target_user_conf_path, 'w') as user_conf_file:
