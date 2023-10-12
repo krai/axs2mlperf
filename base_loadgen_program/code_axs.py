@@ -25,7 +25,12 @@ def generate_user_conf(loadgen_param_dictionary, shortened_mlperf_model_name, lo
             orig_value = loadgen_param_dictionary[param_name]
             if orig_value is not None:
                 (config_category_name, multiplier) = param_to_conf_pair[param_name]
-                new_value = orig_value if multiplier==1 else float(orig_value)*multiplier
+                if multiplier==1:
+                    new_value = orig_value
+                elif type(orig_value) is int and type(multiplier) is int:
+                    new_value = int(orig_value)*multiplier
+                else:
+                    new_value = float(orig_value)*multiplier
                 user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
 
     with open(target_user_conf_path, 'w') as user_conf_file:
