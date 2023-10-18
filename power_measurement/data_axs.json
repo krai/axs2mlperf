@@ -19,6 +19,28 @@
     "power_server_address": [ "^^", "dig", "sut_data_runtime.power_server_address" ],
     "power_server_port": [ "^^", "dig", "sut_data_runtime.power_server_port" ],
 
+    "no_ranging": false,
+    "power_max_amps_sut":  [ "^^", "dig", "sut_data_runtime.power_max_amps", { "safe": true} ],
+    "power_max_volts_sut": [ "^^", "dig", "sut_data_runtime.power_max_volts", { "safe": true} ],
+
+    "power_max_amps": [ "^^", "get", [ "power_max_amps_sut", 0] ],
+    "power_max_volts": [ "^^", "get", [ "power_max_volts_sut", 0] ],
+
+    "effective_no_ranging_sign": [ "^^", "case", [ [ "^^", "func", [ "all", [
+	    [ "^^", "get", "no_ranging" ],
+	    [ "^^", "get", "power_max_amps" ],
+	    [ "^^", "get", "power_max_volts" ]
+    ] ] ], true, "+" ], { "default_value": "-" } ],
+
+    "power_max_amps_insert": [ "^^", "case", [ ["^^", "get", "no_ranging"],
+	true , [ "^^", "substitute", "--max-amps #{power_max_amps}#" ] ],
+        { "default_value": "" }
+    ],
+
+    "power_max_volts_insert": [ "^^", "case", [ ["^^", "get", "no_ranging"],
+	true , [ "^^", "substitute", "--max-volts #{power_max_volts}#" ] ],
+        { "default_value": "" }
+    ],
 
     "mlperf_power_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_power_git" ],
 
@@ -54,7 +76,7 @@
         [ "replace", ["power_loadgen_output", "loadgen_output"] ]
     ]] ],
 
-    "workload_command": [ "^^", "substitute", "axs byquery #{modified_query}#,_with_power+,symlink_to=#{last_mlperf_logs_path}#,power_client_entrydic_path=#{power_client_entrydic_path}#" ],
+    "workload_command": [ "^^", "substitute", "axs byquery #{modified_query}#,_with_power+,symlink_to=#{last_mlperf_logs_path}#,power_client_entrydic_path=#{power_client_entrydic_path}#,effective_no_ranging#{effective_no_ranging_sign}#" ],
 
-    "script_extra_params": [ "^^", "substitute", "--run-workload \"#{workload_command}#\" --loadgen-logs \"#{last_mlperf_logs_path}#\" --output \"#{power_logs_path}#\" --addr #{power_server_address}# --port #{power_server_port}# --ntp #{ntp_server_address}# --no-timestamp-path" ]
+    "script_extra_params": [ "^^", "substitute", "--run-workload \"#{workload_command}#\" --loadgen-logs \"#{last_mlperf_logs_path}#\" --output \"#{power_logs_path}#\" --addr #{power_server_address}# --port #{power_server_port}# --ntp #{ntp_server_address}# --no-timestamp-path #{power_max_amps_insert}# #{power_max_volts_insert}#" ]
 }

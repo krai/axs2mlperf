@@ -44,7 +44,7 @@ def generate_audit_conf( shortened_mlperf_model_name, submission_compliance_test
     return target_audit_conf_path
 
 
-def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_path):
+def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_path, effective_no_ranging):
     "A callback procedure to be activated when in power measurement mode"
 
     power_workload_path = output_entry.get_path()
@@ -54,15 +54,23 @@ def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_p
 
     if os.path.exists( symlink_to ):
         os.unlink( symlink_to )
-        os.symlink( power_workload_path, os.path.join(power_client_entry_path, "testing_logs" ), target_is_directory=True )
         entrydic = load_json( power_client_entrydic_path )
-        entrydic["testing_entry_name"] = power_workload_entry_name
-    else:
-        os.symlink( power_workload_path, os.path.join(power_client_entry_path, "ranging_logs" ), target_is_directory=True )
-        entrydic = { "ranging_entry_name": power_workload_entry_name }
 
+        logs_name = "testing_logs"
+        entry_name_dict = "testing_entry_name"
+    else:
+        entrydic = {}
+        if effective_no_ranging:
+            logs_name = "testing_logs"
+            entry_name_dict = "testing_entry_name"
+        else:
+            logs_name = "ranging_logs"
+            entry_name_dict = "ranging_entry_name"
+
+    entrydic[entry_name_dict] = power_workload_entry_name
     save_json( entrydic, power_client_entrydic_path, indent=4 )
 
+    os.symlink( power_workload_path, os.path.join(power_client_entry_path, logs_name ), target_is_directory=True )
     os.symlink( power_workload_path, symlink_to, target_is_directory=True )
 
     return output_entry
