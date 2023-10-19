@@ -100,6 +100,7 @@
         [ "get", "output_entry" ],
         [ "plant", [ "loadgen_mlperf_conf_path",[ "^^", "get", "loadgen_mlperf_conf_path" ] ]],
         [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
+        [ "plant", [ "experiment_begin_timestamp", [ "^^", "generate_current_timestamp", [], {"used_for": "begin"} ] ]],
         [ "save", [], { "deterministic": false } ],
         [ "get_path", "data_axs.json" ]
     ]] ],
@@ -119,6 +120,15 @@
     ]] ],
 
     "symlink_to": null,
-    "postprocess_on_success": [ "^^", "link_to_power_client_entry" ],
-    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], null ], { "default_value": "postprocess_on_success" } ]
+    "link_to_power_and_register_end_timestamp": [ "^^", "execute", [[
+        [ "link_to_power_client_entry" ],
+        [ "plant", [ "experiment_end_timestamp",  [ "^^", "generate_current_timestamp", [], { "used_for": "end" } ]]],
+        [ "save", [], { "deterministic_2": false } ]
+    ]]],
+    "register_end_timestamp": [ "^^", "execute", [[
+        [ "get", "output_entry" ],
+        [ "plant", [ "experiment_end_timestamp",  [ "^^", "generate_current_timestamp", [], { "used_for": "end" } ]]],
+        [ "save", [], { "deterministic_2": false } ]
+    ]]],
+    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], "register_end_timestamp" ], { "default_value": "link_to_power_and_register_end_timestamp" } ]
 }

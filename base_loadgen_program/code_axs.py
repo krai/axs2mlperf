@@ -1,5 +1,6 @@
 import os
 from shutil import copy2
+import datetime
 from ufun import load_json, save_json
 
 
@@ -96,3 +97,8 @@ def get_config_from_sut(config=None, default_val=None, sut_data_runtime=None, su
     # If config is not in either, return default_val
     print(f"Bailing, set {config} to [{default_val}] ...")
     return default_val
+
+def generate_current_timestamp(used_for="unknown"):
+    timestamp = datetime.datetime.now().strftime("%Y.%m.%dT%H:%M:%S")
+    #print(f"GENERATING TIMESTAMP: {timestamp} used for: {used_for}")
+    return timestamp
