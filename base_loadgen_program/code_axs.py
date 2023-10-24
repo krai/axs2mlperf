@@ -53,8 +53,7 @@ def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_p
 
     power_client_entry_path = os.path.dirname( symlink_to )
 
-    if os.path.exists( symlink_to ):
-        os.unlink( symlink_to )
+    if os.path.exists(power_client_entrydic_path ):
         entrydic = load_json( power_client_entrydic_path )
 
         logs_name = "testing_logs"
@@ -71,7 +70,8 @@ def link_to_power_client_entry(output_entry, symlink_to, power_client_entrydic_p
     entrydic[entry_name_dict] = power_workload_entry_name
     save_json( entrydic, power_client_entrydic_path, indent=4 )
 
-    os.symlink( power_workload_path, os.path.join(power_client_entry_path, logs_name ), target_is_directory=True )
+    if os.path.exists( symlink_to ):
+        os.unlink( symlink_to )
     os.symlink( power_workload_path, symlink_to, target_is_directory=True )
 
     return output_entry
