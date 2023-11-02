@@ -49,10 +49,13 @@
         [ "get_path_of", "power_client_script" ]
     ]] ],
 
+    "collection_name": "work_collection",
+    "collection_object": [ "^", "byquery", ["^^", "substitute", "collection,collection_name=#{collection_name}#" ], { "parent_recursion": true }, [ "collection_name" ] ],
+
     "output_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "plant", ["_parent_entries", [ "AS^IS", [ "^", "byname", "base_power_measurement_experiment" ] ] ] ],
-        [ "attach", [ "^", "work_collection" ] ],
+        [ "attach", [ "^^", "get", "collection_object" ] ],
         [ "save" ]
     ]] ],
 
