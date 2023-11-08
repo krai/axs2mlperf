@@ -7,6 +7,10 @@
     "loadgen_count_override_min": ["^^", "get", "loadgen_count_override"],
     "loadgen_count_override_max": ["^^", "get", "loadgen_count_override"],
 
+    "loadgen_duration_s": null,
+    "loadgen_min_duration_s": ["^^", "get", "loadgen_duration_s"],
+    "loadgen_max_duration_s": ["^^", "get", "loadgen_duration_s"],
+
     "loadgen_multistreamness": null,
     "loadgen_target_latency": null,
     "loadgen_target_qps": null,

@@ -39,6 +39,7 @@ mode_str                      = input_parameters["loadgen_mode"]
 dataset_size                  = input_parameters["loadgen_dataset_size"]
 buffer_size                   = input_parameters["loadgen_buffer_size"]
 count_override                = input_parameters["loadgen_count_override"]
+duration_s                    = input_parameters["loadgen_duration_s"]
 multistreamness               = input_parameters["loadgen_multistreamness"]
 mlperf_conf_path              = input_parameters["loadgen_mlperf_conf_path"]
 user_conf_path                = input_parameters["loadgen_user_conf_path"]
@@ -201,6 +202,10 @@ def benchmark_using_loadgen():
     if count_override is not None:
         ts.min_query_count = count_override
         ts.max_query_count = count_override
+
+    if duration_s is not None:
+        ts.min_duration_ms = duration_s * 1000
+        ts.max_duration_ms = duration_s * 1000
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)

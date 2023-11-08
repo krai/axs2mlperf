@@ -57,6 +57,8 @@
         "loadgen_count_override",
         "loadgen_multistreamness",
 
+        "loadgen_duration_s",
+
         "verbosity",
 
         "normalize_symmetric",
