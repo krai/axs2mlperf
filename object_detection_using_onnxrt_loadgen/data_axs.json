@@ -56,11 +56,6 @@
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_object_detection_loadgen_experiment" ] ],
     "output_entry_param_names": [
-        "loadgen_count_override",
-        "loadgen_multistreamness",
-        "loadgen_min_duration_s",
-        "loadgen_max_duration_s",
-
         "verbosity",
 
         "model_resolution",

@@ -9,14 +9,13 @@ def generate_user_conf(loadgen_param_dictionary, param_to_conf_pair, shortened_m
 
     user_conf   = []
     for param_name in loadgen_param_dictionary.keys():
-        if param_name in param_to_conf_pair:
-            orig_value = loadgen_param_dictionary[param_name]
-            if orig_value is not None:
-                (config_category_name, multiplier) = param_to_conf_pair[param_name]
-                new_value = float(orig_value * multiplier)
-                if float(int(new_value)) == new_value:
-                    new_value = int(new_value)
-                user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
+        orig_value = loadgen_param_dictionary[param_name]
+        if orig_value is not None:
+            (config_category_name, multiplier) = param_to_conf_pair[param_name]
+            new_value = float(orig_value * multiplier)
+            if float(int(new_value)) == new_value:
+                new_value = int(new_value)
+            user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
 
     with open(target_user_conf_path, 'w') as user_conf_file:
          user_conf_file.writelines(user_conf)

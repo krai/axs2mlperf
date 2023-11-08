@@ -30,8 +30,6 @@ scenario_str                = input_parameters["loadgen_scenario"]
 mode_str                    = input_parameters["loadgen_mode"]
 dataset_size                = input_parameters["loadgen_dataset_size"]
 buffer_size                 = input_parameters["loadgen_buffer_size"]
-count_override              = input_parameters["loadgen_count_override"]
-multistreamness             = input_parameters["loadgen_multistreamness"]
 mlperf_conf_path            = input_parameters["loadgen_mlperf_conf_path"]
 user_conf_path              = input_parameters["loadgen_user_conf_path"]
 verbosity                   = input_parameters["verbosity"]
@@ -189,13 +187,6 @@ def benchmark_using_loadgen():
 
     ts.scenario = scenario
     ts.mode     = mode
-
-    if multistreamness is not None:
-        ts.multi_stream_samples_per_query = multistreamness
-
-    if count_override is not None:
-        ts.min_query_count = count_override_str
-        ts.max_query_count = count_override_str
 
     sut = lg.ConstructSUT(issue_queries, flush_queries)
     qsl = lg.ConstructQSL(dataset_size, buffer_size, load_query_samples, unload_query_samples)

@@ -14,8 +14,6 @@
     "loadgen_multistreamness": null,
     "loadgen_target_latency": null,
     "loadgen_target_qps": null,
-    "loadgen_min_duration_s": null,
-    "loadgen_max_duration_s": null,
     "loadgen_compliance_test": null,
 
     "param_to_conf_pair": {
@@ -31,6 +29,12 @@
         "loadgen_min_duration_s":       ["min_duration", 1000],
         "loadgen_offline_expected_qps": ["offline_expected_qps", 1]
     },
+    "param_to_conf_keys": [ "^^", "execute", [[
+        [ "get", "param_to_conf_pair" ],
+        [ "keys" ],
+        0,
+        [ "func", "list" ]
+    ]] ],
 
     "_with_power": false,
 
@@ -112,9 +116,10 @@
         [ "get_path", "data_axs.json" ]
     ]] ],
 
-    "loadgen_user_conf_path": [ "^^", "generate_user_conf", [
-        [ "^^", "slice", [ "loadgen_buffer_size", "loadgen_multistreamness","loadgen_count_override_min","loadgen_count_override_max", "loadgen_target_latency", "loadgen_target_qps" , "loadgen_min_duration_s", "loadgen_max_duration_s" ] ]
-    ]],
+    "loadgen_user_conf_path": [ "^^", "generate_user_conf",
+        [ "^^", "slice", [ "^^", "get", "param_to_conf_keys" ], { "skip_missing": true } ]
+    ],
+
     "internal_to_mlperf_model_name": { "retinanet_openimages": "retinanet", "bert_large": "bert-99" },
     "mlperf_model_name": [ "^^", "execute", [[
 	    [ "get", "internal_to_mlperf_model_name" ],

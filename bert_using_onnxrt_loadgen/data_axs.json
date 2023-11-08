@@ -57,9 +57,6 @@
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_bert_loadgen_experiment" ] ],
     "output_entry_param_names": [
-        "loadgen_count_override",
-        "loadgen_multistreamness",
-
         "verbosity",
         "batch_size",
 
