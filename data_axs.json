@@ -1,6 +1,7 @@
 {
     "_parent_entries": [
-        [ "^", "core_collection" ]
+        [ "^", "core_collection" ],
+        [ "^", "byname", "git" ]
     ],
     "tags": [
         "git_repo",
