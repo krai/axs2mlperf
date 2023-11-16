@@ -28,6 +28,7 @@
         "mlperf_power_git_recipe": "mlperf_power_git_recipe",
         "dataset_cnndm_mlperf_recipe": "dataset_cnndm_mlperf_recipe",
         "dataset_lambada_recipe": "dataset_lambada_recipe",
+        "dataset_coco2014_images_recipe": "dataset_coco2014_images_recipe",
         "gptj_reference_loadgen": "gptj_reference_loadgen",
         "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment",
         "power_measurement": "power_measurement",
