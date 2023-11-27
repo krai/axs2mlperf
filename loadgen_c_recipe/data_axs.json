@@ -27,9 +27,14 @@
 
     "loadgen_path": [ "^", "execute", [[
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-        [ "get_path", "loadgen" ]
+        [ "get_path_of", "loadgen" ]
     ]] ],
 
-    "shell_cmd_with_subs": [ "^^", "substitute", "SRC_DIR=#{loadgen_path}# INSTALL_DIR=#{target_path}# #{abs_source_path}#/install.sh" ]
+    "env": {
+        "SRC_DIR": [ "^^", "substitute", "#{loadgen_path}#"],
+        "INSTALL_DIR": [ "^^", "substitute", "#{target_path}#" ]
+    },
+
+    "shell_cmd_with_subs": "#{abs_source_path}#/install.sh"
 
 }
