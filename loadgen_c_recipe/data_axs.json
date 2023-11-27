@@ -27,7 +27,7 @@
 
     "loadgen_path": [ "^", "execute", [[
         [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-        [ "get_path", "loadgen" ]
+        [ "get_path_of", "loadgen" ]
     ]] ],
 
     "env": {
