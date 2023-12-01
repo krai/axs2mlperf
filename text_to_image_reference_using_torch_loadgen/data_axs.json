@@ -163,6 +163,6 @@
      ]] ],
 
      "script_extra_params": [ "^^", "substitute",
-        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --max-batchsize #{max_batchsize}# #{threads_cmd}# #{use_preprocessed_dataset_cmd}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# #{qps_cmd}# #{model_path_cmd}# --dtype #{dtype}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{user_conf_path}# --audit_conf #{audit_conf}#"
+        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# #{threads_cmd}# #{use_preprocessed_dataset_cmd}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# #{qps_cmd}# #{model_path_cmd}# --dtype #{dtype}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{user_conf_path}# --audit_conf #{audit_conf}#"
      ]
 }
