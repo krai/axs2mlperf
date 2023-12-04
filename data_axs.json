@@ -1,11 +1,18 @@
 {
     "_parent_entries": [
-        [ "^", "core_collection" ],
-        [ "^", "byname", "git" ]
+        [
+            "^",
+            "core_collection"
+        ],
+        [
+            "^",
+            "byname",
+            "git"
+        ]
     ],
     "tags": [
-        "git_repo",
-        "collection"
+        "collection",
+        "git_repo"
     ],
     "contained_entries": {
         "loadgen_example": "loadgen_example",

@@ -184,16 +184,6 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
         measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario] )
 
-        path_model_readme = os.path.join(measurement_path, "README.md")
-        if os.path.exists(readme_template_path):
-            with open(readme_template_path, "r") as input_fd:
-                template = input_fd.read()
-            with open(path_model_readme, "w") as output_fd:
-                output_fd.write( template.format(benchmark=display_benchmark, framework=framework ) )
-
-        with open(path_model_readme, "a") as fd:
-            fd.write( "## Benchmarking " + model_name + " model " + "in " + mode + " mode" + "\n" + "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-        print("")
         for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
 
             filename = os.path.basename( src_file_path )
@@ -234,6 +224,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
                 shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
                 shutil.copy2(sut_power_settings_path, power_settings_file_path)
+
         # --------------------------------[ results ]--------------------------------------
         mode        = {
             'AccuracyOnly': 'accuracy',
@@ -391,3 +382,101 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
 
+
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, __entry__=None):
+    
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+
+    def make_local_dir( path_list ):
+
+        joined_path  = os.path.join( submitted_tree_path, *path_list )
+        print(f"Creating directory: {joined_path}", file=sys.stderr)
+        try:
+            os.makedirs( joined_path )
+        except:
+            pass
+        return joined_path
+
+    readme_template_path = __entry__.get_path("README_template.md")
+
+    target_scenario = None
+
+    print("experiment_entries: ", experiment_entries)
+          
+    for experiment_entry in experiment_entries:
+
+        if type(experiment_entry)==list:
+            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
+        else:
+            target_scenario = experiment_entry['loadgen_scenario']
+
+        scenario = target_scenario.lower()
+
+       
+        if "power_loadgen_output" in experiment_entry["tags"]:
+            power_experiment_entry = experiment_entry
+            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
+            origin_experiment_path = os.readlink(last_mlperf_logs_path)
+            origin_experiment_name = origin_experiment_path.split("/")[-1]
+            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+
+        src_dir         = experiment_entry.get_path("")
+        sut_name        = experiment_entry.get('sut_name')
+        
+        loadgen_mode    = experiment_entry.get('loadgen_mode')
+        with_power      = experiment_entry.get("with_power")
+
+        experiment_cmd = experiment_entry.get('produced_by')
+        compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
+
+        round = 3.1 # set as a default value as of now
+
+        mode = loadgen_mode.replace("Only", "")
+
+        print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
+
+        model_name  = experiment_entry['model_name']
+        mlperf_model_name = experiment_entry['mlperf_model_name']
+
+        # ----------------------------[ measurements ]------------------------------------
+        
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario] )
+
+        path_model_readme = os.path.join(measurement_path, "README.md")
+        if os.path.exists(readme_template_path):
+            with open(readme_template_path, "r") as input_fd:
+                # Read the template
+                template = input_fd.read()
+            with open(path_model_readme, "w") as output_fd:
+                # Write the formatted template to the target file
+                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut_name=sut_name,  model_name=model_name, scenario=scenario ) )
+            
+        with open(path_model_readme, "a") as fd:
+            if mode == 'Accuracy':
+                fd.write( "### Accuracy  " + "\n\n")
+                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+            elif mode == 'Performance' and not with_power:
+                fd.write( "### Performance " + "\n\n")
+                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+            elif mode == 'Performance' and with_power:
+                fd.write( "### Power " + "\n\n")
+                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+
+            if division == "closed":
+                fd.write( "### Compliance TEST" + compliance_test_name + "\n\n")
+                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+        print("")
+
+        # if with_power:
+        #     analyzer_table_file = "analyzer_table.md"
+        #     power_settings_file = "power_settings.md"
+
+        #     sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+        #     sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
+        #     analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
+        #     power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
+
+        #     if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+        #         shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
+        #         shutil.copy2(sut_power_settings_path, power_settings_file_path)
