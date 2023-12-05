@@ -103,12 +103,7 @@ def list_experiment_entries( power, sut_name, sut_system_type, program_name, tas
 
     return experiment_entries
 
-
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
-
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
-
-    def make_local_dir( path_list ):
+def make_local_dir( path_list, submitted_tree_path ):
 
         joined_path  = os.path.join( submitted_tree_path, *path_list )
         print(f"Creating directory: {joined_path}", file=sys.stderr)
@@ -118,13 +113,21 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             pass
         return joined_path
 
-    submitter_path      = make_local_dir( [ division, submitter ] )
-    code_path           = make_local_dir( [ division, submitter, 'code'] )
-    systems_path        = make_local_dir( [ division, submitter, 'systems'] )
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+
+    submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
+    code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
+    systems_path        = make_local_dir( [ division, submitter, 'systems'], submitted_tree_path )
 
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
-    readme_template_path = __entry__.get_path("README_template.md")
+
+
+    generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, __entry__ )
+
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, __entry__ )
 
     for experiment_entry in experiment_entries:
 
@@ -152,12 +155,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
-        readme_path    = program_entry.get_path("README.md")
 
-        experiment_cmd = experiment_entry.get('produced_by')
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
-        framework       = experiment_entry.get('framework').upper()
         task = experiment_entry.get('task')
         display_benchmark   = task.replace("_", " ").title()
 
@@ -165,24 +165,13 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         sut_descriptions_dictionary[sut_name] = sut_description
 
-        print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
-
-        model_name  = experiment_entry['model_name']
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
-        code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ] )
-
-        if os.path.exists(readme_path):
-            print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-            shutil.copy(readme_path, code_model_program_path)         
-        else:
-            print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-        path_readme = os.path.join(code_model_program_path, "README.md")
 
         # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ] )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario] )
+        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
         for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
 
@@ -237,7 +226,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
                 results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
-                results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc)
+                results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc, submitted_tree_path)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
 
@@ -250,7 +239,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             results_path_syll.extend(( mode, 'run_1' ))
 
-        results_path        = make_local_dir( results_path_syll )
+        results_path = make_local_dir( results_path_syll, submitted_tree_path )
 
         for filename in files_to_copy:
             src_file_path = os.path.join(src_dir, filename)
@@ -272,7 +261,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 results_path_syll.append( elem )
                 src_file_path = power_src_dir + "/" + elem + "/"
 
-                results_path        = make_local_dir( results_path_syll )
+                results_path = make_local_dir( results_path_syll, submitted_tree_path )
 
                 for file_name in os.listdir(src_file_path):
                     if file_name != "ptd_out.txt":
@@ -303,11 +292,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ] )
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ] )
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
             results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
@@ -384,25 +373,14 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, __entry__=None):
-    
+
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
-
-    def make_local_dir( path_list ):
-
-        joined_path  = os.path.join( submitted_tree_path, *path_list )
-        print(f"Creating directory: {joined_path}", file=sys.stderr)
-        try:
-            os.makedirs( joined_path )
-        except:
-            pass
-        return joined_path
 
     readme_template_path = __entry__.get_path("README_template.md")
 
     target_scenario = None
 
-    print("experiment_entries: ", experiment_entries)
-          
+
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
@@ -412,7 +390,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         scenario = target_scenario.lower()
 
-       
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
             last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
@@ -422,61 +399,84 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
-        
+
         loadgen_mode    = experiment_entry.get('loadgen_mode')
         with_power      = experiment_entry.get("with_power")
 
-        experiment_cmd = experiment_entry.get('produced_by')
-        compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
+        target_qps = experiment_entry.get("loadgen_target_qps")
+        target_latency = experiment_entry.get("loadgen_target_latency")
+
+        experiment_cmd  = 'axs byquery ' + experiment_entry.get('__query')
+        #experiment_cmd  = experiment_entry.get('produced_by')
+        compliance_test_name      = experiment_entry.get('loadgen_compliance_test')
+
+        # Use target_value only when the command is referred from "__query" tag
+        if scenario in ['singlestream', 'multistream'] and "loadgen_target_latency" not in experiment_cmd:
+            target_value = ",loadgen_target_latency=" + str(target_latency)
+        elif scenario in ['offline', 'server'] and "loadgen_target_qps" not in experiment_cmd:
+            target_value = ",loadgen_target_qps=" + str(target_qps)
+        else:
+            target_value = ""
 
         round = 3.1 # set as a default value as of now
 
         mode = loadgen_mode.replace("Only", "")
 
-        print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}", file=sys.stderr)
+        print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
 
         model_name  = experiment_entry['model_name']
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        # ----------------------------[ measurements ]------------------------------------
-        
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario] )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
-        if os.path.exists(readme_template_path):
+        if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
             with open(readme_template_path, "r") as input_fd:
                 # Read the template
                 template = input_fd.read()
             with open(path_model_readme, "w") as output_fd:
                 # Write the formatted template to the target file
-                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut_name=sut_name,  model_name=model_name, scenario=scenario ) )
-            
+                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=model_name, scenario=scenario ) )
+
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
                 fd.write( "### Accuracy  " + "\n\n")
                 fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-            elif mode == 'Performance' and not with_power:
-                fd.write( "### Performance " + "\n\n")
-                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-            elif mode == 'Performance' and with_power:
-                fd.write( "### Power " + "\n\n")
-                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
-
-            if division == "closed":
-                fd.write( "### Compliance TEST" + compliance_test_name + "\n\n")
-                fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
+            elif mode == 'Performance' and not compliance_test_name:
+                if with_power:
+                    fd.write( "### Power " + "\n\n")
+                    fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
+                else:
+                    fd.write( "### Performance " + "\n\n")
+                    fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
+            else:
+                fd.write( "### Compliance " + compliance_test_name + "\n\n")
+                fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
         print("")
 
-        # if with_power:
-        #     analyzer_table_file = "analyzer_table.md"
-        #     power_settings_file = "power_settings.md"
+def generate_readmes_for_code(experiment_entries, division, submitter, submission_entry, __entry__):
 
-        #     sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
-        #     sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
-        #     analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
-        #     power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
+    code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
 
-        #     if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
-        #         shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
-        #         shutil.copy2(sut_power_settings_path, power_settings_file_path)
+    sut_descriptions_dictionary      = {}
+
+    for experiment_entry in experiment_entries:
+
+        src_dir = experiment_entry.get_path("")
+        experiment_program_name = experiment_entry.get('program_name')
+        program_entry = __entry__.get_kernel().byname(experiment_program_name)
+        readme_path = program_entry.get_path("README.md")
+
+        mlperf_model_name = experiment_entry['mlperf_model_name']
+
+        modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
+        code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
+
+        if os.path.exists(readme_path):
+            print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
+            shutil.copy(readme_path, code_model_program_path)
+        else:
+            print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
+        path_readme = os.path.join(code_model_program_path, "README.md")
