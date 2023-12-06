@@ -47,7 +47,7 @@ def unpack_accuracy_log(raw_accuracy_log):
     return readable_accuracy_log
 
 
-def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None ):
+def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_compiance_test = None, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None, sut_name = None):
 
     terms_list = [] + tags
     terms_list.append( f"framework={framework}" )
@@ -56,6 +56,12 @@ def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, l
     terms_list.append( f"model_name={model_name}" )
     terms_list.append( f"loadgen_dataset_size={loadgen_dataset_size}" )
     terms_list.append( f"loadgen_buffer_size={loadgen_buffer_size}" )
+    if loadgen_compiance_test is None:
+        terms_list.append( f"loadgen_compiance_test-" )
+    else:
+        terms_list.append( f"loadgen_compiance_test={loadgen_compiance_test}" )
+    if sut_name is not None:
+      terms_list.append( f"sut_name={sut_name}" )
 
     if loadgen_scenario == 'MultiStream':
         terms_list.append( f"loadgen_multistreamness={loadgen_multistreamness}" )
