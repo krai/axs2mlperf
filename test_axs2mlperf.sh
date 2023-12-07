@@ -21,8 +21,8 @@ if [ "$ONNX_DETECTION_SSD_COCO" == "on" ] || [ "$ONNX_DETECTION_RETINANET_COCO" 
         echo "Skipping the ONNX_DETECTION_SSD_COCO test"
     fi
     if [ "$ONNX_DETECTION_RETINANET_OPENIMAGES" == "on" ]; then
-        axs byquery extracted,openimages_annotations,v2_1
-        axs byquery downloaded,openimages_mlperf
+        #axs byquery extracted,openimages_annotations,v2_1
+        #axs byquery downloaded,openimages_mlperf
         axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,model_name=retinanet_openimages,loadgen_dataset_size=20,loadgen_buffer_size=100,execution_device=cpu
         export ACCURACY_OUTPUT=`axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,model_name=retinanet_openimages,loadgen_dataset_size=20,loadgen_buffer_size=100,execution_device=cpu , get accuracy`
         echo "Accuracy: $ACCURACY_OUTPUT"
@@ -72,7 +72,7 @@ if [ "$ONNX_CLASSIFY" == "on" ] || [ "$TORCH_CLASSIFY" == "on" ] ; then
 fi
 
 if [ "$ONNX_BERT_SQUAD" == "on" ]; then
-    axs byquery preprocessed,dataset_name=squad_v1_1
+    #axs byquery preprocessed,dataset_name=squad_v1_1
     axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,execution_device=cpu
     export ACCURACY_OUTPUT=`axs byquery loadgen_output,task=bert,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,execution_device=cpu , get accuracy_dict`
     echo "Accuracy: $ACCURACY_OUTPUT"
