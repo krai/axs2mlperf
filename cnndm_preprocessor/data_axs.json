@@ -36,6 +36,5 @@
     "input_data_type": "int32",
     "new_file_extension": "bin",
     "file_name": "preprocessed",
-    "model_name_or_path" : "EleutherAI/gpt-j-6B",
-    "model_dir_mlperf": "/home/oleg/mlperf_inference_data/models/GPTJ-6B/checkpoint-final"
+    "model_name_or_path" : "EleutherAI/gpt-j-6B"
 }
