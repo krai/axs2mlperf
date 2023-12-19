@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 from ufun import save_json
+from tabulate import tabulate
 
 def scenarios_from_sut_type_and_task(sut_system_type, task):
 
@@ -128,7 +129,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, __entry__ )
 
     generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, __entry__ )
-
+    
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
@@ -373,14 +374,14 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, __entry__=None):
-
+    
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
     readme_template_path = __entry__.get_path("README_template.md")
 
     target_scenario = None
 
-
+          
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
@@ -399,17 +400,17 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
-
+        
         loadgen_mode    = experiment_entry.get('loadgen_mode')
         with_power      = experiment_entry.get("with_power")
-
+        
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
 
         experiment_cmd  = 'axs byquery ' + experiment_entry.get('__query')
         #experiment_cmd  = experiment_entry.get('produced_by')
         compliance_test_name      = experiment_entry.get('loadgen_compliance_test')
-
+       
         # Use target_value only when the command is referred from "__query" tag
         if scenario in ['singlestream', 'multistream'] and "loadgen_target_latency" not in experiment_cmd:
             target_value = ",loadgen_target_latency=" + str(target_latency)
@@ -437,7 +438,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
             with open(path_model_readme, "w") as output_fd:
                 # Write the formatted template to the target file
                 output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=model_name, scenario=scenario ) )
-
+        
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
                 fd.write( "### Accuracy  " + "\n\n")
@@ -480,3 +481,64 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
         else:
             print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
         path_readme = os.path.join(code_model_program_path, "README.md")
+
+def generate_tables(experiment_entries, division, submitter, submission_entry, __entry__):
+
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+
+    col_names = ["SUT", "Scenario", "Mode", "Target", "Compliance Test", "Samples per second"]
+    table_data = []
+    for experiment_entry in experiment_entries:
+        
+        if type(experiment_entry)==list:
+            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
+        else:
+            target_scenario = experiment_entry['loadgen_scenario']
+
+        scenario = target_scenario
+
+        entry_path = experiment_entry.get_path("")
+        mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
+        sut_name = experiment_entry.get('sut_name')
+        loadgen_mode = experiment_entry.get('loadgen_mode')
+        mode = loadgen_mode.replace("Only", "")
+        target_qps = experiment_entry.get("loadgen_target_qps")
+        target_latency = experiment_entry.get("loadgen_target_latency")
+        compliance_test_name = experiment_entry.get('loadgen_compliance_test')
+        mlperf_summary_path = experiment_entry
+        
+        def get_samples_per_second(file_path):
+            try:
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        # Check for Server scenario log
+                        if "Scheduled samples per second" in line:
+                        # Assuming the line format is 'Scheduled samples per second : 2223.24'
+                            parts = line.split(':')
+                            if len(parts) == 2:
+                                value = parts[1].strip()  # Remove any leading/trailing whitespace
+                                return float(value)  # Convert the string to a float
+                        # Check for Offline scenario log
+                        elif "Samples per second" in line:
+                            parts = line.split(':')
+                            if len(parts) == 2:
+                                value = parts[1].strip()
+                                return float(value)
+            except IOError as e:
+                print(f"Error reading file: {e}")
+                return None
+
+        samples_per_second = get_samples_per_second(mlperf_log_path)
+
+        if mode.lower() == "accuracy":
+            target = "N/A" 
+            samples_per_second = "N/A"
+        elif scenario in ["Offline", "Server"]:
+            target = target_qps
+        elif scenario in ["SingleStream", "MultiStream"]:
+            target = target_latency
+
+        table_data.append([sut_name, scenario, mode, target, compliance_test_name, samples_per_second])
+
+    # Display Table
+    print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", showindex="always"))
