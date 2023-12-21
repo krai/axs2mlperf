@@ -419,7 +419,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         else:
             target_value = ""
 
-        round = 3.1 # set as a default value as of now
+        round = 4.0 # set as a default value as of now
 
         mode = loadgen_mode.replace("Only", "")
 
@@ -441,7 +441,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
-                fd.write( "### Accuracy  " + "\n\n")
+                fd.write( "\n" + "### Accuracy  " + "\n\n")
                 fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
             elif mode == 'Performance' and not compliance_test_name:
                 if with_power:
@@ -486,7 +486,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
-    col_names = ["SUT", "Scenario", "Mode", "Target", "Compliance Test", "Samples per second"]
+    col_names = ["SUT", "Scenario", "Mode", "Compliance?", "Status", "Target metric", "Actual metric"]
     table_data = []
     for experiment_entry in experiment_entries:
         
@@ -505,8 +505,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
+        retinanet_accuracy_metric = experiment_entry.get("accuracy_report")
         mlperf_summary_path = experiment_entry
         
+        # Fuction to extract the actual performance metric
         def get_samples_per_second(file_path):
             try:
                 with open(file_path, 'r') as file:
@@ -528,17 +530,56 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 print(f"Error reading file: {e}")
                 return None
 
-        samples_per_second = get_samples_per_second(mlperf_log_path)
+        #Function to extract the Result status
+        def get_result_status(file_path):
+            try:
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        # Check for VALID/INVALID result status
+                        if "Result is" in line:
+                            parts = line.split(':')
+                            value = parts[1].strip()
+                            return str(value)
+            except IOError as e:
+                print(f"Error reading file: {e}")
+                return None
 
-        if mode.lower() == "accuracy":
-            target = "N/A" 
-            samples_per_second = "N/A"
-        elif scenario in ["Offline", "Server"]:
+        # Function to extract mAP value
+        def extract_map(metric_list):
+            if metric_list is not None:
+                for item in metric_list:
+                    if "mAP=" in item:
+                        # Extracting the numerical part of the mAP value
+                        map_value = item.split('=')[1].strip()
+                        return map_value
+            return "mAP value not found"
+
+        # Extracting the mAP value
+        map_value = extract_map(retinanet_accuracy_metric)
+
+        # Target accuracy for object detection workload
+        object_dectection_target_accuracy = round(37.55*0.99 , 3)
+
+        if mode.lower() == "performance":
+            actual_metric = get_samples_per_second(mlperf_log_path)
+        elif mode.lower() == "accuracy":
+            actual_metric = map_value
+            target = object_dectection_target_accuracy
+            #if target <= actual_metric:
+                #status = "VALID"
+        status = get_result_status(mlperf_log_path)
+
+        if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
-        elif scenario in ["SingleStream", "MultiStream"]:
+        elif scenario in ["SingleStream", "MultiStream"] and mode.lower() == "performance":
             target = target_latency
 
-        table_data.append([sut_name, scenario, mode, target, compliance_test_name, samples_per_second])
+        if compliance_test_name is False:
+            compliance = "False"
+        else:
+            compliance = "True"
+
+        table_data.append([sut_name, scenario, mode, compliance, status, target, actual_metric])
 
     # Display Table
-    print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", showindex="always"))
+    print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", stralign='center'))

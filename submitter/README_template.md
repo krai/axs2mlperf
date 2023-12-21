@@ -1,8 +1,6 @@
 
-To run the experiments you need the following commands
+# MLPerf Inference v{round} - {division} - {submitter}
 
-# MLPerf Inference - {round} - {division} - {submitter}
-
-To run the experiments you need the following commands
+To run experiments individually, use the following commands.
 
 ## {sut} - {model} - {scenario}
