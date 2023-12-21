@@ -557,7 +557,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         # Extracting the mAP value
         map_value = extract_map(retinanet_accuracy_metric)
 
-        # Target accuracy for object detection workload
+        # Target accuracy for workloads
+        image_classification_target_accuracy = round(76.46*0.99, 3)
+        bert-99_target_accuracy = round(90.874 * 0.99 , 3)
+        bert-99.9_target_accurcay = round(90.874 * 0.999, 3)
         object_dectection_target_accuracy = round(37.55*0.99 , 3)
 
         if mode.lower() == "performance":
