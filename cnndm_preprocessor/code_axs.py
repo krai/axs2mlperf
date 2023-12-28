@@ -69,8 +69,9 @@ def preprocess_files(source_dir,
 def preprocess(source_dir, input_data_type, new_file_extension, file_name, model_name_or_path, dataset_name, tags=None, entry_name=None, __record_entry__=None):
     
     __record_entry__["tags"] = tags or [ "preprocessed" ]
-    entry_name_list = [ dataset_name, "preprocessed" ]
+    entry_name_list = [ dataset_name, model_name_or_path, "preprocessed" ]
     entry_name = "_".join(entry_name_list)
+    entry_name = entry_name.replace("/", "-")
 
     __record_entry__.save( entry_name )
     output_directory = __record_entry__.get_path(file_name)
