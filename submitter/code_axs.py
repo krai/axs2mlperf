@@ -500,12 +500,14 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         entry_path = experiment_entry.get_path("")
         mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
         sut_name = experiment_entry.get('sut_name')
+        model = experiment_entry.get('model_name')
         loadgen_mode = experiment_entry.get('loadgen_mode')
         mode = loadgen_mode.replace("Only", "")
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
-        retinanet_accuracy_metric = experiment_entry.get("accuracy_report")
+        accuracy_metric = experiment_entry.get("accuracy_report")
+        print(accuracy_metric)
         mlperf_summary_path = experiment_entry
         
         # Fuction to extract the actual performance metric
@@ -544,10 +546,19 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 print(f"Error reading file: {e}")
                 return None
 
+        # Function to extract accuracy for image-classification
+        def extract_accuracy_ic(accuracy_metric):
+            if accuracy_metric is not None and "accuracy=" in accuracy_metric:
+                accuracy_part = accuracy_metric.split('accuracy=')[1]
+                # Extracting the accuracy value before the '%' character
+                accuracy_value = accuracy_part.split('%')[0].strip()
+                return accuracy_value
+            return "Accuracy value not found"
+
         # Function to extract mAP value
-        def extract_map(metric_list):
-            if metric_list is not None:
-                for item in metric_list:
+        def extract_map(accuracy_metric):
+            if accuracy_metric is not None:
+                for item in accuracy_metric:
                     if "mAP=" in item:
                         # Extracting the numerical part of the mAP value
                         map_value = item.split('=')[1].strip()
@@ -555,19 +566,27 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             return "mAP value not found"
 
         # Extracting the mAP value
-        map_value = extract_map(retinanet_accuracy_metric)
+        if model == "retinanet":
+            map_value = extract_map(accuracy_metric)
+        elif model == "resnet50":
+            accuracy_ic = extract_accuracy_ic(accuracy_metric)
 
         # Target accuracy for workloads
         image_classification_target_accuracy = round(76.46*0.99, 3)
         object_dectection_target_accuracy = round(37.55*0.99, 3)
-        bert99_target_accuracy = round(90.874 * 0.99, 3)
-        bert999_target_accuracy = round(90.874 * 0.999, 3)
+        bert_target_accuracy = round(90.874 * 0.99 , 3)
 
         if mode.lower() == "performance":
             actual_metric = get_samples_per_second(mlperf_log_path)
         elif mode.lower() == "accuracy":
-            actual_metric = map_value
-            target = object_dectection_target_accuracy
+            if model == "retinanet":
+                actual_metric = map_value
+                target = object_dectection_target_accuracy
+            elif model == "resnet50":
+                actual_metric = accuracy_ic
+                target = image_classification_target_accuracy
+            elif model in ["bert-99", "bert-99.9"]:
+                target = bert_target_accuracy
             #if target <= actual_metric:
                 #status = "VALID"
         status = get_result_status(mlperf_log_path)
