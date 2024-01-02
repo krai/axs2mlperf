@@ -572,18 +572,20 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
 
         if mode.lower() == "performance":
             actual_metric = get_samples_per_second(mlperf_log_path)
+            status = get_result_status(mlperf_log_path)
         elif mode.lower() == "accuracy":
             if model == "retinanet":
                 actual_metric = map_value
                 target = object_dectection_target_accuracy
+                if float(target) <= float(actual_metric):
+                    status = "VALID"
             elif model == "resnet50":
                 actual_metric = accuracy_ic
                 target = image_classification_target_accuracy
+                if float(target) <= float(actual_metric):
+                    status = "VALID"
             elif model in ["bert-99", "bert-99.9"]:
                 target = bert_target_accuracy
-            #if target <= actual_metric:
-                #status = "VALID"
-        status = get_result_status(mlperf_log_path)
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
