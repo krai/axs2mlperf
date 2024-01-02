@@ -516,18 +516,12 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 with open(file_path, 'r') as file:
                     for line in file:
                         # Check for Server scenario log
-                        if "Scheduled samples per second" in line:
-                        # Assuming the line format is 'Scheduled samples per second : 2223.24'
+                        if "Scheduled samples per second" in line or "Samples per second" in line or "90th percentile latency (ns)" in line or "99th percentile latency (ns)" in line:
                             parts = line.split(':')
                             if len(parts) == 2:
                                 value = parts[1].strip()  # Remove any leading/trailing whitespace
                                 return float(value)  # Convert the string to a float
-                        # Check for Offline scenario log
-                        elif "Samples per second" in line:
-                            parts = line.split(':')
-                            if len(parts) == 2:
-                                value = parts[1].strip()
-                                return float(value)
+            
             except IOError as e:
                 print(f"Error reading file: {e}")
                 return None
