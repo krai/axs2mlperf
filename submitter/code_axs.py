@@ -546,7 +546,14 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 # Extracting the accuracy value before the '%' character
                 accuracy_value = accuracy_part.split('%')[0].strip()
                 return accuracy_value
-            return "Accuracy value not found"
+            return "Accuracy value not found."
+
+        def extract_accuracy_bert(accuracy_metric):
+            if accuracy_metric is not None and "\"f1\"" in accuracy_metric:
+                accuracy_part = accuracy_metric.split(' \"f1\":')[1]
+                accuracy_value = accuracy_part.split('}')[0].strip()
+                return float(accuracy_value)
+            return "F1 value not found."
 
         # Function to extract mAP value
         def extract_map(accuracy_metric):
@@ -563,6 +570,8 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             map_value = extract_map(accuracy_metric)
         elif model == "resnet50":
             accuracy_ic = extract_accuracy_ic(accuracy_metric)
+        elif model == "bert-99":
+            accuracy_bert = extract_accuracy_bert(accuracy_metric)
 
         # Target accuracy for workloads
         image_classification_target_accuracy = round(76.46*0.99, 3)
@@ -570,7 +579,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         bert_target_accuracy = round(90.874 * 0.99 , 3)
 
         if mode.lower() == "performance":
-            actual_metric = get_samples_per_second(mlperf_log_path)
+            if scenario in ["Offline" , "Server"]:
+                actual_metric = get_samples_per_second(mlperf_log_path)
+            else:
+                actual_metric = float(get_samples_per_second(mlperf_log_path)) * 1e-6
             status = get_result_status(mlperf_log_path)
         elif mode.lower() == "accuracy":
             if model == "retinanet":
@@ -584,7 +596,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 if float(target) <= float(actual_metric):
                     status = "VALID"
             elif model in ["bert-99", "bert-99.9"]:
+                actual_metric = accuracy_bert
                 target = bert_target_accuracy
+                if float(target) <= float(actual_metric):
+                    status = "VALID"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
@@ -594,7 +609,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         if compliance_test_name is False:
             mode = mode + " "
         else:
-            mode = mode + " " + "with" + " " +compliance_test_name
+            mode = mode + " " + "/" + " " +compliance_test_name
 
         table_data.append([sut_name, scenario, mode, status, target, actual_metric])
 
