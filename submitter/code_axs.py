@@ -507,7 +507,6 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         accuracy_metric = experiment_entry.get("accuracy_report")
-        print(accuracy_metric)
         mlperf_summary_path = experiment_entry
         
         # Fuction to extract the actual performance metric
@@ -515,12 +514,12 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             try:
                 with open(file_path, 'r') as file:
                     for line in file:
-                        # Check for Server scenario log
+                        # Check for mlperf log
                         if "Scheduled samples per second" in line or "Samples per second" in line or "90th percentile latency (ns)" in line or "99th percentile latency (ns)" in line:
                             parts = line.split(':')
                             if len(parts) == 2:
-                                value = parts[1].strip()  # Remove any leading/trailing whitespace
-                                return float(value)  # Convert the string to a float
+                                performance = parts[1].strip()# Remove any leading/trailing whitespace
+                                return performance  
             
             except IOError as e:
                 print(f"Error reading file: {e}")
@@ -600,4 +599,4 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         table_data.append([sut_name, scenario, mode, compliance, status, target, actual_metric])
 
     # Display Table
-    print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", stralign='center'))
+    print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", stralign='center', floatfmt=".3f"))
