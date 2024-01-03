@@ -562,7 +562,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                     if "mAP=" in item:
                         # Extracting the numerical part of the mAP value
                         map_part = item.split('=')[1].strip()
-                        map_value = map_part.spilt('%')[0].strip()
+                        map_value = map_part.split('%')[0].strip()
                         return map_value
             return "mAP value not found"
 
