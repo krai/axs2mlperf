@@ -486,7 +486,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
-    col_names = ["SUT", "Scenario", "Mode", "Compliance?", "Status", "Target metric", "Actual metric"]
+    col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric"]
     table_data = []
     for experiment_entry in experiment_entries:
         
@@ -554,11 +554,11 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 for item in accuracy_metric:
                     if "mAP=" in item:
                         # Extracting the numerical part of the mAP value
-                        map_value = item.split('=')[1].strip()
+                        map_part = item.split('=')[1].strip()
+                        map_value = map_part.spilt('%')[0].strip()
                         return map_value
             return "mAP value not found"
 
-        # Extracting the mAP value
         if model == "retinanet":
             map_value = extract_map(accuracy_metric)
         elif model == "resnet50":
@@ -592,11 +592,11 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             target = target_latency
 
         if compliance_test_name is False:
-            compliance = "False"
+            mode = mode + " "
         else:
-            compliance = "True"
+            mode = mode + " " + "with" + " " +compliance_test_name
 
-        table_data.append([sut_name, scenario, mode, compliance, status, target, actual_metric])
+        table_data.append([sut_name, scenario, mode, status, target, actual_metric])
 
     # Display Table
     print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", stralign='center', floatfmt=".3f"))
