@@ -545,7 +545,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 return accuracy_value
             return "Accuracy value not found."
 
-        # Function to extract accuracy for bert
+        # Function to extract accuracy for bert-99 and bert-99.9
         def extract_accuracy_bert(accuracy_metric):
             if accuracy_metric is not None and "\"f1\"" in accuracy_metric:
                 accuracy_part = accuracy_metric.split(' \"f1\":')[1]
