@@ -574,8 +574,8 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
 
         # Actual accuracy for workloads
         actual_accuracy = {
-            "resnet50": extract_map(accuracy_metric),
-            "retinanet": extract_accuracy_ic(accuracy_metric),
+            "resnet50": extract_accuracy_ic(accuracy_metric),
+            "retinanet": extract_map(accuracy_metric),
             "bert-99": extract_accuracy_bert(accuracy_metric),
             "bert-99.9": extract_accuracy_bert(accuracy_metric)
         }
