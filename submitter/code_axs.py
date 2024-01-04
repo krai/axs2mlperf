@@ -571,10 +571,6 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             "bert-99": round(90.874 * 0.99, 3),
             "bert-99.9": round(90.874 * 0.999, 3)
         }
-        image_classification_target_accuracy = target_accuracy["resnet50"]
-        object_dectection_target_accuracy = target_accuracy["retinanet"]
-        bert_99_target_accuracy = target_accuracy["bert-99"]
-        bert_999_target_accuracy = target_accuracy["bert-99.9"]
 
         # Actual accuracy for workloads
         actual_accuracy = {
@@ -583,10 +579,6 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             "bert-99": extract_accuracy_bert(accuracy_metric),
             "bert-99.9": extract_accuracy_bert(accuracy_metric)
         }
-        accuracy_ic = actual_accuracy["resnet50"]
-        accuracy_od = actual_accuracy["retinanet"]
-        accuracy_bert = actual_accuracy["bert-99"]
-        accuracy_bert_999 = actual_accuracy["bert-99.9"]
 
         if mode.lower() == "performance":
             if scenario in ["Offline" , "Server"]:
@@ -595,18 +587,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 actual_metric = float(get_samples_per_second(mlperf_log_path)) * 1e-6
             status = get_result_status(mlperf_log_path)
         else:
-            if float(object_dectection_target_accuracy) <= float(accuracy_od):
+            if (target_accuracy[model]) <= float(actual_accuracy[model]):
                 status = "VALID"
-                target = object_dectection_target_accuracy
-            if float(image_classification_target_accuracy) <= float(accuracy_ic):
-                status = "VALID"
-                target = image_classification_target_accuracy
-            elif float(bert_99_target_accuracy) <= float(accuracy_bert):
-                status = "VALID"
-                target = bert_99_target_accuracy
-            elif float(bert_999_target_accuracy) <= float(accuracy_bert_999):
-                status = "VALID"
-                target = bert_999_target_accuracy
+                actual_metric = actual_accuracy[model]
+                target = target_accuracy[model]
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
