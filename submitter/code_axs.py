@@ -484,8 +484,6 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
 def generate_tables(experiment_entries, division, submitter, submission_entry, __entry__):
 
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
-
     col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric"]
     table_data = []
     for experiment_entry in experiment_entries:
@@ -507,7 +505,6 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         accuracy_metric = experiment_entry.get("accuracy_report")
-        mlperf_summary_path = experiment_entry
         
         # Fuction to extract the actual performance metric
         def get_samples_per_second(file_path):
@@ -548,6 +545,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                 return accuracy_value
             return "Accuracy value not found."
 
+        # Function to extract accuracy for bert
         def extract_accuracy_bert(accuracy_metric):
             if accuracy_metric is not None and "\"f1\"" in accuracy_metric:
                 accuracy_part = accuracy_metric.split(' \"f1\":')[1]
@@ -566,17 +564,29 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
                         return map_value
             return "mAP value not found"
 
-        if model == "retinanet":
-            map_value = extract_map(accuracy_metric)
-        elif model == "resnet50":
-            accuracy_ic = extract_accuracy_ic(accuracy_metric)
-        elif model == "bert-99":
-            accuracy_bert = extract_accuracy_bert(accuracy_metric)
-
         # Target accuracy for workloads
-        image_classification_target_accuracy = round(76.46*0.99, 3)
-        object_dectection_target_accuracy = round(37.55*0.99, 3)
-        bert_target_accuracy = round(90.874 * 0.99 , 3)
+        target_accuracy = {
+            "resnet50": round(76.46 * 0.99, 3),
+            "retinanet": round(37.55 * 0.99, 3),
+            "bert-99": round(90.874 * 0.99, 3),
+            "bert-99.9": round(90.874 * 0.999, 3)
+        }
+        image_classification_target_accuracy = target_accuracy["resnet50"]
+        object_dectection_target_accuracy = target_accuracy["retinanet"]
+        bert_99_target_accuracy = target_accuracy["bert-99"]
+        bert_999_target_accuracy = target_accuracy["bert-99.9"]
+
+        # Actual accuracy for workloads
+        actual_accuracy = {
+            "resnet50": extract_map(accuracy_metric),
+            "retinanet": extract_accuracy_ic(accuracy_metric),
+            "bert-99": extract_accuracy_bert(accuracy_metric),
+            "bert-99.9": extract_accuracy_bert(accuracy_metric)
+        }
+        accuracy_ic = actual_accuracy["resnet50"]
+        accuracy_od = actual_accuracy["retinanet"]
+        accuracy_bert = actual_accuracy["bert-99"]
+        accuracy_bert_999 = actual_accuracy["bert-99.9"]
 
         if mode.lower() == "performance":
             if scenario in ["Offline" , "Server"]:
@@ -584,22 +594,19 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             else:
                 actual_metric = float(get_samples_per_second(mlperf_log_path)) * 1e-6
             status = get_result_status(mlperf_log_path)
-        elif mode.lower() == "accuracy":
-            if model == "retinanet":
-                actual_metric = map_value
+        else:
+            if float(object_dectection_target_accuracy) <= float(accuracy_od):
+                status = "VALID"
                 target = object_dectection_target_accuracy
-                if float(target) <= float(actual_metric):
-                    status = "VALID"
-            elif model == "resnet50":
-                actual_metric = accuracy_ic
+            if float(image_classification_target_accuracy) <= float(accuracy_ic):
+                status = "VALID"
                 target = image_classification_target_accuracy
-                if float(target) <= float(actual_metric):
-                    status = "VALID"
-            elif model in ["bert-99", "bert-99.9"]:
-                actual_metric = accuracy_bert
-                target = bert_target_accuracy
-                if float(target) <= float(actual_metric):
-                    status = "VALID"
+            elif float(bert_99_target_accuracy) <= float(accuracy_bert):
+                status = "VALID"
+                target = bert_99_target_accuracy
+            elif float(bert_999_target_accuracy) <= float(accuracy_bert_999):
+                status = "VALID"
+                target = bert_999_target_accuracy
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
