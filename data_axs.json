@@ -35,7 +35,8 @@
         "model_pytorch_gptj_cnndm_recipe": "model_pytorch_gptj_cnndm_recipe",
         "base_power_measurement_experiment": "base_power_measurement_experiment",
         "text_to_image_reference_using_torch_loadgen": "text_to_image_reference_using_torch_loadgen",
-        "cnndm_preprocessor": "cnndm_preprocessor"
+        "cnndm_preprocessor": "cnndm_preprocessor",
+	"support_container": "support_container"
     },
     "repo_name": "axs2mlperf",
     "submodules": false

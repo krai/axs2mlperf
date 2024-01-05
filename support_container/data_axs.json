@@ -1,0 +1,36 @@
+{
+	"_parent_entries": [
+		[ "^", "byname", "shell" ]
+	],
+	"_producer_rules": [
+		[ [ "container_loadgen_output" ], ["run"], {
+		} ]
+	],
+
+	"container_name": "new_container",
+	"container_local_dir": "/home/krai/work_collection/",
+	
+	"local_dir": [ "^^", "substitute", "/local/mnt/workspace/#{user_name}#/work_collection/" ],
+	"local_experiment_dir_name": "experiments",
+
+	"container_id": [ "^^", "substitute", "`docker run -dt --name #{container_name}# --ipc=host --net=host --privileged --group-add $(getent group qaic | cut -d: -f3) #{mounted_repos_str}# --rm #{image_name}# bash`" ],
+
+	"repo_list": [ "axs2qaic-dev", "axs2sut-dev", "axs2kilt-dev", "axs2cpu-dev", "axs2system-dev", "axs2mlperf", "kilt-mlperf-dev_main" ],
+	"mounted_repos_str": ["^^", "create_mounted_string" ],
+	
+	"date": null,
+
+	"image_name": [ "^^", "substitute", "krai/axs.#{benchmark}#:deb_#{sdk_vers_date}#" ],
+	"container_only": false,
+	
+	"cmd": [ "^^", "case",   [ [ "^^", "get", "container_only" ],
+	    true, [ "^^","substitute", "export CONTAINER_ID=#{container_id}# ; echo \" Container has been created. CONTAINER_ID =  ${CONTAINER_ID} \"" ]] ,
+	    { "default_value": [ "^^","substitute", " docker exec #{container_id}# bash -c  \"axs byquery #{modified_query}#\""] }
+	],
+	
+	"modified_query": [ "^^", "execute", [[
+		[ "get", "__query" ],
+		[ "replace", ["container_loadgen_output", "loadgen_output"] ]
+	]] ],
+	"shell_cmd_with_subs": "#{cmd}#"
+}
