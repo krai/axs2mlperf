@@ -18,8 +18,6 @@
 	"repo_list": [ "axs2qaic-dev", "axs2sut-dev", "axs2kilt-dev", "axs2cpu-dev", "axs2system-dev", "axs2mlperf", "kilt-mlperf-dev_main" ],
 	"mounted_repos_str": ["^^", "create_mounted_string" ],
 	
-	"date": null,
-
 	"image_name": [ "^^", "substitute", "krai/axs.#{benchmark}#:deb_#{sdk_vers_date}#" ],
 	"container_only": false,
 	
