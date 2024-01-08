@@ -6,19 +6,22 @@
 		[ [ "container_loadgen_output" ], ["run"], {
 		} ]
 	],
-
-	"container_name": "new_container",
+	"model_name_container":  [ "^^", "get_model_name_container" ],
+	"container_name": [ "^^", "substitute", "#{user}#_#{model_name_container}#" ],
 	"container_local_dir": "/home/krai/work_collection/",
 	
-	"local_dir": [ "^^", "substitute", "/local/mnt/workspace/#{user_name}#/work_collection/" ],
+	"local_dir": [ "^^", "substitute", "/local/mnt/workspace/#{user}#/work_collection/" ],
 	"local_experiment_dir_name": "experiments",
 
-	"container_id": [ "^^", "substitute", "`docker run -dt --name #{container_name}# --ipc=host --net=host --privileged --group-add $(getent group qaic | cut -d: -f3) #{mounted_repos_str}# --rm #{image_name}# bash`" ],
+	"container_id": [ "^^", "substitute", "`docker run -dt --name #{container_name}# --ipc=host --net=host --privileged --group-add $(getent group qaic | cut -d: -f3) #{mounted_repos_str}# --rm #{image_name}#:#{image_tag}# bash`" ],
 
 	"repo_list": [ "axs2qaic-dev", "axs2sut-dev", "axs2kilt-dev", "axs2cpu-dev", "axs2system-dev", "axs2mlperf", "kilt-mlperf-dev_main" ],
 	"mounted_repos_str": ["^^", "create_mounted_string" ],
 	
-	"image_name": [ "^^", "substitute", "krai/axs.#{benchmark}#:deb_#{sdk_vers_date}#" ],
+	"docker_os":  "deb",
+	"image_tag": [ "^^", "substitute", "#{docker_os}#_#{sdk_ver}#" ],
+	"image_name": ["^^", "get_image_name" ],
+
 	"container_only": false,
 	
 	"cmd": [ "^^", "case",   [ [ "^^", "get", "container_only" ],
