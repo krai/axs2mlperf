@@ -37,7 +37,7 @@
         "text_to_image_reference_using_torch_loadgen": "text_to_image_reference_using_torch_loadgen",
         "cnndm_preprocessor": "cnndm_preprocessor",
         "docker_qaic": "docker_qaic",
-        "docker_tensorrtllm": "docker_tensorrtllm"
+        "docker_trtllm": "docker_trtllm"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
