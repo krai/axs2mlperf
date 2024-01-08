@@ -13,10 +13,11 @@
 	
 	"local_dir": [ "^^", "substitute", "/local/mnt/workspace/#{user}#/work_collection/" ],
 	"local_experiment_dir_name": "experiments",
+    "local_experiment_dir": [ "^^", "substitute", "/local/mnt/workspace/#{user}#/work_collection/" ],
 
 	"container_id": [ "^^", "substitute", "`docker run -dt --name #{container_name}# --ipc=host --net=host --privileged --group-add $(getent group qaic | cut -d: -f3) #{mounted_repos_str}# --rm #{image_name}#:#{image_tag}# bash`" ],
 
-	"repo_list": [ "axs2qaic-dev", "axs2sut-dev", "axs2kilt-dev", "axs2cpu-dev", "axs2system-dev", "axs2mlperf", "kilt-mlperf-dev_main" ],
+	"repo_list": [ "axs2qaic-dev", "axs2sut-dev", "axs2kilt-dev", "axs2cpu-dev", "axs2system-dev", "axs2mlperf", "kilt-mlperf-dev_main", "experiments" ],
 	"mounted_repos_str": ["^^", "create_mounted_string" ],
 	
 	"docker_os":  "deb",

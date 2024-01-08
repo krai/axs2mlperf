@@ -1,13 +1,14 @@
 import getpass
 
-def create_mounted_string(local_dir, container_local_dir, repo_list, local_experiment_dir_name):
+def create_mounted_string(local_dir, container_local_dir, repo_list, local_experiment_dir_name, local_experiment_dir):
     result = ""
-    repo_list.append(local_experiment_dir_name)
     for elem in repo_list:
         if elem not in [ "kilt-mlperf-dev_main", local_experiment_dir_name] :
             end = "_main"
         else:
             end = ""
+        if elem == local_experiment_dir_name:
+            local_dir = local_experiment_dir
         result += " -v " + local_dir + elem + ":" + container_local_dir + elem + end
     return result
 
