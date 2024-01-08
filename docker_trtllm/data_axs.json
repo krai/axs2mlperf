@@ -20,7 +20,7 @@
     "local_experiment_dir_name": "experiments",
     "local_experiments_dir": [ "^^", "substitute", "/home/#{user}#/work_collection/" ],
 
-    "container_id": [ "^^", "substitute", "`docker run -dt --name #{container_name}# --ipc=host --ulimit memlock=#{memlock}# --ulimit stack=#{stack}# --gpus=#{gpus}# #{mounted_repos_str}# #{ccache_dirs}# --workdir #{code_dir}# --hostname #{hostname}# --tmpfs #{tmpfs}# --rm #{image_name}#:#{image_tag}# bash`" ],
+    "container_id": [ "^^", "substitute", "`if [ $(docker ps -qf \"name=#{container_name}#\" | head -c1 | wc -c) -ne 0 ]; then docker ps -qf \"name=#{container_name}#\"; else docker run -dt --name #{container_name}# --ipc=host --ulimit memlock=#{memlock}# --ulimit stack=#{stack}# --gpus=#{gpus}# #{mounted_repos_str}# #{ccache_dirs}# --workdir #{code_dir}# --hostname #{hostname}# --tmpfs #{tmpfs}# --rm #{image_name}#:#{image_tag}# bash; fi;`" ],
 
     "repo_list": [ "axs2tensorrt-dev", "experiments" ],
     "mounted_repos_str": [ "^^", "create_mounted_string" ],
