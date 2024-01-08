@@ -1,3 +1,5 @@
+import getpass
+
 def create_mounted_string(local_dir, container_local_dir, repo_list, local_experiment_dir_name):
     result = ""
     repo_list.append(local_experiment_dir_name)
@@ -24,3 +26,6 @@ def get_model_name_container(model_name):
     else:
         result = model_name
     return result
+
+def get_user_name():
+    return getpass.getuser()
