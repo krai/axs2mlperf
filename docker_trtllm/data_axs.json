@@ -3,7 +3,7 @@
         [ "^", "byname", "shell" ]
     ],
     "_producer_rules": [
-        [ [ "container_loadgen_output" ], ["run"], {
+        [ [ "container_trtllm_loadgen_output" ], ["run"], {
         } ]
     ],
     "user": [ "^^", "get_user_name" ],
@@ -41,7 +41,7 @@
 
     "modified_query": [ "^^", "execute", [[
         [ "get", "__query" ],
-        [ "replace", ["container_loadgen_output", "loadgen_output"] ]
+        [ "replace", ["container_trtllm_loadgen_output", "loadgen_output"] ]
     ]] ],
     "shell_cmd_with_subs": "#{cmd}#"
 }
