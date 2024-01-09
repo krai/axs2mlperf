@@ -35,7 +35,7 @@
     "container_only": false,
 
     "cmd": [ "^^", "case",   [ [ "^^", "get", "container_only" ],
-        true, [ "^^","substitute", "export CONTAINER_ID=#{container_id}# ; echo \" Container has been created. CONTAINER_ID = `echo ${CONTAINER_ID} | cut -c1-12`\"" ]] ,
+        true, [ "^^","substitute", "export CONTAINER_ID=#{container_id}# ; echo \"CONTAINER_ID = `echo ${CONTAINER_ID} | cut -c1-12`\"" ]] ,
         { "default_value": [ "^^","substitute", " docker exec #{container_id}# bash -c  \"axs byquery #{modified_query}#\""] }
     ],
 
