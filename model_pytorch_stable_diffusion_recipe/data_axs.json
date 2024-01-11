@@ -1,0 +1,29 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp32" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "file_path": "stable_diffusion_fp32.zip",
+            "url": "https://cloud.mlcommons.org/index.php/s/DjnCSGyNBkWA4Ro/download"
+        } ],
+        [ [ "extracted",  "pytorch_model", "model_name=stable_diffusion", "dtype=fp32" ], [["get_kernel"],["byname","extractor"],["extract"]], {
+            "archive_format": "zip",
+            "archive_path": [ "^", "execute", [[
+                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp32" ]] ],
+                [ "get_path" ]
+            ]] ],
+            "file_name": [ "extracted", "stable_diffusion_fp32" ]
+        } ],
+
+        [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp16" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "file_path": "stable_diffusion_fp16.zip",
+            "url": "https://cloud.mlcommons.org/index.php/s/LCdW5RM6wgGWbxC/download"
+        } ],
+        [ [ "extracted",  "pytorch_model", "model_name=stable_diffusion", "dtype=fp16" ], [["get_kernel"],["byname","extractor"],["extract"]], {
+            "archive_format": "zip",
+            "archive_path": [ "^", "execute", [[
+                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp16" ]] ],
+                [ "get_path" ]
+            ]] ],
+            "file_name": [ "extracted", "stable_diffusion_fp16" ]
+        } ]
+    ]
+}
