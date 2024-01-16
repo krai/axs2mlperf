@@ -373,7 +373,7 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, power, __entry__=None):
     
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -391,12 +391,10 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         scenario = target_scenario.lower()
 
-        if "power_loadgen_output" in experiment_entry["tags"]:
+        if "power_loadgen_output" in experiment_entry["tags"] and power:
             power_experiment_entry = experiment_entry
-            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
-            origin_experiment_path = os.readlink(last_mlperf_logs_path)
-            origin_experiment_name = origin_experiment_path.split("/")[-1]
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+            avg_power = power_experiment_entry.call("avg_power")
+            print(avg_power)
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
@@ -424,11 +422,10 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         mode = loadgen_mode.replace("Only", "")
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
-
+        
         model_name  = experiment_entry['model_name']
-        mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
@@ -444,9 +441,9 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "\n" + "### Accuracy  " + "\n\n")
                 fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
             elif mode == 'Performance' and not compliance_test_name:
-                if with_power:
+                if "power_loadgen_output" in experiment_entry["tags"]:
                     fd.write( "### Power " + "\n\n")
-                    fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
+                    fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
                 else:
                     fd.write( "### Performance " + "\n\n")
                     fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
@@ -465,13 +462,19 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
     for experiment_entry in experiment_entries:
 
-        src_dir = experiment_entry.get_path("")
-        experiment_program_name = experiment_entry.get('program_name')
+        if "power_loadgen_output" in experiment_entry["tags"]:
+            power_experiment_entry = experiment_entry
+            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
+            origin_experiment_path = os.readlink(last_mlperf_logs_path)
+            origin_experiment_name = origin_experiment_path.split("/")[-1]
+            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+
+        experiment_program_name  = experiment_entry.get('program_name')
+        print(experiment_program_name)
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
+        print(program_entry)
         readme_path = program_entry.get_path("README.md")
-
         mlperf_model_name = experiment_entry['mlperf_model_name']
-
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
 
@@ -482,9 +485,9 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
             print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
         path_readme = os.path.join(code_model_program_path, "README.md")
 
-def generate_tables(experiment_entries, division, submitter, submission_entry, __entry__):
+def generate_tables(experiment_entries, division, submitter, submission_entry, power, __entry__):
 
-    col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric"]
+    col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Energy Efficiency"]
     table_data = []
     for experiment_entry in experiment_entries:
         
@@ -496,7 +499,12 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
         scenario = target_scenario
 
         entry_path = experiment_entry.get_path("")
-        mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
+        if power:
+            power_experiment_path = os.path.join(entry_path, 'power_logs')
+            performance_dir_path = os.path.join(power_experiment_path, 'run_1')
+            mlperf_log_path = os.path.join(performance_dir_path, 'mlperf_log_summary.txt')
+        elif not power:
+            mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
         sut_name = experiment_entry.get('sut_name')
         model = experiment_entry.get('model_name')
         loadgen_mode = experiment_entry.get('loadgen_mode')
@@ -580,17 +588,29 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             "bert-99.9": extract_accuracy_bert(accuracy_metric)
         }
 
+
+        if "power_loadgen_output" in experiment_entry["tags"] and power:
+            power_experiment_entry = experiment_entry
+            avg_power = round(power_experiment_entry.call("avg_power"),3)
+        else:
+            avg_power = "N/A"
+        
+
         if mode.lower() == "performance":
             if scenario in ["Offline" , "Server"]:
                 actual_metric = get_samples_per_second(mlperf_log_path)
-            else:
+                energy_eff = round(float(actual_metric)/float(avg_power) ,3) if power is True else "N/A"
+            elif scenario in ["SingleStream", "MultiStream"]:
                 actual_metric = float(get_samples_per_second(mlperf_log_path)) * 1e-6
+                energy_eff = round(float(avg_power)/(1/float(actual_metric * 0.001)) ,3) if power is True else "N/A" # convert latency from milliseconds to seconds
             status = get_result_status(mlperf_log_path)
+
         else:
             if (target_accuracy[model]) <= float(actual_accuracy[model]):
                 status = "VALID"
                 actual_metric = actual_accuracy[model]
                 target = target_accuracy[model]
+                energy_eff = "N/A"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance":
             target = target_qps
@@ -598,11 +618,13 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, _
             target = target_latency
 
         if compliance_test_name is False:
-            mode = mode + " "
+            mode = mode 
+        elif compliance_test_name is None:
+            mode = mode + ""
         else:
-            mode = mode + " " + "/" + " " +compliance_test_name
+            mode = mode + " / " + compliance_test_name
 
-        table_data.append([sut_name, scenario, mode, status, target, actual_metric])
+        table_data.append([sut_name, scenario, mode, status, target, actual_metric, avg_power, energy_eff])
 
     # Display Table
     print(tabulate(table_data, headers=col_names, tablefmt="fancy_grid", stralign='center', floatfmt=".3f"))
