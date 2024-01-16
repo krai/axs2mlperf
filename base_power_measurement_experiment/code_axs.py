@@ -2,6 +2,7 @@
 
 import datetime
 import sys
+import logging
 
 
 def load_lines(fname):
@@ -17,7 +18,11 @@ def avg_power( mlperf_log_parser_path, server_timezone_sec, client_timezone_sec,
     server_timezone = datetime.timedelta(seconds=server_timezone_sec)
     client_timezone = datetime.timedelta(seconds=client_timezone_sec)
 
+    logger = logging.getLogger()
+    orig_level = logger.level
+    logger.setLevel(logging.WARNING)
     mlperf_log = MLPerfLog(detail_log_path)
+    logger.setLevel(orig_level)
 
     datetime_format = '%m-%d-%Y %H:%M:%S.%f'
     power_begin = datetime.datetime.strptime(mlperf_log["power_begin"], datetime_format) + client_timezone
