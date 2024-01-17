@@ -3,6 +3,7 @@
 import os
 import shutil
 import sys
+import json
 from ufun import save_json
 from tabulate import tabulate
 
@@ -487,7 +488,7 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
 def generate_tables(experiment_entries, division, submitter, submission_entry, power, __entry__):
 
-    col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Energy Efficiency"]
+    col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Efficiency"]
     table_data = []
     for experiment_entry in experiment_entries:
         
@@ -571,6 +572,24 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
                         map_value = map_part.split('%')[0].strip()
                         return map_value
             return "mAP value not found"
+        
+        if power and "power_loadgen_output" in experiment_entry["tags"]:
+            path_to_program_output = os.path.join(entry_path, 'program_output.json')
+            def get_entry_name(path_to_prgram_output):
+                with open(path_to_program_output, 'r') as file:
+                    data = json.load(file)
+
+                entry_name = data.get("ranging_entry_name", None)
+
+                return entry_name
+
+            generated_entry = get_entry_name(path_to_program_output)
+            target_entry = __entry__.get_kernel().byname(generated_entry)
+
+            if scenario in ["Offline", "Server"]:
+                target = target_entry.get('loadgen_target_qps')
+            else:
+                target = target_entry.get('loadgen_target_latency')
 
         # Target accuracy for workloads
         target_accuracy = {
@@ -612,9 +631,9 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
                 target = target_accuracy[model]
                 energy_eff = "N/A"
 
-        if scenario in ["Offline", "Server"] and mode.lower() == "performance":
+        if scenario in ["Offline", "Server"] and mode.lower() == "performance" and not power:
             target = target_qps
-        elif scenario in ["SingleStream", "MultiStream"] and mode.lower() == "performance":
+        elif scenario in ["SingleStream", "MultiStream"] and mode.lower() == "performance" and not power:
             target = target_latency
 
         if compliance_test_name is False:
