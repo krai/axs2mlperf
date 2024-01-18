@@ -3,7 +3,7 @@
     "_producer_rules": [
         [ [ "downloaded", "dataset_name=coco-1024" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,checkout=stable_diffusion_reference,url=https://github.com/pgmpablo157321/inference" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
