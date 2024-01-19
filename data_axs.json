@@ -31,6 +31,7 @@
         "dataset_coco2014_images_recipe": "dataset_coco2014_images_recipe",
         "gptj_reference_loadgen": "gptj_reference_loadgen",
         "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment",
+        "base_llama2_loadgen_experiment": "base_llama2_loadgen_experiment",
         "power_measurement": "power_measurement",
         "model_pytorch_gptj_cnndm_recipe": "model_pytorch_gptj_cnndm_recipe",
         "base_power_measurement_experiment": "base_power_measurement_experiment",
