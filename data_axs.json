@@ -36,7 +36,8 @@
         "base_power_measurement_experiment": "base_power_measurement_experiment",
         "text_to_image_reference_using_torch_loadgen": "text_to_image_reference_using_torch_loadgen",
         "cnndm_preprocessor": "cnndm_preprocessor",
-        "model_pytorch_stable_diffusion_recipe": "model_pytorch_stable_diffusion_recipe"
+        "model_pytorch_stable_diffusion_recipe": "model_pytorch_stable_diffusion_recipe",
+        "dataset_openorca_mlperf_recipe": "dataset_openorca_mlperf_recipe"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
