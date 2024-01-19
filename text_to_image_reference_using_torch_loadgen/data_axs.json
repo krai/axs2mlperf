@@ -4,7 +4,7 @@
         [ [ "loadgen_output", "task=text_to_image", "framework=torch" ], [["get", "pipeline"]] ]
     ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,checkout=stable_diffusion_reference,url=https://github.com/pgmpablo157321/inference" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
@@ -43,7 +43,7 @@
     ]] ],
     
     "num_workers": 1,
-    "num_images": 40504,
+    "num_images": 5000,
     
     "profile_name": "stable-diffusion-xl-pytorch",
     "dataset_name": "coco-1024",
@@ -62,20 +62,20 @@
 
     "model_name": "stable-diffusion-xl",
 
-    "model_path": null,
-    "model_path_cmd": [ "^^", "case", [ [ "^^", "get", "model_path" ],
-        null, "" ],
-        { "default_value": [ "^^", "substitute", "--model-path #{model_path}#" ] }
-    ],
+    "model_query": [ "^^", "substitute", [ "extracted,pytorch_model,model_name=stable_diffusion,dtype=#{dtype}#"] ],
+    "model_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [ [ "^^", "get", "model_query" ] ] ]
+    ]] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get_path" ]
+    ]] ],
 
-    "loadgen_mode": [ "^^", "case", [ [ "^^", "get", "accuracy"],
-        true, "AccuracyOnly" ],
-        { "default_value": "PerformanceOnly" }
-    ],
     "loadgen_dataset_size": 10,
     "loadgen_buffer_size": 1,
 
-    "device": "cuda",
+    "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda"}, ["num_gpus"]],
     "dtype": "fp32",
     "max_batchsize": 1,
     "samples_per_query": 8,
@@ -94,26 +94,17 @@
     ],
 
     "performance_sample_count": null,
+    "loadgen_buffer_size": 5000,
     "performance_sample_count_cmd": [ "^^", "case", [ [ "^^", "get", "performance_sample_count" ],
          null, "" ],
-        { "default_value": [ "^^", "substitute", "--performance-sample-count #{performance_sample_count}#" ] }
+         { "default_value": [ "^^", "substitute", "--performance-sample-count #{performance_sample_count}#" ] }
     ],
 
-    "use_preprocessed_dataset": null,
-    "use_preprocessed_dataset_cmd": [ "^^", "case", [ [ "^^", "get", "use_preprocessed_dataset" ],
-        null, "" ],
-        { "default_value": [ "^^", "substitute", "--use_preprocessed_dataset #{use_preprocessed_dataset}#" ] }
-    ],
+    "threads":  1,
 
-    "threads":  null,
-    "threads_cmd": [ "^^", "case", [ [ "^^", "get", "threads" ],
-        null, "" ],
-         { "default_value": [ "^^", "substitute", "--threads #{threads}#" ] }
-    ],
-
-    "find_peak_performance": null,
+    "find_peak_performance": false,
     "find_peak_performance_cmd": [ "^^", "case", [ [ "^^", "get", "find_peak_performance" ],
-         null, "" ],
+         false, "" ],
          { "default_value": [ "^^", "substitute", "--find-peak-performance #{find_peak_performance}#" ] }
     ],
 
@@ -135,6 +126,11 @@
          { "default_value": [ "^^", "substitute", "--max-latency #{max_latency}#" ] }
     ],
 
+    "ids_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+	[ "get_path", [[ "text_to_image", "tools", "sample_ids.xt" ]] ]
+    ]] ],
+
     "accuracy": false,
     "accuracy_cmd": [ "^^", "case", [ [ "^^", "get", "accuracy"],
         true, "--accuracy" ],
@@ -145,11 +141,6 @@
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path", "mlperf.conf" ]
     ]] ],
-    "user_conf_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ "text_to_image", "user.conf" ]] ]
-    ]] ],
-    "audit_conf": "audit.config",
     
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_loadgen_experiment" ] ],
     "output_entry_param_names": [
@@ -163,6 +154,6 @@
      ]] ],
 
      "script_extra_params": [ "^^", "substitute",
-        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# #{threads_cmd}# #{use_preprocessed_dataset_cmd}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# #{qps_cmd}# #{model_path_cmd}# --dtype #{dtype}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{user_conf_path}# --audit_conf #{audit_conf}#"
+        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# --threads #{threads}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# --model-path #{model_path}# --dtype #{dtype}# #{qps_cmd}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --ids-path #{ids_path}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{loadgen_user_conf_path}#"
      ]
 }
