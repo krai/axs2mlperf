@@ -11,6 +11,14 @@
         [ "get_path_of", "diffusion_reference_script" ]
     ]] ],
 
+    "numpy_query": ["python_package", "package_name=numpy", "package_version=1.24.4"],
+    "pillow_query": ["python_package", "package_name=pillow", "package_version=10.2.0"],
+    "scipy_query": ["python_package", "package_name=scipy", "package_version=1.9.1"],
+    "tqdm_query": ["python_package", "package_name=tqdm", "package_version=4.66.1"],
+    "tokenizers_query": ["python_package", "package_name=tokenizers", "package_version=0.13.3"],
+    "torch_query": ["python_package", "package_name=torch", "package_version=2.1.2"],
+    "torchvision_query": ["python_package", "package_name=torchvision", "package_version=0.16.2"],
+
     "diffusers_query": ["python_package", "package_name=diffusers", "package_version=0.21.2"],
     "transformers_query": ["python_package", "package_name=transformers", "package_version=4.33.2"],
     "accelerate_query": ["python_package", "package_name=accelerate", "package_version=0.23.0"],
@@ -23,16 +31,23 @@
     "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
             
     "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "numpy_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "pillow_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "scipy_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "tqdm_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "tokenizers_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "torch_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "torchvision_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "diffusers_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "transformers_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "accelerate_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "open_clip_torch_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "opencv_python_query" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "^^", "get", "fiftyone_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "pycocotools_query" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "^^", "get", "torch_fidelity_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "scipy_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "torch_torchmetrics_query" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ]
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "torch_fidelity_query" ]] ]
     ],
     
     "dataset_query": [ "^^", "substitute", [ "downloaded,dataset_name=#{dataset_name}#,num_images=#{num_images}#,num_workers=#{num_workers}#"] ],
@@ -94,7 +109,6 @@
     ],
 
     "performance_sample_count": null,
-    "loadgen_buffer_size": 5000,
     "performance_sample_count_cmd": [ "^^", "case", [ [ "^^", "get", "performance_sample_count" ],
          null, "" ],
          { "default_value": [ "^^", "substitute", "--performance-sample-count #{performance_sample_count}#" ] }
@@ -128,7 +142,7 @@
 
     "ids_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-	[ "get_path", [[ "text_to_image", "tools", "sample_ids.xt" ]] ]
+	[ "get_path", [[ "text_to_image", "tools", "sample_ids.txt" ]] ]
     ]] ],
 
     "accuracy": false,
@@ -152,7 +166,6 @@
          [ "get", "output_entry" ],
          [ "get_path", "" ]
      ]] ],
-
      "script_extra_params": [ "^^", "substitute",
         "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# --threads #{threads}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# --model-path #{model_path}# --dtype #{dtype}# #{qps_cmd}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --ids-path #{ids_path}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{loadgen_user_conf_path}#"
      ]
