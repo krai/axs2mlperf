@@ -156,7 +156,7 @@
         [ "get_path", "mlperf.conf" ]
     ]] ],
     
-    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_loadgen_experiment" ] ],
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_image_loadgen_experiment" ] ],
     "output_entry_param_names": [
         "num_workers",
         "dataset_name",
