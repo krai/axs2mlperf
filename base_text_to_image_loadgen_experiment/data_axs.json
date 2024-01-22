@@ -4,10 +4,12 @@
     "accuracy_dict": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "bypath", [ "^^", "get_path", "results.json" ]],
-        [ "slice", { "clip_score": "accuracy_results.CLIP_SCORE", "fid_score": "accuracy_results.FID_SCORE" } ]
+        [ "slice", { "fid": "accuracy_results.FID_SCORE" , "clip": "accuracy_results.CLIP_SCORE" } ]
         ]]
     ],
 
-    "clip_score": [ "^^" , "dig","accuracy_dict.clip_score" ],
-    "fid_score": [ "^^" , "dig","accuracy_dict.fid_score" ]
+    "clip": [ "^^" , "dig","accuracy_dict.clip" ],
+    "fid": [ "^^" , "dig","accuracy_dict.fid" ],
+
+    "accuracy_range_dict": { "fid": [23.01085758, 23.95007626], "clip": [31.68631873, 31.81331801] }
 }

@@ -76,3 +76,13 @@ def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, l
         terms_list.append( f"loadgen_target_qps={loadgen_target_qps}" )
 
     return "axs byquery "+','.join(terms_list)
+
+
+def validate_accuracy(accuracy_dict, accuracy_range_dict ):
+    result_list = []
+    for key in accuracy_dict:
+        if (accuracy_dict[key] >= accuracy_range_dict[key][0] and  accuracy_dict[key] <= accuracy_range_dict[key][1]):
+            validity = "VALID"
+        else:
+            validity = "INVALID"
+        print('{} : {}={}'.format(validity, key, accuracy_dict[key]) )
