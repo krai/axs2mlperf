@@ -1,14 +1,13 @@
 {
     "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
 
-    "accuracy_log_file_name": "results.json",
-
-    "extract_accuracy_report": [ "^^", "execute", [[
-        [ "dig", "raw_accuracy_log.accuracy_results" ]
-    ]], {} ],
     "accuracy_dict": [ "^^", "execute", [[
-        [ "get", "accuracy_report" ]
-     ]], {} ],
-    "clip_score": [ "^^" , "dig","accuracy_dict.CLIP_SCORE" ],
-    "fid_score": [ "^^" , "dig","accuracy_dict.FID_SCORE" ]
+        [ "get_kernel" ],
+        [ "bypath", [ "^^", "get_path", "results.json" ]],
+        [ "slice", { "clip_score": "accuracy_results.CLIP_SCORE", "fid_score": "accuracy_results.FID_SCORE" } ]
+        ]]
+    ],
+
+    "clip_score": [ "^^" , "dig","accuracy_dict.clip_score" ],
+    "fid_score": [ "^^" , "dig","accuracy_dict.fid_score" ]
 }
