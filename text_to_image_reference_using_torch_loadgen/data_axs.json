@@ -89,8 +89,8 @@
         [ "get_path" ]
     ]] ],
 
-    "loadgen_dataset_size": 10,
-    "loadgen_buffer_size": 1,
+    "loadgen_dataset_size": 5000,
+    "loadgen_buffer_size": 5000,
 
     "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda"}, ["num_gpus"]],
     "dtype": "fp32",
