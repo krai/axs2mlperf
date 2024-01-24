@@ -1,0 +1,42 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "tool_detector" ]
+    ],
+    "_producer_rules": [
+
+        [ [ "shell_tool", "can_cpupower" ] , [["get_kernel"],["byname","tool_detector"],["detect"]], {
+                "tool_name": "cpupower",
+                "shell_cmd_templates": {
+                    "help": "\"#{tool_path}#\" help #{subcommand}#",
+                    "version": "\"#{tool_path}#\" -v",
+                    "info": "\"#{tool_path}#\" frequency-info",
+                    "set_governor": "sudo \"#{tool_path}#\" frequency-set --governor #{governor}#",
+                    "get_policy": "\"#{tool_path}#\" frequency-info --policy"
+                },
+                "cmd_key": "info",
+                "subcommand": "help",
+                "governor": "performance"
+        } ]
+    ],
+
+    "desired_governor": null,
+    "cpupower_tool": [ "^", "byquery", "shell_tool,can_cpupower" ],
+
+    "governor_setting_pipeline": [ "^^", "case", [ [ "^^", "func", [ "all", [
+        [ "^^", "get", "cpupower_tool" ],
+        [ "^^", "get", "desired_governor" ]
+    ] ] ], true, [ 
+            [ "get", "cpupower_tool" ],
+            [ "run", [], { "cmd_key": "set_governor", "governor": [ "^^", "get", "desired_governor" ] } ],
+            [ ],
+            [ "get", "cpupower_tool" ],
+            [ "run", [], { "cmd_key": "get_policy", "capture_output": true } ],
+            0,
+            [ "func", ["ufun.rematch", "\\\"(\\w+)\\\""] ]
+        ] ], { "default_value": [
+            [ "noop", "Cannot set cpufreq governor: either cpupower tool is not available on the system or desired_governor not set" ]
+        ] }
+    ],
+
+    "set_governor": [ "^^", "execute", [ [ "^^", "get", "governor_setting_pipeline" ] ] ]
+}

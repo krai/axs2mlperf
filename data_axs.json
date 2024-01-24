@@ -37,7 +37,8 @@
         "text_to_image_reference_using_torch_loadgen": "text_to_image_reference_using_torch_loadgen",
         "cnndm_preprocessor": "cnndm_preprocessor",
         "model_pytorch_stable_diffusion_recipe": "model_pytorch_stable_diffusion_recipe",
-        "base_text_to_image_loadgen_experiment": "base_text_to_image_loadgen_experiment"
+        "base_text_to_image_loadgen_experiment": "base_text_to_image_loadgen_experiment",
+        "cpufreq_support": "cpufreq_support"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
