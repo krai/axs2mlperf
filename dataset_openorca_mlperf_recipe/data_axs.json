@@ -1,17 +1,17 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ] ],
     "_producer_rules": [
-        [ [ "downloaded1", "dataset_name=openorca" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "_downloaded", "dataset_name=openorca" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca/resolve/main/1M-GPT4-Augmented.parquet",
             "md5": "ed5a8dfd509ac465017f1b7a8183a525"
         } ],
-        [ [ "preprocessed", "dataset_name=openorca" ], [["run"]], { "return_saved_record_entry": true } ]
+        [ [ "downloaded", "dataset_name=openorca" ], [["run"]], { "return_saved_record_entry": true } ]
     ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
     "openorca_dataset_path": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", "downloaded1,dataset_name=openorca" ],
+        [ "byquery", "_downloaded,dataset_name=openorca" ],
         [ "get_path" ]
     ]] ],
 
@@ -38,5 +38,5 @@
         [ "get_path", "" ]
     ]] ],
 
-    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{model_dir}# --seqlen_limit=1024 --export_dir=#{output_entry_path}# --num_total_samples=24576" ]
+    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{model_dir}# --seqlen_limit=1024 --export_dir=#{output_entry_path}# --num_total_samples=1000" ]
 }
