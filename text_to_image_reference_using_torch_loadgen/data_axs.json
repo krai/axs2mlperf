@@ -4,8 +4,6 @@
         [ [ "loadgen_output", "task=text_to_image", "framework=torch" ], [["get", "pipeline"]] ]
     ],
 
-    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
-
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "diffusion_reference_script" ]
@@ -91,6 +89,7 @@
 
     "loadgen_dataset_size": 5000,
     "loadgen_buffer_size": 5000,
+    "loadgen_compliance_test": false,
 
     "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda"}, ["num_gpus"]],
     "dtype": "fp32",
@@ -153,22 +152,15 @@
         { "default_value": "" }
     ],
 
-    "mlperf_conf_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "mlperf.conf" ]
-    ]] ],
-    
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_image_loadgen_experiment" ] ],
     "output_entry_param_names": [
+        "loadgen_compliance_test",
         "num_workers",
         "dataset_name",
         "num_images"
      ],
-     "output_dir": [ "^^", "execute", [[
-         [ "get", "output_entry" ],
-         [ "get_path", "" ]
-     ]] ],
+
      "script_extra_params": [ "^^", "substitute",
-        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# --threads #{threads}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# --model-path #{model_path}# --dtype #{dtype}# #{qps_cmd}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --ids-path #{ids_path}# --output #{output_dir}# --mlperf_conf #{mlperf_conf_path}# --user_conf #{loadgen_user_conf_path}#"
+        "--dataset \"#{dataset_name}#\" --dataset-path #{dataset_path}# --profile #{profile_name}# --scenario #{loadgen_scenario}# --device #{device}# --max-batchsize #{max_batchsize}# --threads #{threads}# #{accuracy_cmd}# #{find_peak_performance_cmd}# #{backend_cmd}# --model-name #{model_name}# --model-path #{model_path}# --dtype #{dtype}# #{qps_cmd}# --latent-framework #{latent_framework}# #{time_cmd}# #{count_cmd}# #{debug_cmd}# #{performance_sample_count_cmd}# #{max_latency_cmd}# --samples-per-query #{samples_per_query}# --ids-path #{ids_path}# --output #{output_dir}# --mlperf_conf #{loadgen_mlperf_conf_path}# --user_conf #{loadgen_user_conf_path}# ; echo #{input_parameters_file_path}#"
      ]
 }
