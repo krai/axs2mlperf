@@ -16,7 +16,7 @@
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
-                "python_deps": [ [ "^", "byquery", "python_package,package_name=numpy" ] ],
+                "python_deps": [ [ "^^", "python_sync_pip_package", "python_package,package_name=numpy" ] ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --imagenet-val-file \"#{ground_truth_path}#\"" ],
                 "capture_output": true

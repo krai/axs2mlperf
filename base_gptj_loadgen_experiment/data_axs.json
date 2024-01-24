@@ -25,11 +25,11 @@
         [ "byname", "python_script" ],
         [ "run", [], {
                 "python_deps": [
-                    [ "^", "byquery", "python_package,package_name=torch" ],
-                    [ "^", "byquery", "python_package,package_name=transformers" ],
-                    [ "^", "byquery", "python_package,package_name=nltk" ],
-                    [ "^", "byquery", "python_package,package_name=rouge_score" ],
-                    [ "^", "byquery", "python_package,package_name=evaluate" ]
+                    [ "^^", "python_sync_pip_package", "python_package,package_name=torch" ],
+                    [ "^^", "python_sync_pip_package", "python_package,package_name=transformers" ],
+                    [ "^^", "python_sync_pip_package", "python_package,package_name=nltk" ],
+                    [ "^^", "python_sync_pip_package", "python_package,package_name=rouge_score" ],
+                    [ "^^", "python_sync_pip_package", "python_package,package_name=evaluate" ]
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}#" ],
