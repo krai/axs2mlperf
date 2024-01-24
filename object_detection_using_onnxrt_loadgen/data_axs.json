@@ -8,7 +8,7 @@
 
     "python_deps": [
         [ "^^", "python_sync_pip_package", [ [ "^^", "get", "onnxruntime_query" ] ] ],
-        [ "^^", "python_sync_pip_package", "data_loader,coco_images" ],
+        [ "^", "byquery", "data_loader,coco_images" ],
         [ "^^", "python_sync_pip_package", [ [ "^^", "get", "loadgen_query" ] ] ]
     ],
 

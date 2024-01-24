@@ -25,7 +25,7 @@
 
     "python_deps": [
         [ "^^", "python_sync_pip_package", [ [ "^^", "get", "onnxruntime_query" ] ] ],
-        [ "^^", "python_sync_pip_package", "data_loader,imagenet" ],
+        [ "^", "byquery", "data_loader,imagenet" ],
         [ "^^", "python_sync_pip_package", [ [ "^^", "get", "loadgen_query" ] ] ]
     ],
 
