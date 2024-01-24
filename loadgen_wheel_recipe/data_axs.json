@@ -30,6 +30,7 @@
         [ "plant", [ "^^", "substitute", [[
             "package_name", "mlperf_loadgen",
             "python_major_dot_minor", "#{python_major_dot_minor}#",
+            "desired_python_version", "#{python_major_dot_minor}#",
             "tags", ["package_wheel"]
           ]] ] ],
         [ "attach", [ "^", "work_collection" ] ],
