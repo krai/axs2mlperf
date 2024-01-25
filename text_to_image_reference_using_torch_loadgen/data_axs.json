@@ -90,7 +90,7 @@
     "input_data_types": [ "^^", "dig", "model_entry.input_data_types" ],
     "retraining": [ "^^", "dig", "model_entry.retraining" ],
     "weight_data_types": [ "^^", "dig", "model_entry.weight_data_types" ],
-    "starting_weights_filename": [ "^^", "dig", "model_entry.starting_weights_filename" ],
+    "url": [ "^^", "dig", "model_entry.url" ],
     "weight_transformations": [ "^^", "dig", "model_entry.weight_transformations" ],
 
     "loadgen_dataset_size": 5000,
@@ -171,7 +171,7 @@
         "input_data_types",
         "retraining",
         "weight_data_types",
-        "starting_weights_filename",
+        "url",
         "weight_transformations",
 
         "profile_name",
