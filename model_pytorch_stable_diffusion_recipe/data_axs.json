@@ -10,7 +10,7 @@
                 [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp32" ]] ],
                 [ "get_path" ]
             ]] ],
-            "starting_weights_filename": "https://cloud.mlcommons.org/index.php/s/DjnCSGyNBkWA4Ro/download",
+            "url": "https://cloud.mlcommons.org/index.php/s/DjnCSGyNBkWA4Ro/download",
             "weight_data_types": "fp32",
             "file_name": [ "extracted", "stable_diffusion_fp32" ]
         }, [ "input_data_types", "retraining", "weight_transformations" ] ],
@@ -25,7 +25,7 @@
                 [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp16" ]] ],
                 [ "get_path" ]
             ]] ],
-            "starting_weights_filename":  "https://cloud.mlcommons.org/index.php/s/LCdW5RM6wgGWbxC/download",
+            "url":  "https://cloud.mlcommons.org/index.php/s/LCdW5RM6wgGWbxC/download",
             "weight_data_types": "fp16",
             "file_name": [ "extracted", "stable_diffusion_fp16" ]
         }, [ "input_data_types", "retraining", "weight_transformations" ] ]
