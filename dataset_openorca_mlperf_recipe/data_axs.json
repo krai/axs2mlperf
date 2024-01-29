@@ -15,7 +15,13 @@
         [ "get_path" ]
     ]] ],
 
-    "model_dir": "TODO",
+    "hf_model_name": "Llama-2-13b-chat-hf",
+    "model_dir_query": [ "^^", "substitute", "downloaded,hf_model,hf_model_name=#{hf_model_name}#" ],
+    "model_dir": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "model_dir_entry" ]] ],
+        [ "get_path" ]
+    ]] ],
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],

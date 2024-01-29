@@ -10,7 +10,7 @@
 
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
 
-    "dataset_name": "cnndm_v3_0_0",
+    "dataset_name": "openorca",
     "dataset_query": [ "downloaded", [ "^^", "substitute", "dataset_name=#{dataset_name}#" ]],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
 
