@@ -38,7 +38,8 @@
         "cnndm_preprocessor": "cnndm_preprocessor",
         "model_pytorch_stable_diffusion_recipe": "model_pytorch_stable_diffusion_recipe",
         "base_text_to_image_loadgen_experiment": "base_text_to_image_loadgen_experiment",
-        "cpufreq_support": "cpufreq_support"
+        "cpufreq_support": "cpufreq_support",
+        "stable_diffusion_xl_git_recipe": "stable_diffusion_xl_git_recipe"
     },
     "repo_name": "axs2mlperf",
     "submodules": false

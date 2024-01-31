@@ -1,0 +1,7 @@
+{
+    "_producer_rules": [
+        [ [ "git_repo", "repo_name=stable_diffusion_xl_base_1.0_git" ], [["get_kernel"],["byname","git"],["clone"]], {
+        }, [ "url" ] ]
+    ],
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0"
+}
