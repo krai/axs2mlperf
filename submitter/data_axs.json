@@ -101,6 +101,7 @@
             } ]
         ]]
     ],
+
     "run_checker_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
