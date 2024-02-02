@@ -22,6 +22,7 @@
         "imagenet": 50000,
         "openimages": 24781,
         "coco": 5000,
+        "coco-1024": 5000,
         "squad_v1_1": 10833,
         "cnndailymail": 13368
     },
@@ -29,7 +30,8 @@
         "image_classification": 1024,
         "object_detection": 64,
         "bert": 10833,
-        "gptj": 13368
+        "gptj": 13368,
+        "text_to_image": 5000
     },
 
     "program_entry": [ "^^", "execute", [[

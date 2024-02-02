@@ -30,9 +30,9 @@
     ]] ],
 
     "python_deps": [
-        [ "^", "byquery", "python_package,package_name=setuptools-rust"],
-        [ "^", "byquery", "python_package,package_name=torch"],
-        [ "^", "byquery", "python_package,package_name=transformers[onnx]"]
+        [ "^^", "python_sync_pip_package", "python_package,package_name=setuptools-rust"],
+        [ "^^", "python_sync_pip_package", "python_package,package_name=torch"],
+        [ "^^", "python_sync_pip_package", "python_package,package_name=transformers[onnx]"]
     ],
     "abs_script_path": "-m transformers.onnx",
 

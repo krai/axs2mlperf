@@ -20,8 +20,10 @@ def avg_power( mlperf_log_parser_path, server_timezone_sec, client_timezone_sec,
 
     logger = logging.getLogger()
     orig_level = logger.level
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.CRITICAL)
+
     mlperf_log = MLPerfLog(detail_log_path)
+
     logger.setLevel(orig_level)
 
     datetime_format = '%m-%d-%Y %H:%M:%S.%f'

@@ -1,4 +1,6 @@
 {
+    "_parent_entries": [ [ "^", "byname", "cpufreq_support" ] ],
+
     "loadgen_scenario": "SingleStream",
     "loadgen_mode": "AccuracyOnly",
     "loadgen_dataset_size": 20,
@@ -116,6 +118,7 @@
         [ "plant", [ "loadgen_mlperf_conf_path",[ "^^", "get", "loadgen_mlperf_conf_path" ] ]],
         [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
         [ "plant", [ "experiment_begin_timestamp", [ "^^", "generate_current_timestamp", [], {"used_for": "begin"} ] ]],
+        [ "plant", [ "cpufreq_governor", [ "^^", "get", "set_governor" ] ]],
         [ "save", [], { "deterministic": false } ],
         [ "get_path", "data_axs.json" ]
     ]] ],

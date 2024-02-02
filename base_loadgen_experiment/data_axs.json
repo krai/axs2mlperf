@@ -38,6 +38,8 @@
     ]] ],
     "readable_accuracy_log": [ "^^", "unpack_accuracy_log" ],
 
+    "accuracy_range_dict": {},
+
     "produced_by": [ "^^", "guess_command" ],
 
     "program_entry": ["^", "byname", ["^^", "get", "program_name" ], {}, ["program_name"] ],
