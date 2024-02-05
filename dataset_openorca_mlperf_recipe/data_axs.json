@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ] ],
     "_producer_rules": [
-        [ [ "_downloaded", "dataset_name=openorca" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "dataset_name=openorca_parquet" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca/resolve/main/1M-GPT4-Augmented.parquet",
             "md5": "ed5a8dfd509ac465017f1b7a8183a525"
         } ],
@@ -11,20 +11,21 @@
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
     "openorca_dataset_path": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", "_downloaded,dataset_name=openorca" ],
+        [ "byquery", "downloaded,dataset_name=openorca_parquet" ],
         [ "get_path" ]
     ]] ],
 
     "hf_model_name": "Llama-2-13b-chat-hf",
-    "model_dir_query": [ "^^", "substitute", "downloaded,hf_model,hf_model_name=#{hf_model_name}#" ],
+    "model_dir_query": [ "^^", "substitute", "downloaded,hf_model,model_name=#{hf_model_name}#" ],
     "model_dir": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", [[ "^^", "get", "model_dir_entry" ]] ],
+        [ "byquery", [[ "^^", "get", "model_dir_query" ]] ],
         [ "get_path" ]
     ]] ],
 
     "abs_script_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_kernel" ],
+        [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
         [ "get_path_of", "llama2_openorca_preprocess_script" ]
     ]] ],
 
@@ -44,5 +45,6 @@
         [ "get_path", "" ]
     ]] ],
 
-    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{model_dir}# --seqlen_limit=1024 --export_dir=#{output_entry_path}# --num_total_samples=1000" ]
+    "total_samples": 24576,
+    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{model_dir}# --seqlen_limit=1024 --export_dir=#{output_entry_path}#" ]
 }
