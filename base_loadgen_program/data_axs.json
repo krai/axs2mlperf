@@ -132,7 +132,7 @@
 	    [ "get", "internal_to_mlperf_model_name" ],
 	    [ "get", [ [ "^^", "get", "model_name" ], [ "^^", "get", "model_name" ] ] ]
     ]] ],
-    "full_to_shortened_mlperf_model_name": { "bert-99.9": "bert", "bert-99": "bert" },
+    "full_to_shortened_mlperf_model_name": { "bert-99.9": "bert", "bert-99": "bert", "gptj-99.9": "gptj", "gptj-99": "gptj" },
     "shortened_mlperf_model_name": [ "^^", "execute", [[
 	    [ "get", "full_to_shortened_mlperf_model_name" ],
 	    [ "get", [ [ "^^", "get", "mlperf_model_name" ], [ "^^", "get", "mlperf_model_name" ] ] ]
