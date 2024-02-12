@@ -465,10 +465,6 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
-            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
-            origin_experiment_path = os.readlink(last_mlperf_logs_path)
-            origin_experiment_name = origin_experiment_path.split("/")[-1]
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
         experiment_program_name  = experiment_entry.get('program_name')
         print(experiment_program_name)
@@ -579,7 +575,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
                 with open(path_to_program_output, 'r') as file:
                     data = json.load(file)
 
-                entry_name = data.get("ranging_entry_name", None)
+                entry_name = data.get("testing_entry_name", None)
 
                 return entry_name
 
