@@ -1,5 +1,6 @@
 {
-    "abs_log_summary_path": [ "^^", "get_path", "mlperf_log_summary.txt" ],
+    "rel_log_summary_path": "mlperf_log_summary.txt",
+    "abs_log_summary_path": [ "^^", "get_path_from", "rel_log_summary_path" ],
 
     "summary": [ "^^", "parse_summary" ],
 
