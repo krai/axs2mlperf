@@ -30,9 +30,10 @@
         [ "get", "accuracy_report" ]
     ]] ],
 
-    "accuracy_log_file_name": "mlperf_log_accuracy.json",
+    "rel_accuracy_log_path": "mlperf_log_accuracy.json",
+    "abs_accuracy_log_path": ["^^", "get_path_from", "rel_accuracy_log_path"],
     "raw_accuracy_log": [ "^^", "execute", [[
-        [ "get_path_from", "accuracy_log_file_name" ],
+        [ "get", "abs_accuracy_log_path" ],
         0,
         [ "func", "ufun.load_json" ]
     ]] ],
