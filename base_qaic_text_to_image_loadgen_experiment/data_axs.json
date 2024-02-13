@@ -1,0 +1,72 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+    "output_accuracy_path": ["^^", "get_path", "accuracy_results.json"],
+    "output_path": ["^^", "get_path", "images/"],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "text_to_image_using_qaic_loadgen" ],
+        [ "get_path",[[ "text_to_image", "tools", "accuracy_coco.py"]] ]
+    ]] ],
+
+    "dataset_query": [ "^^", "substitute", [ "downloaded,dataset_name=#{dataset_name}#,num_images=#{num_images}#,num_workers=#{num_workers}#"] ],
+    "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
+    "caption_path": [ "^^", "execute", [[
+        [ "get", "dataset_entry" ],
+        [ "get_path", [[ "captions", "captions.tsv" ]]]
+    ]] ],
+    "compliance_images_path": [ "^^", "get", "output_path" ],
+    "compliance_images_path_cmd": [ "^^", "case", [ [ "^^", "get", "loadgen_dataset_size" ],
+        5000, [ "^^", "substitute", "--compliance-images-path #{compliance_images_path}#" ],
+        { "default_value": "" }
+        ] ],
+
+    "extract_accuracy_report": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "python_script" ],
+        [ "run", [], {
+                "python_deps": [ 
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pandas" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pillow" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=scipy" ],
+
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=tqdm" ],
+
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=tokenizers,package_version=0.13.3" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=networkx,package_version=3.0" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torch,package_version=1.13.1" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torchvision,package_version=0.14.1" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torchaudio,package_version=0.13.1" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=onnx,package_version=1.12.0" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=onnxruntime" ],
+
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=transformers,package_version=4.33.2" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=accelerate,package_version=0.23.0" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=open-clip-torch,package_version=2.7.0" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=opencv-python,package_version=4.8.1.78" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pycocotools,package_version=2.0.7" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torch-fidelity,package_version=0.3.0" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torchmetrics,package_version=0.11.4" ]
+
+
+                ],
+                "abs_script_path": ["^^", "get", "abs_script_path"],
+                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --caption-path \"#{caption_path}#\" --output-file \"#{output_accuracy_path}#\" #{compliance_images_path_cmd}#" ],
+                "capture_output": true
+            } ],
+            0,
+            [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
+    ]], {} ],
+    "accuracy_dict": [ "^^", "execute", [[
+        [ "get", "accuracy_report" ],
+        0,
+        [ "func", "eval" ]
+    ]], {} ],
+    "fid": [ "^^" , "dig","accuracy_dict.FID_SCORE" ],
+    "clip": [ "^^" , "dig", "accuracy_dict.CLIP_SCORE" ],
+
+    "accuracy_range_dict": { "FID_SCORE": [23.01085758, 23.95007626], "CLIP_SCORE": [31.68631873, 31.81331801] }
+}
