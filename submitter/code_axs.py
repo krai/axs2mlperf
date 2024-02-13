@@ -21,7 +21,6 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
 
 
 def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
-
     common_attributes = {
         "task":                 task,
         "sut_name":             sut_name,
@@ -115,7 +114,7 @@ def make_local_dir( path_list, submitted_tree_path ):
             pass
         return joined_path
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -126,10 +125,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
 
-
     generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, __entry__ )
-
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, power, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -360,15 +357,15 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
-
+    print("DEBUG:full run entry ", __entry__)
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, infer_from_ss, model_meta_data, submission_entry, __entry__)
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
@@ -377,7 +374,6 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, power, __entry__=None):
     
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
-
     readme_template_path = __entry__.get_path("README_template.md")
 
     target_scenario = None
