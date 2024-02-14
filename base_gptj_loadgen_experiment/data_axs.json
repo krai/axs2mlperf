@@ -3,11 +3,6 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "abs_script_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "gptj_accuracy_script" ]
-    ]] ],
-
     "dataset_name": "cnndm_v3_0_0",
     "dataset_query": [ "downloaded", [ "^^", "substitute", "dataset_name=#{dataset_name}#" ]],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
@@ -21,6 +16,20 @@
     "tokenizer_part": [ "^^", "case", [ [ "^^", "get", [ "tokenizer_path", "" ] ],
         "EleutherAI/gpt-j-6B", "", "", "", null, "" ],
         { "default_value": [ "^^", "substitute", " --tokenizer_path \"#{tokenizer_path}#\"" ] }
+    ],
+
+    "own_accuracy_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gptj_accuracy_script" ]
+    ]] ],
+
+    "abs_script_path": [ "^^", "get",
+        [ "^^", "case", [ [ "^^", "get", "tokenizer_path" ],
+            "EleutherAI/gpt-j-6B", "own_accuracy_script_path",
+            "", "own_accuracy_script_path",
+            null, "own_accuracy_script_path"
+            ], { "default_value": "custom_accuracy_script_path" }
+        ]
     ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
