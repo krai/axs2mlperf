@@ -11,17 +11,14 @@
         [ "get_path",[[ "text_to_image", "tools", "accuracy_coco.py"]] ]
     ]] ],
 
-    "dataset_query": [ "^^", "substitute", [ "downloaded,dataset_name=#{dataset_name}#,num_images=#{num_images}#,num_workers=#{num_workers}#"] ],
+    "dataset_query": [ "^^", "substitute", [ "downloaded,dataset_name=#{dataset_name}#,num_images=#{loadgen_dataset_size}#,num_workers=#{num_workers}#"] ],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
     "caption_path": [ "^^", "execute", [[
         [ "get", "dataset_entry" ],
         [ "get_path", [[ "captions", "captions.tsv" ]]]
     ]] ],
     "compliance_images_path": [ "^^", "get", "output_path" ],
-    "compliance_images_path_cmd": [ "^^", "case", [ [ "^^", "get", "loadgen_dataset_size" ],
-        5000, [ "^^", "substitute", "--compliance-images-path #{compliance_images_path}#" ],
-        { "default_value": "" }
-        ] ],
+    "compliance_images_path_cmd": [ "^^", "compliance_images_cmd" ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
