@@ -1,6 +1,6 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp32", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "extracted", "pytorch_model", "model_name=stable_diffusion", "dtype=fp32", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "url": "stable_diffusion_fp32"
         } ],
@@ -19,7 +19,7 @@
             "file_name": [ "extracted", "stable_diffusion_fp32" ]
         }, [ "input_data_types", "retraining", "weight_transformations" ] ],
 
-        [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp16", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "extracted", "pytorch_model", "model_name=stable_diffusion", "dtype=fp16", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "file_path": "stable_diffusion_fp16",
             "url": "stable_diffusion_fp16"
