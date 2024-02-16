@@ -289,6 +289,12 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
                 else:
                     print(f"    Creating empty file -->  {dst_file_path}", file=sys.stderr)
 
+        if mlperf_model_name == 'stable-diffusion-xl' and mode=='accuracy':
+            src_images_dir = os.path.join(src_dir, "images")
+            results_images_path = os.path.join(results_path, "images")
+            print(f"    Copying: {src_images_dir}  -->  {results_images_path}", file=sys.stderr)
+            shutil.copytree( src_images_dir, results_images_path, dirs_exist_ok=True)
+
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
             compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
