@@ -2,8 +2,10 @@
     "_producer_rules": [
         [ [ "extracted", "pytorch_model", "model_name=gptj_cnndm", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
+            "file_path": [ "extracted", "gpt-j", "checkpoint-final" ],
             "url": "gpt-j"
         } ],
+
         [ [ "downloaded", "pytorch_model", "model_name=gptj_cnndm", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "file_path": "gptj_model.zip",
             "url": "https://cloud.mlcommons.org/index.php/s/QAZ2oM94MkFtbQx/download",
