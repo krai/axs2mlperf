@@ -41,5 +41,5 @@
     ],
     "input_data_types": "int64",
     "retraining": "no",
-    "weight_transformations": null
+    "weight_transformations": "None"
 }
