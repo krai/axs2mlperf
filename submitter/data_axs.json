@@ -32,7 +32,7 @@
         "coco": 5000,
         "coco-1024": 5000,
         "squad_v1_1": 10833,
-        "cnndailymail": 13368
+        "cnndm_v3_0_0": 13368
     },
     "task2buffer_size": {
         "image_classification": 1024,
