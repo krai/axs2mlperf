@@ -113,13 +113,17 @@
 
     "program_name": [ "^^", "get_name" ],
 
-    "input_parameters_file_path": [ "^^", "execute", [[
+    "topped_up_output_entry": [ "^^", "execute", [[
         [ "get", "output_entry" ],
         [ "plant", [ "loadgen_mlperf_conf_path",[ "^^", "get", "loadgen_mlperf_conf_path" ] ]],
         [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
         [ "plant", [ "experiment_begin_timestamp", [ "^^", "generate_current_timestamp", [], {"used_for": "begin"} ] ]],
         [ "plant", [ "cpufreq_governor", [ "^^", "get", "set_governor" ] ]],
-        [ "save", [], { "deterministic": false } ],
+        [ "save", [], { "deterministic": false } ]
+    ]] ],
+
+    "input_parameters_file_path": [ "^^", "execute", [[
+        [ "get", "topped_up_output_entry" ],
         [ "get_path", "data_axs.json" ]
     ]] ],
 
