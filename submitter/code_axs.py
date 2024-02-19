@@ -118,6 +118,14 @@ def make_local_dir( path_list, submitted_tree_path ):
             pass
         return joined_path
 
+def get_original_entry(path_to_program_output):
+
+        with open(path_to_program_output, 'r') as file:
+            data = json.load(file)
+
+        entry_name = data.get("testing_entry_name", None)
+        return entry_name
+
 def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
@@ -129,7 +137,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
 
-    generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, __entry__ )
+    generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, power, __entry__ )
+
     generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, power, __entry__ )
     
     for experiment_entry in experiment_entries:
@@ -142,22 +151,25 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         scenario = target_scenario.lower()
 
         experiment_parameters = []
+
+        entry_path = experiment_entry.get_path("")
+
+
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
-            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
-            origin_experiment_path = os.readlink(last_mlperf_logs_path)
-            origin_experiment_name = origin_experiment_path.split("/")[-1]
+            path_to_program_output = os.path.join(entry_path, 'program_output.json')
+            origin_experiment_name = get_original_entry(path_to_program_output)
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
-        src_dir         = experiment_entry.get_path("")
+        experiment_program_name  = experiment_entry.get('program_name')
+        program_entry = __entry__.get_kernel().byname(experiment_program_name)
+
+        src_dir = experiment_entry.get_path("")
+
         sut_name        = experiment_entry.get('sut_name')
         sut_description = experiment_entry.get('sut_description')
         loadgen_mode    = experiment_entry.get('loadgen_mode')
 
-        with_power      = experiment_entry.get("with_power")
-
-        experiment_program_name  = experiment_entry.get('program_name')
-        program_entry = __entry__.get_kernel().byname(experiment_program_name)
 
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
@@ -166,11 +178,13 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         mode = loadgen_mode.replace("Only", "")
 
+        with_power      = experiment_entry.get("with_power")
+
         sut_descriptions_dictionary[sut_name] = sut_description
 
-        mlperf_model_name = experiment_entry['mlperf_model_name']
+        mlperf_model_name = experiment_entry.get('mlperf_model_name')
 
-        modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
+        modified_program_name = experiment_program_name.replace("resnet50", "image_classification") 
 
         # ----------------------------[ measurements ]------------------------------------
         measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
@@ -459,7 +473,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
         print("")
 
-def generate_readmes_for_code(experiment_entries, division, submitter, submission_entry, __entry__):
+def generate_readmes_for_code(experiment_entries, division, submitter, submission_entry, power, __entry__):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -469,17 +483,15 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
     for experiment_entry in experiment_entries:
 
-        if "power_loadgen_output" in experiment_entry["tags"]:
-            power_experiment_entry = experiment_entry
-            last_mlperf_logs_path = power_experiment_entry.get_path("last_mlperf_logs")
-            origin_experiment_path = os.readlink(last_mlperf_logs_path)
-            origin_experiment_name = origin_experiment_path.split("/")[-1]
+        
+        entry_path = experiment_entry.get_path("")
+        if power and "power_loadgen_output" in experiment_entry["tags"]:
+            path_to_program_output = os.path.join(entry_path, 'program_output.json')
+            origin_experiment_name = get_original_entry(path_to_program_output)
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
 
         experiment_program_name  = experiment_entry.get('program_name')
-        print(experiment_program_name)
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
-        print(program_entry)
         readme_path = program_entry.get_path("README.md")
         mlperf_model_name = experiment_entry['mlperf_model_name']
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
@@ -581,15 +593,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
         
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            def get_entry_name(path_to_prgram_output):
-                with open(path_to_program_output, 'r') as file:
-                    data = json.load(file)
-
-                entry_name = data.get("ranging_entry_name", None)
-
-                return entry_name
-
-            generated_entry = get_entry_name(path_to_program_output)
+            generated_entry = get_original_entry(path_to_program_output)
             target_entry = __entry__.get_kernel().byname(generated_entry)
 
             if scenario in ["Offline", "Server"]:
