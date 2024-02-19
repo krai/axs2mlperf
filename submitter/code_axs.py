@@ -20,15 +20,18 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
     return scenarios
 
 
-def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
     common_attributes = {
         "framework":            framework,
         "task":                 task,
         "sut_name":             sut_name,
-        "model_name":           model_name,
 #        "loadgen_dataset_size": loadgen_dataset_size,
 #        "loadgen_buffer_size":  loadgen_buffer_size,
     }
+    if model_name:
+        common_attributes["model_name"] = model_name
+    if mlperf_model_name:
+        common_attributes["mlperf_model_name"] = mlperf_model_name
     if framework=="kilt":
         common_attributes["device"]     = device
 
