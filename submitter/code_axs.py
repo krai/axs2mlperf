@@ -22,10 +22,10 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
 
 def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, model_name, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
     common_attributes = {
+        "framework":            framework,
         "task":                 task,
         "sut_name":             sut_name,
         "model_name":           model_name,
-        "framework":            framework,
 #        "loadgen_dataset_size": loadgen_dataset_size,
 #        "loadgen_buffer_size":  loadgen_buffer_size,
     }
@@ -510,7 +510,7 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
         elif not power:
             mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
         sut_name = experiment_entry.get('sut_name')
-        model = experiment_entry.get('model_name')
+        model_name = experiment_entry.get('model_name')
         loadgen_mode = experiment_entry.get('loadgen_mode')
         mode = loadgen_mode.replace("Only", "")
         target_qps = experiment_entry.get("loadgen_target_qps")
@@ -628,10 +628,10 @@ def generate_tables(experiment_entries, division, submitter, submission_entry, p
             status = get_result_status(mlperf_log_path)
 
         else:
-            if (target_accuracy[model]) <= float(actual_accuracy[model]):
+            if (target_accuracy[model_name]) <= float(actual_accuracy[model_name]):
                 status = "VALID"
-                actual_metric = actual_accuracy[model]
-                target = target_accuracy[model]
+                actual_metric = actual_accuracy[model_name]
+                target = target_accuracy[model_name]
                 energy_eff = "N/A"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance" and not power:
