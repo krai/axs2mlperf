@@ -151,9 +151,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         entry_path = experiment_entry.get_path("")
 
-        with_power      = experiment_entry.get("with_power")
 
-        if power and "power_loadgen_output" in experiment_entry["tags"]:
+        if "power_loadgen_output" in experiment_entry["tags"]:
+            power_experiment_entry = experiment_entry
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
             origin_experiment_name = get_original_entry(path_to_program_output)
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
@@ -174,6 +174,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         display_benchmark   = task.replace("_", " ").title()
 
         mode = loadgen_mode.replace("Only", "")
+
+        with_power      = experiment_entry.get("with_power")
 
         sut_descriptions_dictionary[sut_name] = sut_description
 
