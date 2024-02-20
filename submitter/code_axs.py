@@ -20,7 +20,7 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
     return scenarios
 
 
-def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
     common_attributes = {
         "framework":            framework,
         "task":                 task,
@@ -444,9 +444,9 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
         
-        model_name  = experiment_entry['model_name']
+        mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
@@ -455,7 +455,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 template = input_fd.read()
             with open(path_model_readme, "w") as output_fd:
                 # Write the formatted template to the target file
-                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=model_name, scenario=scenario ) )
+                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=mlperf_model_name, scenario=scenario ) )
         
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
