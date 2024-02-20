@@ -9,6 +9,8 @@
 
     "power": false,
 
+    "sdk_ver": "",
+
     "sut_description_query": ["^^", "substitute", ["sut_description,sut=#{sut_name}#"]],
     "sut_description_entry": [ "^", "byquery", [[ "^^", "get", "sut_description_query" ]], {}, ["sut_description_query"] ],
     "sut_description": [ "^^", "execute", [[

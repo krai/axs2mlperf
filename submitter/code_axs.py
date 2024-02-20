@@ -126,7 +126,7 @@ def get_original_entry(path_to_program_output):
         entry_name = data.get("testing_entry_name", None)
         return entry_name
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -139,7 +139,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
     generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, power, __entry__ )
 
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, power, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -169,7 +169,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         sut_name        = experiment_entry.get('sut_name')
         sut_description = experiment_entry.get('sut_description')
         loadgen_mode    = experiment_entry.get('loadgen_mode')
-
+        
+        if sdk_ver:
+            system_name = sut_name + "_" + str(sdk_ver)
+        else:
+            system_name = sut_name
 
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
@@ -187,8 +191,8 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         modified_program_name = experiment_program_name.replace("resnet50", "image_classification") 
 
         # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', system_name ], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
         for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
 
@@ -197,7 +201,7 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
+        measurements_meta_path  = os.path.join(measurement_path, f"{system_name}_{modified_program_name}_{scenario}.json")
 
         # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
         model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
@@ -238,11 +242,11 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         }[ experiment_entry['loadgen_mode'] ]
 
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
-            results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
+            results_path_syll   = [ division, submitter, 'results', system_name, mlperf_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-            results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
-                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc, submitted_tree_path)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -315,14 +319,14 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
-            results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
+            results_dir = os.path.join(submitter_path , 'results', system_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'compliance', system_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             result_verify =  __entry__.call('get', 'run_verify', {
                     "in_dir": tmp_dir,
@@ -360,9 +364,9 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         if sut_description['system_type'] == 'dc':
             sut_description['system_type'] = 'datacenter'
 
-        sut_path = os.path.join( systems_path, sut_name+'.json' )
+        sut_path = os.path.join( systems_path, system_name+'.json' )
 
-        print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
+        print(f"  Creating SUT description: {system_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
 
     return submission_entry.save()
@@ -381,7 +385,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     print("DEBUG:full run entry ", __entry__)
@@ -389,13 +393,13 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
+        lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, power, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__=None):
     
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     readme_template_path = __entry__.get_path("README_template.md")
@@ -426,6 +430,11 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
 
+        if sdk_ver:
+            system_name = sut_name + "_" + str(sdk_ver)
+        else:
+            system_name = sut_name
+
         experiment_cmd  = 'axs byquery ' + experiment_entry.get('__query')
         #experiment_cmd  = experiment_entry.get('produced_by')
         compliance_test_name      = experiment_entry.get('loadgen_compliance_test')
@@ -446,7 +455,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         model_name  = experiment_entry['model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
