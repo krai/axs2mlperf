@@ -2,7 +2,7 @@
     "_producer_rules": [
         [ [ "extracted", "pytorch_model", "model_name=stable_diffusion", "dtype=fp32", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
-            "url": "stable_diffusion_fp32"
+            "url": "mlc-inference:mlcommons-inference-wg-public/stable_diffusion_fp32"
         } ],
         [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp32", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "file_path": "stable_diffusion_fp32.zip",
@@ -11,7 +11,7 @@
         [ [ "extracted",  "pytorch_model", "model_name=stable_diffusion", "dtype=fp32", "source?=via_wget" ], [["get_kernel"],["byname","extractor"],["extract"]], {
             "archive_format": "zip",
             "archive_path": [ "^", "execute", [[
-                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp32" ]] ],
+                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp32,source=via_wget" ]] ],
                 [ "get_path" ]
             ]] ],
             "url": "https://cloud.mlcommons.org/index.php/s/DjnCSGyNBkWA4Ro/download",
@@ -22,7 +22,7 @@
         [ [ "extracted", "pytorch_model", "model_name=stable_diffusion", "dtype=fp16", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "file_path": "stable_diffusion_fp16",
-            "url": "stable_diffusion_fp16"
+            "url": "mlc-inference:mlcommons-inference-wg-public/stable_diffusion_fp16"
         } ],
         [ [ "downloaded", "pytorch_model", "model_name=stable_diffusion", "dtype=fp16", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "file_path": "stable_diffusion_fp16.zip",
@@ -31,7 +31,7 @@
         [ [ "extracted",  "pytorch_model", "model_name=stable_diffusion", "dtype=fp16", "source?=via_wget" ], [["get_kernel"],["byname","extractor"],["extract"]], {
             "archive_format": "zip",
             "archive_path": [ "^", "execute", [[
-                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp16" ]] ],
+                [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=stable_diffusion,dtype=fp16,source=via_wget" ]] ],
                 [ "get_path" ]
             ]] ],
             "url":  "https://cloud.mlcommons.org/index.php/s/LCdW5RM6wgGWbxC/download",
