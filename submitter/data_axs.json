@@ -24,7 +24,6 @@
 
     "division": "open",
     "submitter": "Krai",
-    "record_entry_name": "laid_out_submission",
 
     "dataset_name2dataset_size": {
         "imagenet": 50000,
@@ -122,7 +121,8 @@
        ]]
     ],
 
-    "submission_entry_name": [ "^^", "substitute", "laid_out_submission_#{division}#_#{program_name}#_on_#{sut_name}#" ],
+    "submission_entry_name_template": "laid_out_submission_#{division}#_#{task}#_using_#{framework}#_on_#{sut_name}#",
+    "submission_entry_name": [ "^^", "substitute", [ "^^", "get", "submission_entry_name_template" ] ],
     "submission_entry": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "set_path", [ "^^", "get", "submission_entry_name" ] ],
