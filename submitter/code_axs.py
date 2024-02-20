@@ -20,7 +20,7 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
     return scenarios
 
 
-def list_experiment_entries( power, sut_name, sut_system_type, program_name, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
     common_attributes = {
         "framework":            framework,
         "task":                 task,
@@ -462,7 +462,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
         
-        mlperf_model_name  = experiment_entry['mlperf_model_name']
+        mlperf_model_name = experiment_entry['mlperf_model_name']
 
         measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
