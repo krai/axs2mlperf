@@ -127,7 +127,7 @@ def get_original_entry(path_to_program_output):
         return entry_name
 
 
-def lay_out(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
@@ -396,7 +396,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
 
 
 
-def full_run(experiment_entries, division, submitter, record_entry_name, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     print("DEBUG:full run entry ", __entry__)
@@ -405,7 +405,7 @@ def full_run(experiment_entries, division, submitter, record_entry_name, log_tru
     else:
         print("Run lay_out in {submitted_tree_path} ...")
 
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
@@ -504,13 +504,12 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
 
     for experiment_entry in experiment_entries:
 
-        
         entry_path = experiment_entry.get_path("")
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
             origin_experiment_name = get_original_entry(path_to_program_output)
             experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
-
+        
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
         readme_path = program_entry.get_path("README.md")
