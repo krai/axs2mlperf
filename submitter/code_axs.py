@@ -369,6 +369,15 @@ def lay_out(experiment_entries, division, submitter, record_entry_name, log_trun
         print(f"  Creating SUT description: {system_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
 
+        framework_prefix = "QUALCOMM Cloud AI SDK v"
+        if sdk_ver:
+            with open(sut_path, 'r') as file:
+                data = json.load(file)
+            current_framework = data['framework']
+            new_framework = f"{framework_prefix}{sdk_ver}"
+            data['framework'] = new_framework
+            save_json(data, sut_path, indent=4)
+
     return submission_entry.save()
 
 
@@ -453,9 +462,9 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
         
-        model_name  = experiment_entry['model_name']
+        mlperf_model_name  = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
@@ -464,7 +473,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 template = input_fd.read()
             with open(path_model_readme, "w") as output_fd:
                 # Write the formatted template to the target file
-                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=model_name, scenario=scenario ) )
+                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=mlperf_model_name, scenario=scenario ) )
         
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
