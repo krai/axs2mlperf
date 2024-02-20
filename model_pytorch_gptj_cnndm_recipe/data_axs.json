@@ -3,7 +3,7 @@
         [ [ "extracted", "pytorch_model", "model_name=gptj_cnndm", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "file_path": [ "extracted", "gpt-j", "checkpoint-final" ],
-            "url": "gpt-j"
+            "url": "mlc-inference:mlcommons-inference-wg-public/gpt-j"
         } ],
 
         [ [ "downloaded", "pytorch_model", "model_name=gptj_cnndm", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
@@ -13,7 +13,7 @@
             "md5b": "470d09e35f9afa75f79e70d689d0b96a"
         } ],
 
-        [ [ "extracted",  "pytorch_model", "model_name=gptj_cnndm" ], [["get_kernel"],["byname","extractor"],["extract"]], {
+        [ [ "extracted",  "pytorch_model", "model_name=gptj_cnndm", "source?=via_wget" ], [["get_kernel"],["byname","extractor"],["extract"]], {
             "archive_format": "zip",
             "archive_path": [ "^", "execute", [[
                 [ "byquery", [[ "^^", "substitute", "downloaded,pytorch_model,model_name=gptj_cnndm,source=via_wget" ]] ],
