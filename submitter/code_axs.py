@@ -188,10 +188,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
         measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
-        for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
-
-            filename = os.path.basename( src_file_path )
-            dst_file_path = os.path.join(measurement_path, filename)
+        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
+            src_file_path = os.path.join(src_dir, src_file_name)
+            dst_file_path = os.path.join(measurement_path, src_file_name)
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
@@ -488,8 +487,8 @@ def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tre
         mlperf_model_name = experiment_entry['mlperf_model_name']
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
-        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
 
+        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
         for file_to_copy in submission_files_to_copy_from_code:
             file_to_copy_source_path = program_entry.get_path( file_to_copy )
 
