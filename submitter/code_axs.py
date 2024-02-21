@@ -368,20 +368,19 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     return submission_entry.save()
 
 
-def run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__):
+def run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__):
 
-    checker_log_path  = os.path.join(submitted_tree_path, division, submitter )
     result_checker =  __entry__.call( 'get', 'run_checker_script', {
             "submission_checker_path": submission_checker_path,
             "submitted_tree_path": submitted_tree_path
              } )
 
     print(result_checker)
-    logfile = open(os.path.join(checker_log_path,"submission-checker.log"),"w")
+    logfile = open(checker_log_path, "w")
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     print("DEBUG:full run entry ", __entry__)
@@ -392,7 +391,7 @@ def full_run(experiment_entries, division, submitter, log_truncation_script_path
         lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
-    run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
+    run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, power, __entry__=None):

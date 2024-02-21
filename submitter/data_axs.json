@@ -128,12 +128,20 @@
         [ "set_path", [ "^^", "get", "submission_entry_name" ] ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "plant", [
-            "tags", [ "laid_out_submission" ]
+            "tags", [ "laid_out_submission" ],
+            "contained_files", {
+                "checker_log": [ "submission-checker.log" ],
+                "submitted_tree": [ "submitted_tree" ]
+            }
           ] ],
         [ "save" ]
     ]] ],
+    "checker_log_path": [ "^^", "execute", [[
+        [ "get", "submission_entry" ],
+        [ "get_path_of", "checker_log", { "strict": false } ]
+    ]] ],
     "submitted_tree_path": [ "^^", "execute", [[
         [ "get", "submission_entry" ],
-        [ "get_path", "submitted_tree" ]
+        [ "get_path_of", "submitted_tree" ]
     ]] ]
 }
