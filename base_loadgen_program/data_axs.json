@@ -153,5 +153,7 @@
         [ "plant", [ "experiment_end_timestamp",  [ "^^", "generate_current_timestamp", [], { "used_for": "end" } ]]],
         [ "save", [], { "deterministic_2": false } ]
     ]]],
-    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], "register_end_timestamp" ], { "default_value": "link_to_power_and_register_end_timestamp" } ]
+    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], "register_end_timestamp" ], { "default_value": "link_to_power_and_register_end_timestamp" } ],
+
+    "submission_files_to_copy_from_code": [ "README.md" ]
 }

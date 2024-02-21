@@ -138,7 +138,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
 
-    generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, power, __entry__ )
+    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
     generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__ )
     
@@ -379,26 +379,24 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             data['framework'] = new_framework
             save_json(data, sut_path, indent=4)
 
-    return submission_entry.save()
+    return submitted_tree_path
 
 
-def run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__):
+def run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__):
 
-    checker_log_path  = os.path.join(submitted_tree_path, division, submitter )
     result_checker =  __entry__.call( 'get', 'run_checker_script', {
             "submission_checker_path": submission_checker_path,
             "submitted_tree_path": submitted_tree_path
              } )
 
     print(result_checker)
-    logfile = open(os.path.join(checker_log_path,"submission-checker.log"),"w")
+    logfile = open(checker_log_path, "w")
     logfile.write(result_checker)
 
 
 
 def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     print("DEBUG:full run entry ", __entry__)
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
@@ -408,12 +406,11 @@ def full_run(experiment_entries, division, submitter, log_truncation_script_path
         lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
-    run_checker(submitted_tree_path, division, submitter, submission_checker_path, __entry__)
+    run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__=None):
     
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     readme_template_path = __entry__.get_path("README_template.md")
 
     target_scenario = None
@@ -494,17 +491,17 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
         print("")
 
-def generate_readmes_for_code(experiment_entries, division, submitter, submission_entry, power, __entry__):
 
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
 
     code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
 
     sut_descriptions_dictionary      = {}
 
     for experiment_entry in experiment_entries:
-
+        
         entry_path = experiment_entry.get_path("")
+
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
             origin_experiment_name = get_original_entry(path_to_program_output)
@@ -512,19 +509,22 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
         
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
-        readme_path = program_entry.get_path("README.md")
         mlperf_model_name = experiment_entry['mlperf_model_name']
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
+        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
 
-        if os.path.exists(readme_path):
-            print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-            shutil.copy(readme_path, code_model_program_path)
-        else:
-            print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-        path_readme = os.path.join(code_model_program_path, "README.md")
+        for file_to_copy in submission_files_to_copy_from_code:
+            file_to_copy_source_path = program_entry.get_path( file_to_copy )
 
-def generate_tables(experiment_entries, division, submitter, submission_entry, power, __entry__):
+            if os.path.exists(file_to_copy_source_path):
+                print(f"    Copying: {file_to_copy_source_path}  -->  {code_model_program_path}", file=sys.stderr)
+                shutil.copy(file_to_copy_source_path, code_model_program_path)
+            else:
+                print(f"    NOT Copying: {file_to_copy_source_path}  -->  {code_model_program_path}", file=sys.stderr)
+
+
+def generate_tables(experiment_entries, division, submitter, power, __entry__):
 
     col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Efficiency"]
     table_data = []

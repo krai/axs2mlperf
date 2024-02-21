@@ -2,7 +2,8 @@
     "_producer_rules": [
         [ [ "extracted", "pytorch_model", "model_name=gptj_cnndm", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
-            "file_path": [ "extracted", "gpt-j", "checkpoint-final" ],
+            "file_path": [ "extracted", "gpt-j" ],
+            "file_name": [ "extracted", "gpt-j", "checkpoint-final" ],
             "url": "mlc-inference:mlcommons-inference-wg-public/gpt-j"
         } ],
 
