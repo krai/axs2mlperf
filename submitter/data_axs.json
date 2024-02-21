@@ -142,6 +142,6 @@
     ]] ],
     "submitted_tree_path": [ "^^", "execute", [[
         [ "get", "submission_entry" ],
-        [ "get_path_of", "submitted_tree" ]
+        [ "get_path_of", "submitted_tree", { "strict": false } ]
     ]] ]
 }

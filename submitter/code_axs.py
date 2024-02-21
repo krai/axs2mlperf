@@ -126,9 +126,7 @@ def get_original_entry(path_to_program_output):
         entry_name = data.get("testing_entry_name", None)
         return entry_name
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
-
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
@@ -137,9 +135,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
 
-    generate_readmes_for_code( experiment_entries, division, submitter, submission_entry, power, __entry__ )
+    generate_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, power, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -365,7 +363,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
 
-    return submission_entry.save()
+    return submitted_tree_path
 
 
 def run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__):
@@ -380,23 +378,21 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
 
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     print("DEBUG:full run entry ", __entry__)
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submitted_tree_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, power, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, __entry__=None):
     
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
     readme_template_path = __entry__.get_path("README_template.md")
 
     target_scenario = None
@@ -472,9 +468,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
         print("")
 
-def generate_readmes_for_code(experiment_entries, division, submitter, submission_entry, power, __entry__):
-
-    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
+def generate_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
 
     code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
 
@@ -503,7 +497,8 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submissio
             print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
         path_readme = os.path.join(code_model_program_path, "README.md")
 
-def generate_tables(experiment_entries, division, submitter, submission_entry, power, __entry__):
+
+def generate_tables(experiment_entries, division, submitter, power, __entry__):
 
     col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Efficiency"]
     table_data = []
