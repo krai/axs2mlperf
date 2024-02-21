@@ -135,7 +135,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
 
-    generate_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
     generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
     
@@ -468,16 +468,16 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "```" + "\n" + experiment_cmd + target_value + "\n" + "```" + "\n\n")
         print("")
 
-def generate_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
+
+def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
 
     code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
 
     sut_descriptions_dictionary      = {}
 
     for experiment_entry in experiment_entries:
-
-        
         entry_path = experiment_entry.get_path("")
+
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
             origin_experiment_name = get_original_entry(path_to_program_output)
@@ -485,17 +485,19 @@ def generate_readmes_for_code(experiment_entries, division, submitter, submitted
 
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
-        readme_path = program_entry.get_path("README.md")
         mlperf_model_name = experiment_entry['mlperf_model_name']
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
+        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
 
-        if os.path.exists(readme_path):
-            print(f"    Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-            shutil.copy(readme_path, code_model_program_path)
-        else:
-            print(f"    NOT Copying: {readme_path}  -->  {code_model_program_path}", file=sys.stderr)
-        path_readme = os.path.join(code_model_program_path, "README.md")
+        for file_to_copy in submission_files_to_copy_from_code:
+            file_to_copy_source_path = program_entry.get_path( file_to_copy )
+
+            if os.path.exists(file_to_copy_source_path):
+                print(f"    Copying: {file_to_copy_source_path}  -->  {code_model_program_path}", file=sys.stderr)
+                shutil.copy(file_to_copy_source_path, code_model_program_path)
+            else:
+                print(f"    NOT Copying: {file_to_copy_source_path}  -->  {code_model_program_path}", file=sys.stderr)
 
 
 def generate_tables(experiment_entries, division, submitter, power, __entry__):
