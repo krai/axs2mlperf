@@ -118,13 +118,19 @@ def make_local_dir( path_list, submitted_tree_path ):
             pass
         return joined_path
 
-def get_original_entry(path_to_program_output):
 
-        with open(path_to_program_output, 'r') as file:
-            data = json.load(file)
+def get_testing_entry(experiment_entry):
 
-        entry_name = data.get("testing_entry_name", None)
-        return entry_name
+    entry_path = experiment_entry.get_path("")
+    path_to_program_output = os.path.join(entry_path, 'program_output.json')
+
+    with open(path_to_program_output, 'r') as file:
+        data = json.load(file)
+
+    entry_name = data.get("testing_entry_name", None)
+    testing_entry = experiment_entry.get_kernel().byname(entry_name)
+    return testing_entry
+
 
 
 def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
@@ -153,14 +159,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         experiment_parameters = []
 
-        entry_path = experiment_entry.get_path("")
-
-
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            origin_experiment_name = get_original_entry(path_to_program_output)
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+            experiment_entry = get_testing_entry(experiment_entry)
 
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
@@ -195,10 +196,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', system_name ], submitted_tree_path )
         measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
-        for src_file_path in ( experiment_entry['loadgen_mlperf_conf_path'], os.path.join(src_dir, 'user.conf') ):
-
-            filename = os.path.basename( src_file_path )
-            dst_file_path = os.path.join(measurement_path, filename)
+        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
+            src_file_path = os.path.join(src_dir, src_file_name)
+            dst_file_path = os.path.join(measurement_path, src_file_name)
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
@@ -427,6 +427,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         if "power_loadgen_output" in experiment_entry["tags"] and power:
             power_experiment_entry = experiment_entry
+            experiment_entry = get_testing_entry(experiment_entry)
             avg_power = power_experiment_entry.call("avg_power")
             print(avg_power)
 
@@ -499,21 +500,17 @@ def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tre
     sut_descriptions_dictionary      = {}
 
     for experiment_entry in experiment_entries:
-        
-        entry_path = experiment_entry.get_path("")
 
         if power and "power_loadgen_output" in experiment_entry["tags"]:
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            origin_experiment_name = get_original_entry(path_to_program_output)
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
-        
+            experiment_entry = get_testing_entry(experiment_entry)
+            
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
         mlperf_model_name = experiment_entry['mlperf_model_name']
         modified_program_name   = experiment_program_name.replace("resnet50", "image_classification")
         code_model_program_path = make_local_dir( [code_path, mlperf_model_name , modified_program_name ], submitted_tree_path )
-        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
 
+        submission_files_to_copy_from_code = program_entry.get( "submission_files_to_copy_from_code" , [ "README.md" ] )
         for file_to_copy in submission_files_to_copy_from_code:
             file_to_copy_source_path = program_entry.get_path( file_to_copy )
 
@@ -553,7 +550,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         accuracy_metric = experiment_entry.get("accuracy_report")
         
-        # Fuction to extract the actual performance metric
+        # Function to extract the actual performance metric
         def get_samples_per_second(file_path):
             try:
                 with open(file_path, 'r') as file:
@@ -621,9 +618,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             return "rouge1 value not found"
 
         if power and "power_loadgen_output" in experiment_entry["tags"]:
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            generated_entry = get_original_entry(path_to_program_output)
-            target_entry = __entry__.get_kernel().byname(generated_entry)
+            target_entry = get_testing_entry(experiment_entry)
 
             if scenario in ["Offline", "Server"]:
                 target = target_entry.get('loadgen_target_qps')
