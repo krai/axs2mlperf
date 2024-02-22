@@ -630,7 +630,8 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": round(76.46 * 0.99, 3),
             "retinanet": round(37.55 * 0.99, 3),
             "bert-99": round(90.874 * 0.99, 3),
-            "bert-99.9": round(90.874 * 0.999, 3)
+            "bert-99.9": round(90.874 * 0.999, 3),
+            "gptj-99": round(42.9865 * 0.99, 3)
         }
 
         # Actual accuracy for workloads
@@ -638,7 +639,8 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": extract_accuracy_ic(accuracy_metric),
             "retinanet": extract_map(accuracy_metric),
             "bert-99": extract_accuracy_bert(accuracy_metric),
-            "bert-99.9": extract_accuracy_bert(accuracy_metric)
+            "bert-99.9": extract_accuracy_bert(accuracy_metric),
+            "gptj-99": extract_rouge1(accuracy_metric)
         }
 
 
