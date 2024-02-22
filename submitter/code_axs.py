@@ -397,7 +397,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
     target_scenario = None
 
-          
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
@@ -407,11 +406,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         scenario = target_scenario.lower()
 
-        if "power_loadgen_output" in experiment_entry["tags"] and power:
-            power_experiment_entry = experiment_entry
-            experiment_entry = get_testing_entry(experiment_entry)
-            avg_power = power_experiment_entry.call("avg_power")
-            print(avg_power)
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
@@ -439,6 +433,15 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         mode = loadgen_mode.replace("Only", "")
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
+
+        if "power_loadgen_output" in experiment_entry["tags"] and power:
+            power_experiment_entry = experiment_entry
+            avg_power = power_experiment_entry.call("avg_power")
+            print(avg_power)
+            experiment_entry = get_testing_entry(experiment_entry)
+            power_case = True
+        else:
+            power_case = False
         
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
@@ -458,7 +461,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "\n" + "### Accuracy  " + "\n\n")
                 fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
             elif mode == 'Performance' and not compliance_test_name:
-                if "power_loadgen_output" in experiment_entry["tags"]:
+                if power_case:
                     fd.write( "### Power " + "\n\n")
                     fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
                 else:
