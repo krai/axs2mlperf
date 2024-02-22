@@ -118,13 +118,19 @@ def make_local_dir( path_list, submitted_tree_path ):
             pass
         return joined_path
 
-def get_original_entry(path_to_program_output):
 
-        with open(path_to_program_output, 'r') as file:
-            data = json.load(file)
+def get_testing_entry(experiment_entry):
 
-        entry_name = data.get("testing_entry_name", None)
-        return entry_name
+    entry_path = experiment_entry.get_path("")
+    path_to_program_output = os.path.join(entry_path, 'program_output.json')
+
+    with open(path_to_program_output, 'r') as file:
+        data = json.load(file)
+
+    entry_name = data.get("testing_entry_name", None)
+    testing_entry = experiment_entry.get_kernel().byname(entry_name)
+    return testing_entry
+
 
 def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
 
@@ -150,14 +156,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         experiment_parameters = []
 
-        entry_path = experiment_entry.get_path("")
-
-
         if "power_loadgen_output" in experiment_entry["tags"]:
             power_experiment_entry = experiment_entry
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            origin_experiment_name = get_original_entry(path_to_program_output)
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+            experiment_entry = get_testing_entry(experiment_entry)
 
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
@@ -408,6 +409,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         if "power_loadgen_output" in experiment_entry["tags"] and power:
             power_experiment_entry = experiment_entry
+            experiment_entry = get_testing_entry(experiment_entry)
             avg_power = power_experiment_entry.call("avg_power")
             print(avg_power)
 
@@ -475,12 +477,9 @@ def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tre
     sut_descriptions_dictionary      = {}
 
     for experiment_entry in experiment_entries:
-        entry_path = experiment_entry.get_path("")
 
         if power and "power_loadgen_output" in experiment_entry["tags"]:
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            origin_experiment_name = get_original_entry(path_to_program_output)
-            experiment_entry = __entry__.get_kernel().byname(origin_experiment_name)
+            experiment_entry = get_testing_entry(experiment_entry)
 
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
@@ -528,7 +527,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         accuracy_metric = experiment_entry.get("accuracy_report")
         
-        # Fuction to extract the actual performance metric
+        # Function to extract the actual performance metric
         def get_samples_per_second(file_path):
             try:
                 with open(file_path, 'r') as file:
@@ -587,9 +586,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             return "mAP value not found"
         
         if power and "power_loadgen_output" in experiment_entry["tags"]:
-            path_to_program_output = os.path.join(entry_path, 'program_output.json')
-            generated_entry = get_original_entry(path_to_program_output)
-            target_entry = __entry__.get_kernel().byname(generated_entry)
+            target_entry = get_testing_entry(experiment_entry)
 
             if scenario in ["Offline", "Server"]:
                 target = target_entry.get('loadgen_target_qps')
