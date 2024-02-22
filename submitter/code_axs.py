@@ -545,7 +545,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         elif not power:
             mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
         sut_name = experiment_entry.get('sut_name')
-        model_name = experiment_entry.get('model_name')
+        mlperf_model_name = experiment_entry.get('mlperf_model_name')
         loadgen_mode = experiment_entry.get('loadgen_mode')
         mode = loadgen_mode.replace("Only", "")
         target_qps = experiment_entry.get("loadgen_target_qps")
@@ -611,6 +611,15 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
                         return map_value
             return "mAP value not found"
         
+        # Function to extract rouge1 value
+        def extract_rouge1(accuracy_metric):
+            if accuracy_metric is not None:
+                for item in accuracy_metric:
+                    if "rouge1" in item:
+                        accuracy_part = accuracy_metric.split('"rouge1":')[1]
+                        return accuracy_part
+            return "rouge1 value not found"
+
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             path_to_program_output = os.path.join(entry_path, 'program_output.json')
             generated_entry = get_original_entry(path_to_program_output)
@@ -655,10 +664,10 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             status = get_result_status(mlperf_log_path)
 
         else:
-            if (target_accuracy[model_name]) <= float(actual_accuracy[model_name]):
+            if (target_accuracy[mlperf_model_name]) <= float(actual_accuracy[mlperf_model_name]):
                 status = "VALID"
-                actual_metric = actual_accuracy[model_name]
-                target = target_accuracy[model_name]
+                actual_metric = actual_accuracy[mlperf_model_name]
+                target = target_accuracy[mlperf_model_name]
                 energy_eff = "N/A"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance" and not power:
