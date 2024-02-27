@@ -31,7 +31,8 @@
         "loadgen_target_qps":           ["target_qps", 1],
         "loadgen_max_duration_s":       ["max_duration", 1000],
         "loadgen_min_duration_s":       ["min_duration", 1000],
-        "loadgen_offline_expected_qps": ["offline_expected_qps", 1]
+        "loadgen_offline_expected_qps": ["offline_expected_qps", 1],
+        "loadgen_use_token_latencies":  ["use_token_latencies", 1]
     },
     "param_to_conf_keys": [ "^^", "execute", [[
         [ "get", "param_to_conf_pair" ],
@@ -96,7 +97,7 @@
     "pipeline": [ "^^", "execute", [[
         [ "run" ],
         [],
-        [ "get", "output_entry" ]
+        [ "get", "output_entry" ]    
     ]] ],
 
     "output_dir": [ "^^", "execute", [[
