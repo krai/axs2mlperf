@@ -21,7 +21,7 @@
     ]] ],
     
     "variant": "7b",
-    "_checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,model_name=Llama-2-#{variant}#-chat-hf" ],
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,llama2,model_name=Llama-2-#{variant}#-chat-hf" ],
     "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
