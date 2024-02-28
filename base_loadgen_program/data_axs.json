@@ -97,7 +97,7 @@
     "pipeline": [ "^^", "execute", [[
         [ "run" ],
         [],
-        [ "get", "output_entry" ]
+        [ "get", "output_entry" ]    
     ]] ],
 
     "output_dir": [ "^^", "execute", [[
