@@ -17,11 +17,10 @@
     "dataset_path": [ "^^", "execute", [[
         [ "get", "dataset_entry" ],
         [ "get_path" ],
-        [ "__add__", "/open_orca_gpt4_tokenized_llama.full.pkl" ]
+        [ "__add__", "/open_orca_gpt4_tokenized_llama.sampled_24576.pkl" ]
     ]] ],
     
-    "variant": "7b",
-    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,llama2,model_name=Llama-2-#{variant}#-chat-hf" ],
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,llama2" ],
     "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
@@ -35,14 +34,17 @@
         [ "byname", "python_script" ],
         [ "run", [], {
                 "python_deps": [
-                    [ "^", "byquery", "python_package,package_name=torch" ],
-                    [ "^", "byquery", "python_package,package_name=transformers" ],
-                    [ "^", "byquery", "python_package,package_name=nltk" ],
-                    [ "^", "byquery", "python_package,package_name=rouge_score" ],
-                    [ "^", "byquery", "python_package,package_name=evaluate" ]
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torch" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=transformers" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=nltk" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=rouge_score" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=sentencepiece" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pillow" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=evaluate" ]
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}# --checkpoint-path #{checkpoint_path}#" ],
+                "desired_python_version": "3.10",
                 "capture_output": true
             } ],
         0,
