@@ -51,15 +51,21 @@
         [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
     ]], {} ],
 
-    "accuracy_dict": [ "^^", "execute", [[
+    "accuracy_dict_full": [ "^^", "execute", [[
         ["get", "accuracy_report" ],
         0,
         [ "func", "eval" ]
      ]], {} ],
+    "accuracy_dict": [ "^^", "get_accuracy_dict" ],
     "rouge1": [ "^^" , "dig","accuracy_dict.rouge1" ],
     "rouge2": [ "^^" , "dig","accuracy_dict.rouge2" ],
     "rougeL": [ "^^" , "dig","accuracy_dict.rougeL" ],
+    "tokens_per_sample": [ "^^" , "dig","accuracy_dict.tokens_per_sample" ],
+
     "rougeLsum": [ "^^" , "dig","accuracy_dict.rougeLsum" ],
     "gen_len": [ "^^" , "dig","accuracy_dict.gen_len" ],
-    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ]
+    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
+
+
+    "accuracy_range_dict": { "rouge1": [ 43.986888, null ], "rouge2": [ 21.814848, null ], "rougeL": [ 28.330038, null ], "tokens_per_sample": [ 265.005, null ] }
 }
