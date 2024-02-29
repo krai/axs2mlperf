@@ -1,4 +1,6 @@
 {
+    "_parent_entries": [ [ "^", "byname", "cpufreq_support" ] ],
+
     "loadgen_scenario": "SingleStream",
     "loadgen_mode": "AccuracyOnly",
     "loadgen_dataset_size": 20,
@@ -112,12 +114,17 @@
 
     "program_name": [ "^^", "get_name" ],
 
-    "input_parameters_file_path": [ "^^", "execute", [[
+    "topped_up_output_entry": [ "^^", "execute", [[
         [ "get", "output_entry" ],
         [ "plant", [ "loadgen_mlperf_conf_path",[ "^^", "get", "loadgen_mlperf_conf_path" ] ]],
         [ "plant", [ "loadgen_user_conf_path",[ "^^", "get", "loadgen_user_conf_path" ] ]],
         [ "plant", [ "experiment_begin_timestamp", [ "^^", "generate_current_timestamp", [], {"used_for": "begin"} ] ]],
-        [ "save", [], { "deterministic": false } ],
+        [ "plant", [ "cpufreq_governor", [ "^^", "get", "set_governor" ] ]],
+        [ "save", [], { "deterministic": false } ]
+    ]] ],
+
+    "input_parameters_file_path": [ "^^", "execute", [[
+        [ "get", "topped_up_output_entry" ],
         [ "get_path", "data_axs.json" ]
     ]] ],
 
@@ -130,7 +137,7 @@
 	    [ "get", "internal_to_mlperf_model_name" ],
 	    [ "get", [ [ "^^", "get", "model_name" ], [ "^^", "get", "model_name" ] ] ]
     ]] ],
-    "full_to_shortened_mlperf_model_name": { "bert-99.9": "bert", "bert-99": "bert" },
+    "full_to_shortened_mlperf_model_name": { "bert-99.9": "bert", "bert-99": "bert", "gptj-99.9": "gptj", "gptj-99": "gptj" },
     "shortened_mlperf_model_name": [ "^^", "execute", [[
 	    [ "get", "full_to_shortened_mlperf_model_name" ],
 	    [ "get", [ [ "^^", "get", "mlperf_model_name" ], [ "^^", "get", "mlperf_model_name" ] ] ]
@@ -147,5 +154,7 @@
         [ "plant", [ "experiment_end_timestamp",  [ "^^", "generate_current_timestamp", [], { "used_for": "end" } ]]],
         [ "save", [], { "deterministic_2": false } ]
     ]]],
-    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], "register_end_timestamp" ], { "default_value": "link_to_power_and_register_end_timestamp" } ]
+    "get_and_return_on_success": [ "^^", "case",[ [ "^^", "get", "symlink_to" ], [null, ""], "register_end_timestamp" ], { "default_value": "link_to_power_and_register_end_timestamp" } ],
+
+    "submission_files_to_copy_from_code": [ "README.md" ]
 }

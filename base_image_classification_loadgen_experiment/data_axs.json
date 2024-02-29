@@ -5,8 +5,6 @@
 
     "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, ["model_query"] ],
 
-    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
-
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path_of", "classification_accuracy_script" ]
@@ -16,9 +14,9 @@
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
-                "python_deps": [ [ "^", "byquery", "python_package,package_name=numpy" ] ],
+                "python_deps": [ [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy" ] ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
-                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --imagenet-val-file \"#{ground_truth_path}#\"" ],
+                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{abs_accuracy_log_path}#\" --imagenet-val-file \"#{ground_truth_path}#\"" ],
                 "capture_output": true
             } ]
     ]], {} ],

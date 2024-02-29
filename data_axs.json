@@ -11,8 +11,8 @@
         ]
     ],
     "tags": [
-        "git_repo",
-        "collection"
+        "collection",
+        "git_repo"
     ],
     "contained_entries": {
         "loadgen_example": "loadgen_example",
@@ -46,7 +46,11 @@
         "cnndm_preprocessor": "cnndm_preprocessor",
         "model_pytorch_stable_diffusion_recipe": "model_pytorch_stable_diffusion_recipe",
         "dataset_openorca_mlperf_recipe": "dataset_openorca_mlperf_recipe",
-        "openorca_preprocessor": "openorca_preprocessor"
+        "openorca_preprocessor": "openorca_preprocessor",
+        "base_text_to_image_loadgen_experiment": "base_text_to_image_loadgen_experiment",
+        "cpufreq_support": "cpufreq_support",
+        "stable_diffusion_xl_git_recipe": "stable_diffusion_xl_git_recipe",
+        "base_qaic_text_to_image_loadgen_experiment": "base_qaic_text_to_image_loadgen_experiment"
     },
     "repo_name": "axs2mlperf",
     "submodules": false

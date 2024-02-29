@@ -32,6 +32,7 @@ def avg_power( mlperf_log_parser_path, server_timezone_sec, client_timezone_sec,
 
     power_list  = []
     for line in load_lines(power_sample_log_path):
+        if not line.startswith("Time"): continue
         timestamp = datetime.datetime.strptime(line.split(",")[1], datetime_format) + server_timezone
         if timestamp > power_begin and timestamp < power_end:
             power_list.append(float(line.split(",")[3]))

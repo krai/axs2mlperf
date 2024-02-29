@@ -1,0 +1,19 @@
+{
+    "_producer_rules": [
+        [ [ "git_repo", "repo_name=stable_diffusion_xl_base_1.0_git" ], [
+                ["get_kernel"],
+                ["byname","git"],
+                ["clone"],
+                ["run",[],{
+                        "cmd_key": "generic",
+                        "rest_of_cmd": "lfs pull -I vae_decoder/model.onnx",
+                        "capture_output": false,
+                        "get_and_return_on_success": "__entry__"
+                    }]
+            ], {}, [ "url", "env" ] ]
+    ],
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+    "env": {
+        "GIT_LFS_SKIP_SMUDGE": "1"
+    }
+}
