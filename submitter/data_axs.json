@@ -31,14 +31,16 @@
         "coco": 5000,
         "coco-1024": 5000,
         "squad_v1_1": 10833,
-        "cnndm_v3_0_0": 13368
+        "cnndm_v3_0_0": 13368,
+        "openorca": 24576
     },
     "task2buffer_size": {
         "image_classification": 1024,
         "object_detection": 64,
         "bert": 10833,
         "gptj": 13368,
-        "text_to_image": 5000
+        "text_to_image": 5000,
+        "llm": 24576
     },
 
     "program_entry": [ "^^", "execute", [[
