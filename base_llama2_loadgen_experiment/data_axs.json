@@ -35,8 +35,10 @@
         [ "byname", "python_script" ],
         [ "run", [], {
                 "python_deps": [
+                    [ "^", "byquery", "python_package,package_name=pillow" ],
                     [ "^", "byquery", "python_package,package_name=torch" ],
                     [ "^", "byquery", "python_package,package_name=transformers" ],
+                    [ "^", "byquery", "python_package,package_name=sentencepiece" ],
                     [ "^", "byquery", "python_package,package_name=nltk" ],
                     [ "^", "byquery", "python_package,package_name=rouge_score" ],
                     [ "^", "byquery", "python_package,package_name=evaluate" ]
