@@ -43,5 +43,7 @@
         [ "func", "float"]
     ]], {} ],
 
-    "accuracy": [ "^^", "get", "mAP" ]
+    "accuracy": [ "^^", "get", "mAP" ],
+    "accuracy_dict": { "mAP": [ "^^", "get", "accuracy" ] },
+    "accuracy_range_dict": { "mAP": [37.175, null] }
 }
