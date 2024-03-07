@@ -101,3 +101,10 @@ def generate_current_timestamp(used_for="unknown"):
     timestamp = datetime.datetime.now().strftime("%Y.%m.%dT%H:%M:%S")
     #print(f"GENERATING TIMESTAMP: {timestamp} used for: {used_for}")
     return timestamp
+
+def list_to_str(sdk_ver_list):
+    sdk_ver_list_str = []
+    for elem in sdk_ver_list:
+        sdk_ver_list_str.append(str(elem))
+    result = ".".join(sdk_ver_list_str)
+    return result
