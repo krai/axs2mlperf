@@ -103,8 +103,5 @@ def generate_current_timestamp(used_for="unknown"):
     return timestamp
 
 def list_to_str(sdk_ver_list):
-    sdk_ver_list_str = []
-    for elem in sdk_ver_list:
-        sdk_ver_list_str.append(str(elem))
-    result = ".".join(sdk_ver_list_str)
-    return result
+    sdk_ver_list_stringified = [ str(elem) for elem in sdk_ver_list ]
+    return ".".join(sdk_ver_list_stringified)
