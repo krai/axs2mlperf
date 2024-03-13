@@ -1,0 +1,40 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
+    "_producer_rules": [
+        [ [ "preprocessed", "dataset_name=openorca" ], [[ "run" ]] ]
+    ],
+
+    "openorca_dataset_type": "full",
+    "openorca_dataset_file": [ "^^", "case", [[ "^^", "get", "openorca_dataset_type" ],
+        "full", "open_orca_gpt4_tokenized_llama.sampled_24576.pkl",
+        "calibration", "open_orca_gpt4_tokenized_llama.calibration_1000.pkl"
+    ]],
+
+    "openorca_dataset_query": [ "^^", "substitute", "downloaded,dataset_name=openorca,model_dir=#{tokenizer_path}#" ],
+    "openorca_dataset_entry": [ "^", "byquery", [[ "^^", "get", "openorca_dataset_query" ]], {}, [ "openorca_dataset_query" ] ],
+    "openorca_dataset_dir": [ "^^", "execute", [[
+        [ "get", "openorca_dataset_entry" ],
+        [ "get_path" ]
+    ]] ],
+    "openorca_dataset_path": [ "^^", "substitute", "#{openorca_dataset_dir}#/#{openorca_dataset_file}#" ],
+  
+    "tokenizer_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", "downloaded,hf_model" ],
+        [ "get_path" ]
+    ]] ],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pandas" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy" ]] ]
+    ],
+
+    "newborn_entry_tags": [ "preprocessed", "dataset_name=openorca" ],
+    "newborn_name_template": [ "preprocessed_openorca_dataset_#{openorca_dataset_type}#" ],
+    "newborn_entry_param_names": [ "openorca_dataset_type" ],
+    "return_this_entry": [ "^^", "substitute", "#{newborn_entry}#" ],
+
+    "rel_script_path": "main.py",
+    "script_extra_params": [ "^^", "substitute", "#{openorca_dataset_path}# #{tokenizer_path}# #{newborn_entry_path}#" ]
+}
