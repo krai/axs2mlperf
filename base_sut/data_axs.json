@@ -1,0 +1,16 @@
+{
+    "num_device": 1,
+    "device_id": "all",
+    "hypothetical_num_device": [ "^^" , "set_hypothetical_num_device" ],
+    "with_power": false,
+
+    "model": null,
+
+    "model_config_entry": [ "^^" , "get_model_config"],
+
+    "model_compiletime_device_model_entry": [ "^^" , "get_config", "compile_model"],
+
+    "profile_compiletime_device_model_entry": [ "^^" , "get_config", "compile_profile"],
+
+    "runtime_device_model_entry": [ "^^" , "get_config", "runtime"]
+}

@@ -50,7 +50,8 @@
         "base_text_to_image_loadgen_experiment": "base_text_to_image_loadgen_experiment",
         "cpufreq_support": "cpufreq_support",
         "stable_diffusion_xl_git_recipe": "stable_diffusion_xl_git_recipe",
-        "base_qaic_text_to_image_loadgen_experiment": "base_qaic_text_to_image_loadgen_experiment"
+        "base_qaic_text_to_image_loadgen_experiment": "base_qaic_text_to_image_loadgen_experiment",
+        "base_sut": "base_sut"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
