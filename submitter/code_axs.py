@@ -132,7 +132,10 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
+
+    submitted_tree_path = submission_entry.get_path( 'submitted_tree' )
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
@@ -143,7 +146,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
     copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -168,7 +171,11 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         sut_name        = experiment_entry.get('sut_name')
         sut_description = experiment_entry.get('sut_description')
         loadgen_mode    = experiment_entry.get('loadgen_mode')
-
+        
+        if sdk_ver:
+            system_name = sut_name + "_" + str(sdk_ver)
+        else:
+            system_name = sut_name
 
         compliance_test_name       = experiment_entry.get('loadgen_compliance_test')
 
@@ -186,8 +193,8 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         modified_program_name = experiment_program_name.replace("resnet50", "image_classification") 
 
         # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', system_name ], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
         for src_file_name in ( 'mlperf.conf', 'user.conf' ):
             src_file_path = os.path.join(src_dir, src_file_name)
@@ -195,7 +202,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
+        measurements_meta_path  = os.path.join(measurement_path, f"{system_name}_{modified_program_name}_{scenario}.json")
 
         # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
         model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
@@ -236,11 +243,11 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         }[ experiment_entry['loadgen_mode'] ]
 
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
-            results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
+            results_path_syll   = [ division, submitter, 'results', system_name, mlperf_model_name, scenario, mode]
         elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
-            results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
-                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST01_acc = [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST01_acc = make_local_dir(results_path_syll_TEST01_acc, submitted_tree_path)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -313,14 +320,14 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
-            results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
+            tmp_dir = make_local_dir( [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
+            results_dir = os.path.join(submitter_path , 'results', system_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'compliance', system_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             result_verify =  __entry__.call('get', 'run_verify', {
                     "in_dir": tmp_dir,
@@ -358,10 +365,19 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         if sut_description['system_type'] == 'dc':
             sut_description['system_type'] = 'datacenter'
 
-        sut_path = os.path.join( systems_path, sut_name+'.json' )
+        sut_path = os.path.join( systems_path, system_name+'.json' )
 
-        print(f"  Creating SUT description: {sut_name}  -->  {sut_path}", file=sys.stderr)
+        print(f"  Creating SUT description: {system_name}  -->  {sut_path}", file=sys.stderr)
         save_json(sut_description, sut_path, indent=4)
+
+        framework_prefix = "QUALCOMM Cloud AI SDK v"
+        if sdk_ver:
+            with open(sut_path, 'r') as file:
+                data = json.load(file)
+            current_framework = data['framework']
+            new_framework = f"{framework_prefix}{sdk_ver}"
+            data['framework'] = new_framework
+            save_json(data, sut_path, indent=4)
 
     return submitted_tree_path
 
@@ -378,20 +394,22 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
     print("DEBUG:full run entry ", __entry__)
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submitted_tree_path, __entry__)
+
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power, infer_from_ss, model_meta_data, submission_entry, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submission_entry, sdk_ver, power, __entry__=None):
     
     readme_template_path = __entry__.get_path("README_template.md")
 
@@ -415,6 +433,11 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
+
+        if sdk_ver:
+            system_name = sut_name + "_" + str(sdk_ver)
+        else:
+            system_name = sut_name
 
         experiment_cmd  = 'axs byquery ' + experiment_entry.get('__query')
         #experiment_cmd  = experiment_entry.get('produced_by')
@@ -445,7 +468,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'measurements', system_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
@@ -483,7 +506,7 @@ def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tre
 
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             experiment_entry = get_testing_entry(experiment_entry)
-
+            
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
         mlperf_model_name = experiment_entry['mlperf_model_name']
@@ -522,7 +545,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         elif not power:
             mlperf_log_path = os.path.join(entry_path, 'mlperf_log_summary.txt')
         sut_name = experiment_entry.get('sut_name')
-        model_name = experiment_entry.get('model_name')
+        mlperf_model_name = experiment_entry.get('mlperf_model_name')
         loadgen_mode = experiment_entry.get('loadgen_mode')
         mode = loadgen_mode.replace("Only", "")
         target_qps = experiment_entry.get("loadgen_target_qps")
@@ -588,6 +611,15 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
                         return map_value
             return "mAP value not found"
         
+        # Function to extract rouge1 value
+        def extract_rouge1(accuracy_metric):
+            if accuracy_metric is not None:
+                for item in accuracy_metric:
+                    if "rouge1" in item:
+                        accuracy_part = accuracy_metric.split('"rouge1":')[1]
+                        return accuracy_part
+            return "rouge1 value not found"
+
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             target_entry = get_testing_entry(experiment_entry)
 
@@ -601,7 +633,8 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": round(76.46 * 0.99, 3),
             "retinanet": round(37.55 * 0.99, 3),
             "bert-99": round(90.874 * 0.99, 3),
-            "bert-99.9": round(90.874 * 0.999, 3)
+            "bert-99.9": round(90.874 * 0.999, 3),
+            "gptj-99": round(42.9865 * 0.99, 3)
         }
 
         # Actual accuracy for workloads
@@ -609,7 +642,8 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": extract_accuracy_ic(accuracy_metric),
             "retinanet": extract_map(accuracy_metric),
             "bert-99": extract_accuracy_bert(accuracy_metric),
-            "bert-99.9": extract_accuracy_bert(accuracy_metric)
+            "bert-99.9": extract_accuracy_bert(accuracy_metric),
+            "gptj-99": extract_rouge1(accuracy_metric)
         }
 
 
@@ -630,10 +664,10 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             status = get_result_status(mlperf_log_path)
 
         else:
-            if (target_accuracy[model_name]) <= float(actual_accuracy[model_name]):
+            if (target_accuracy[mlperf_model_name]) <= float(actual_accuracy[mlperf_model_name]):
                 status = "VALID"
-                actual_metric = actual_accuracy[model_name]
-                target = target_accuracy[model_name]
+                actual_metric = actual_accuracy[mlperf_model_name]
+                target = target_accuracy[mlperf_model_name]
                 energy_eff = "N/A"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance" and not power:
