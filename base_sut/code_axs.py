@@ -302,3 +302,10 @@ def get_config(config_target, model, device, card, system_type, num_device, hypo
         return q1_entry
 
     assert False, f"\n\n\nERROR: Missing Configs when searching for [{query}]. Try to add the relevant entry for the base class [{base_query}]."
+
+
+def parse_lscpu_output(lscpu_output_struct):
+
+    lscpu_output_dict = { p["field"][:-1]: p["data"] for p in lscpu_output_struct }
+
+    return lscpu_output_dict
