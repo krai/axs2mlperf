@@ -340,7 +340,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             if task == "llm":
-                dtype = experiment_entry['dtype']
+                dtype = experiment_entry['benchmark_output_data_type']
             else:
                 dtype = ""
             result_verify =  __entry__.call('get', 'run_verify', create_run_verification_input_dict(task, tmp_dir, verify_script_path, results_dir, compliance_dir, output_dir, target_scenario, dtype))
