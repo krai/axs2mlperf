@@ -78,6 +78,22 @@
 
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
     "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],
+    "scenario_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
+        "llm" , [ "^^", "substitute", "--scenario #{scenario}#"] ],
+        { "default_value": ""  }
+    ],
+
+    "result_dir_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
+        "llm" , "" ],
+        { "default_value": [ "^^", "substitute", "--results_dir #{results_dir}#" ] }
+    ],
+
+
+    "dtype_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
+        "llm" , [ "^^", "substitute", "--dtype #{dtype}#"] ],
+        { "default_value": "" }
+    ],
+
 
     "run_verify": [ "^^", "execute", [[
         [ "get_kernel" ],
@@ -88,12 +104,14 @@
                 [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy" ]
             ],
             "abs_script_path": ["^^", "get", "verify_script_path"],
-            "script_extra_params": [ "^^", "substitute", "--results_dir \"#{results_dir}#\" --compliance_dir \"#{compliance_dir}#\" --output_dir \"#{output_dir}#\" " ],
+            "script_extra_params": [ "^^", "substitute", "#{result_dir_cmd}# --compliance_dir \"#{compliance_dir}#\" --output_dir \"#{output_dir}#\" #{scenario_cmd}# #{dtype_cmd}#" ],
             "capture_output": false,
             "capture_stderr": true,
-            "results_dir": [ "^^", "get", "results_dir" ],
+            "results_dir_cmd": [ "^^", "get", "results_dir_cmd" ],
             "compliance_dir": [ "^^", "get", "compliance_dir" ],
-            "output_dir": [ "^^", "get", "output_dir" ]
+            "output_dir": [ "^^", "get", "output_dir" ],
+            "scenario_cmd": [ "^^", "get", "scenario_cmd" ],
+            "dtype_cmd": [ "^^", "get", "dtype_cmd" ]
         } ]
     ]] ],
 
