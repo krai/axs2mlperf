@@ -50,5 +50,5 @@
     "f1": [ "^^" , "dig","accuracy_dict.f1" ],
     "exact_match": [ "^^" , "dig","accuracy_dict.exact_match" ],
     "accuracy": [ "^^" , "get", "f1" ],
-    "accuracy_range_dict": { "f1": [89.965, null], "exact_match": [null, null]}
+    "accuracy_range_dict": { "f1": [89.965, null], "exact_match": [0, null]}
 }
