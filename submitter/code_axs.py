@@ -7,6 +7,22 @@ import json
 from ufun import save_json
 from tabulate import tabulate
 
+def create_run_verification_input_dict(task, tmp_dir, verify_script_path, results_dir, compliance_dir, output_dir, scenario, dtype=None):
+    result_dict = {
+        "in_dir": tmp_dir,
+        "verify_script_path": verify_script_path,
+        "compliance_dir": compliance_dir,
+        "output_dir": output_dir
+    }
+    if task == "llm":
+        result_dict [ "scenario" ] = scenario
+        result_dict [ "dtype" ] = dtype
+    else:
+        result_dict [ "results_dir" ] = results_dir
+    print("result_dict = ", result_dict)
+    return result_dict
+
+
 def scenarios_from_sut_type_and_task(sut_system_type, task):
 
     if sut_system_type == "edge":
@@ -49,7 +65,8 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
             "object_detection":     [ 'TEST01', 'TEST05' ],
             "bert":                 [ 'TEST01', 'TEST05' ],
             "gptj":                 [ ],
-            "text_to_image":        [ ]
+            "text_to_image":        [ ],
+            "llm":                  [ 'TEST06' ]
         }[task]
 
         for compliance_test_name in compliance_test_list:
@@ -258,7 +275,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             if not with_power:
                 results_path_syll.append( 'run_1' )
 
-        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
+        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05", "TEST06" ]:
             results_path_syll.extend(( mode, 'run_1' ))
 
         results_path = make_local_dir( results_path_syll, submitted_tree_path )
@@ -319,8 +336,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             shutil.copytree( src_images_dir, results_images_path, dirs_exist_ok=True)
 
         # -------------------------------[ compliance , verification ]--------------------------------------
-        if compliance_test_name in [ "TEST01", "TEST04", "TEST05" ]:
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', system_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
+        
+        if compliance_test_name in [ "TEST01", "TEST04", "TEST05", "TEST06" ]:
+            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
@@ -329,13 +347,11 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', system_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
-            result_verify =  __entry__.call('get', 'run_verify', {
-                    "in_dir": tmp_dir,
-                    "verify_script_path": verify_script_path,
-                    "results_dir": results_dir,
-                    "compliance_dir": compliance_dir,
-                    "output_dir": output_dir
-                        } )
+            if task == "llm":
+                dtype = experiment_entry['benchmark_output_data_type']
+            else:
+                dtype = ""
+            result_verify =  __entry__.call('get', 'run_verify', create_run_verification_input_dict(task, tmp_dir, verify_script_path, results_dir, compliance_dir, output_dir, target_scenario, dtype))
             if result_verify == "":
                 shutil.rmtree(tmp_dir, ignore_errors=True)
             else:
@@ -397,7 +413,6 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
 
 def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, sdk_ver, power=False, infer_from_ss=False, model_meta_data=None, submission_entry=None, __entry__=None):
 
-    print("DEBUG:full run entry ", __entry__)
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
@@ -415,7 +430,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
     target_scenario = None
 
-          
     for experiment_entry in experiment_entries:
 
         if type(experiment_entry)==list:
@@ -425,11 +439,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
 
         scenario = target_scenario.lower()
 
-        if "power_loadgen_output" in experiment_entry["tags"] and power:
-            power_experiment_entry = experiment_entry
-            experiment_entry = get_testing_entry(experiment_entry)
-            avg_power = power_experiment_entry.call("avg_power")
-            print(avg_power)
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
@@ -462,6 +471,15 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         mode = loadgen_mode.replace("Only", "")
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
+
+        if "power_loadgen_output" in experiment_entry["tags"] and power:
+            power_experiment_entry = experiment_entry
+            avg_power = power_experiment_entry.call("avg_power")
+            print(avg_power)
+            experiment_entry = get_testing_entry(experiment_entry)
+            power_case = True
+        else:
+            power_case = False
         
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
@@ -481,7 +499,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 fd.write( "\n" + "### Accuracy  " + "\n\n")
                 fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
             elif mode == 'Performance' and not compliance_test_name:
-                if "power_loadgen_output" in experiment_entry["tags"]:
+                if power_case:
                     fd.write( "### Power " + "\n\n")
                     fd.write( "```" + "\n" + experiment_cmd + "\n" + "```" + "\n\n")
                 else:

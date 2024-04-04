@@ -3,34 +3,31 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "dataset_name": "cnndm_v3_0_0",
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "llama2_accuracy_script" ]
+    ]] ],
+
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+
+    "dataset_name": "openorca",
     "dataset_query": [ "downloaded", [ "^^", "substitute", "dataset_name=#{dataset_name}#" ]],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
 
     "dataset_path": [ "^^", "execute", [[
         [ "get", "dataset_entry" ],
+        [ "get_path" ],
+        [ "__add__", "/open_orca_gpt4_tokenized_llama.sampled_24576.pkl" ]
+    ]] ],
+    
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,llama2" ],
+    "checkpoint_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
         [ "get_path" ]
     ]] ],
+
     "accuracy_log_dtype": "int32",
-    "tokenizer_path": "",
-    "tokenizer_part": [ "^^", "case", [ [ "^^", "get", [ "tokenizer_path", "" ] ],
-        "EleutherAI/gpt-j-6B", "", "", "", null, "" ],
-        { "default_value": [ "^^", "substitute", " --tokenizer_path \"#{tokenizer_path}#\"" ] }
-    ],
-
-    "own_accuracy_script_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "gptj_accuracy_script" ]
-    ]] ],
-
-    "abs_script_path": [ "^^", "get",
-        [ "^^", "case", [ [ "^^", "get", "tokenizer_path" ],
-            "EleutherAI/gpt-j-6B", "own_accuracy_script_path",
-            "", "own_accuracy_script_path",
-            null, "own_accuracy_script_path"
-            ], { "default_value": "custom_accuracy_script_path" }
-        ]
-    ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
@@ -41,26 +38,34 @@
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=transformers" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=nltk" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=rouge_score" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=sentencepiece" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pillow" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=evaluate" ]
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
-                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{abs_accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}# #{tokenizer_part}#" ],
+                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}# --checkpoint-path #{checkpoint_path}#" ],
+                "desired_python_version": "3.10",
                 "capture_output": true
             } ],
         0,
         [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
     ]], {} ],
 
-    "accuracy_dict": [ "^^", "execute", [[
+    "accuracy_dict_full": [ "^^", "execute", [[
         ["get", "accuracy_report" ],
         0,
         [ "func", "eval" ]
      ]], {} ],
+    "accuracy_dict": [ "^^", "get_accuracy_dict" ],
     "rouge1": [ "^^" , "dig","accuracy_dict.rouge1" ],
     "rouge2": [ "^^" , "dig","accuracy_dict.rouge2" ],
     "rougeL": [ "^^" , "dig","accuracy_dict.rougeL" ],
+    "tokens_per_sample": [ "^^" , "dig","accuracy_dict.tokens_per_sample" ],
+
     "rougeLsum": [ "^^" , "dig","accuracy_dict.rougeLsum" ],
     "gen_len": [ "^^" , "dig","accuracy_dict.gen_len" ],
     "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
-    "accuracy_range_dict": { "rouge1": [ 42.9865, null ], "rouge2": [ 20.1235, null ], "rougeL": [ 29.9881, null ], "gen_len": [ 4016878, null ] }
+
+
+    "accuracy_range_dict": { "rouge1": [ 43.986888, null ], "rouge2": [ 21.814848, null ], "rougeL": [ 28.330038, null ], "tokens_per_sample": [ 265.005, null ] }
 }

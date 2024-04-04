@@ -1,0 +1,30 @@
+{
+    "num_device": 1,
+    "device_id": "all",
+    "hypothetical_num_device": [ "^^" , "set_hypothetical_num_device" ],
+    "with_power": false,
+
+    "model": null,
+
+    "model_config_entry": [ "^^" , "get_model_config"],
+
+    "model_compiletime_device_model_entry": [ "^^" , "get_config", "compile_model"],
+
+    "profile_compiletime_device_model_entry": [ "^^" , "get_config", "compile_profile"],
+
+    "runtime_device_model_entry": [ "^^" , "get_config", "runtime"],
+
+
+    "lscpu_output_struct": [ "^", "execute", [[
+        [ "byquery", "shell_tool,can_lscpu" ],
+        [ "run" ],
+        0,
+        [ "func", "eval" ],
+        [ "__getitem__", "lscpu" ]
+    ]] ],
+
+    "lscpu_output_dict": [ "^^", "parse_lscpu_output" ],
+
+    "cpu_min_mhz": [ "^^", "dig", "lscpu_output_dict.CPU min MHz" ],
+    "cpu_max_mhz": [ "^^", "dig", "lscpu_output_dict.CPU max MHz" ]
+}
