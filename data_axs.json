@@ -52,7 +52,8 @@
         "stable_diffusion_xl_git_recipe": "stable_diffusion_xl_git_recipe",
         "base_qaic_text_to_image_loadgen_experiment": "base_qaic_text_to_image_loadgen_experiment",
         "base_sut": "base_sut",
-        "rclone_mlc_inference_config": "rclone_mlc_inference_config"
+        "rclone_mlc_inference_config": "rclone_mlc_inference_config",
+        "preprocess_imagenet_using_opencv": "preprocess_imagenet_using_opencv"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
