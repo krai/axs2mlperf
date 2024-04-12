@@ -21,6 +21,7 @@
     "loadgen_max_query_count": null,
     "loadgen_samples_per_query": null,
     "loadgen_offline_expected_qps": null,
+    "loadgen_server_coalesce_queries": true,
 
     "param_to_conf_pair": {
         "loadgen_count_override_min":   ["min_query_count", 1],
@@ -34,7 +35,8 @@
         "loadgen_max_duration_s":       ["max_duration", 1000],
         "loadgen_min_duration_s":       ["min_duration", 1000],
         "loadgen_offline_expected_qps": ["offline_expected_qps", 1],
-        "loadgen_use_token_latencies":  ["use_token_latencies", 1]
+        "loadgen_use_token_latencies":  ["use_token_latencies", 1],
+        "loadgen_server_coalesce_queries":  ["coalesce_queries", 1]
     },
     "param_to_conf_keys": [ "^^", "execute", [[
         [ "get", "param_to_conf_pair" ],
