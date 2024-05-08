@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "shell" ] ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
@@ -20,7 +20,9 @@
         [ "__add__", "/open_orca_gpt4_tokenized_llama.sampled_24576.pkl" ]
     ]] ],
     
-    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,llama2" ],
+    "variant": "7b",
+    "hf_model_name": [ "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_model,model_name=#{hf_model_name}#" ],
     "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
@@ -44,7 +46,7 @@
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}# --checkpoint-path #{checkpoint_path}#" ],
-                "desired_python_version": "3.10",
+                "desired_python_version": ["^", "kernel_python_major_dot_minor"],
                 "capture_output": true
             } ],
         0,

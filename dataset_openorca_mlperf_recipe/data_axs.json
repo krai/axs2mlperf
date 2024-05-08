@@ -14,8 +14,9 @@
         [ "byquery", "downloaded,dataset_name=openorca_parquet" ],
         [ "get_path" ]
     ]] ],
-
-    "hf_model_name": "Llama-2-13b-chat-hf",
+	
+    "variant": "7b",
+    "hf_model_name": [ "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
     "model_dir_query": [ "^^", "substitute", "downloaded,hf_model,model_name=#{hf_model_name}#" ],
     "model_dir": [ "^^", "execute", [[
         [ "get_kernel" ],
