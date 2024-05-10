@@ -1,17 +1,14 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
 
     "_producer_rules": [
-        [ [ "package_wheel", "package_name=mlperf_loadgen" ], [["get","populated_wheel_entry"]] ],
+        [ [ "package_wheel", "package_name=mlperf_loadgen" ], [["get", "pipeline"]] ],
 
         [ [ "python_package", "package_name=mlperf_loadgen", "desired_python_version." ], [ ["get_kernel"], ["byname", "pip" ], ["install"]], {
             "installable": [ "AS^IS", "^^", "execute", [[
                     [ "get_kernel" ],
 					[ "byquery", [ "^^", "substitute", "package_wheel,package_name=mlperf_loadgen,desired_python_version===#{desired_python_version}#" ] ],
-					[ "get_path", "*.whl" ],
-					0,
-					["func", "glob.glob"  ],
-					[ "__getitem__", 0 ]
+					[ "find_file", "mlperf_loadgen.*\\.whl", {"return_full": true, "abs_paths": true } ]
 				 ]] ]
 				}
         ]
@@ -23,22 +20,17 @@
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=wheel" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pybind11" ]] ]
     ],
-
-    "wheel_entry": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "set_path", [ "^^", "substitute", "loadgen_package_wheel_for_python#{python_major_dot_minor}#" ] ],
-        [ "plant", [ "^^", "substitute", [[
-            "package_name", "mlperf_loadgen",
-            "python_major_dot_minor", "#{python_major_dot_minor}#",
-            "desired_python_version", "#{python_major_dot_minor}#",
-            "tags", ["package_wheel"]
-          ]] ] ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "save" ]
-    ]] ],
-    "wheel_entry_path": [ "^^", "execute", [[
-        [ "get", "wheel_entry" ],
-        [ "get_path" ]
+    "newborn_parent_names": [ ],
+    "newborn_entry_param_mapping": {
+        "package_name": "mlperf_loadgen",
+        "python_major_dot_minor": [ "^^", "substitute", "#{python_major_dot_minor}#" ],
+        "desired_python_version": [ "^^", "substitute", "#{python_major_dot_minor}#" ]
+    },
+    "newborn_name_template": "loadgen_package_wheel_for_python#{python_major_dot_minor}#",
+    "newborn_entry_tags": [ "package_wheel" ],
+    "pipeline": [ "^^", "execute", [[                                                                                                                                                                    [ "run" ],
+        [ ],
+        [ "get", "stored_newborn_entry" ]
     ]] ],
 
     "compiler_path": [ "^", "execute", [[
@@ -57,11 +49,6 @@
         [ "get_path", "loadgen" ]
     ]] ],
     "abs_script_path": "setup.py",
-    "script_extra_params": [ "^^", "substitute", "egg_info --egg-base #{wheel_entry_path}# bdist_wheel -d #{wheel_entry_path}#" ],
+    "script_extra_params": [ "^^", "substitute", "egg_info --egg-base #{newborn_entry_path}# bdist_wheel -d #{newborn_entry_path}#" ]
 
-    "populated_wheel_entry": [ "^^", "execute", [[
-        [ "run" ],
-        [],
-        [ "get", "wheel_entry" ]
-    ]] ]
 }
