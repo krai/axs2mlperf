@@ -48,7 +48,8 @@ def load_image(image_path,            # Full path to processing image
                crop_percentage = 87.5,# Crop to this percentage then scale to target size
                data_layout = 'NHWC',  # Data layout to store
                convert_to_bgr = False,# Swap image channel RGB -> BGR
-               interpolation_method = cv2.INTER_LINEAR # Interpolation method.
+               interpolation_method = cv2.INTER_LINEAR, # Interpolation method.
+               resize_size = 0        # Resizing target values for H&W. Overwrites crop_percentage is set not equal to 0.
                ):
 
     out_height = target_size
@@ -56,8 +57,12 @@ def load_image(image_path,            # Full path to processing image
 
     def resize_with_aspectratio(img):
         height, width, _ = img.shape
-        new_height = int(100. * out_height / crop_percentage)   # intermediate oversized image from which to crop
-        new_width = int(100. * out_width / crop_percentage)     # ---------------------- ,, ---------------------
+        if resize_size != 0:
+            new_height = resize_size
+            new_width = resize_size
+        else:
+            new_height = int(100. * out_height / crop_percentage)   # intermediate oversized image from which to crop
+            new_width = int(100. * out_width / crop_percentage)     # ---------------------- ,, ---------------------
         if height > width:
             w = new_width
             h = int(new_height * height / width)
@@ -95,7 +100,7 @@ def load_image(image_path,            # Full path to processing image
 
 def preprocess_files(selected_filenames, images_directory, destination_dir, crop_percentage, resolution, convert_to_bgr,
     data_type, data_layout, new_file_extension, normalayout, subtract_mean, given_channel_means, normalize_symmetric, 
-    quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method):
+    quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method, resize_size):
     "Go through the selected_filenames and preprocess all the files (optionally normalize and subtract mean)"
     output_filenames = []
 
@@ -108,7 +113,8 @@ def preprocess_files(selected_filenames, images_directory, destination_dir, crop
                               target_size = resolution,
                               crop_percentage = crop_percentage,
                               convert_to_bgr = convert_to_bgr,
-                              interpolation_method = interpolation_method)
+                              interpolation_method = interpolation_method,
+                              resize_size = resize_size)
 
         if quantized:
             image_data = norma_layout(image_data, data_type, data_layout, subtract_mean, given_channel_means, normalize_symmetric)
@@ -150,7 +156,7 @@ def int8_to_uint8(image):
 def preprocess(dataset_name, crop_percentage, resolution, convert_to_bgr,
     data_type, data_layout, new_file_extension, file_name, normalayout, subtract_mean, given_channel_means, 
     normalize_symmetric, quantized, quant_scale, offset, quant_offset, first_n, fof_name, image_file, convert_to_unsigned, 
-    interpolation_method, supported_extensions, input_file_list, 
+    interpolation_method, supported_extensions, input_file_list, resize_size,
     index_file=None, tags=None, calibration=None, entry_name=None, images_directory=None, __record_entry__=None ):
     __record_entry__["tags"] = tags or [ "preprocessed" ]
     if quantized:
@@ -174,9 +180,9 @@ def preprocess(dataset_name, crop_percentage, resolution, convert_to_bgr,
     destination_dir = output_directory
 
     print(("From: {}, To: {}, Size: {}, Crop: {}, 2BGR: {}, OFF: {}, VOL: '{}', FOF: {},"+
-        " DTYPE: {}, DLAYOUT: {}, EXT: {}, NORM: {}, SMEAN: {}, GCM: {}, QUANTIZE: {}, QUANT_SCALE: {}, QUANT_OFFSET: {}, CONV_UNSIGNED: {}, INTER: {}, IMG: {}").format(
+        " DTYPE: {}, DLAYOUT: {}, EXT: {}, NORM: {}, SMEAN: {}, GCM: {}, QUANTIZE: {}, QUANT_SCALE: {}, QUANT_OFFSET: {}, CONV_UNSIGNED: {}, INTER: {}, RESIZE: {} IMG: {}").format(
         images_directory, destination_dir, resolution, crop_percentage, convert_to_bgr, offset, first_n, fof_name,
-        data_type, data_layout, new_file_extension, normalize_symmetric, subtract_mean, given_channel_means, quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method, image_file) )
+        data_type, data_layout, new_file_extension, normalize_symmetric, subtract_mean, given_channel_means, quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method, resize_size, image_file) )
 
     if interpolation_method == 'INTER_AREA':
 
@@ -201,7 +207,8 @@ def preprocess(dataset_name, crop_percentage, resolution, convert_to_bgr,
 
     output_filenames = preprocess_files(
         selected_filenames, images_directory, destination_dir, crop_percentage, resolution, convert_to_bgr,
-        data_type, data_layout, new_file_extension, normalayout, subtract_mean, given_channel_means, normalize_symmetric, quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method)
+        data_type, data_layout, new_file_extension, normalayout, subtract_mean, given_channel_means, normalize_symmetric,
+        quantized, quant_scale, quant_offset, convert_to_unsigned, interpolation_method, resize_size)
 
     fof_full_path = os.path.join(destination_dir, fof_name)
     with open(fof_full_path, 'w') as fof:

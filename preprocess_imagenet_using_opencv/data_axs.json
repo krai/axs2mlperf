@@ -8,7 +8,7 @@
             "resolution",  "crop_percentage", "convert_to_bgr", "offset", "first_n", "fof_name", "data_type",
             "new_file_extension", "image_file", "data_layout", "normalayout",
             "subtract_mean", "given_channel_means", "quant_scale", "quant_offset", "quantized", "convert_to_unsigned",
-            "interpolation_method", "file_name", "dataset_name"
+            "interpolation_method", "resize_size", "file_name", "dataset_name"
           ]
         ],
         [ [ "preprocessed", "dataset_name=imagenet", "preprocess_method=opencv", "normalayout+" ], [ ["preprocess"] ], {
@@ -19,7 +19,7 @@
             "resolution",  "crop_percentage", "convert_to_bgr", "offset", "first_n", "fof_name", "data_type",
             "new_file_extension", "image_file", "data_layout", "normalayout",
             "subtract_mean", "given_channel_means", "quant_scale", "quant_offset", "quantized", "convert_to_unsigned",
-            "interpolation_method", "file_name", "dataset_name"
+            "interpolation_method", "resize_size", "file_name", "dataset_name"
           ]
         ],
         [ [ "preprocessed", "dataset_name=imagenet", "preprocess_method=opencv" ], [ ["preprocess"] ], {
@@ -30,7 +30,7 @@
             "resolution",  "crop_percentage", "convert_to_bgr", "offset", "first_n", "fof_name", "data_type",
             "new_file_extension", "image_file", "data_layout", "normalayout",
             "subtract_mean", "given_channel_means", "quantized", "convert_to_unsigned",
-            "interpolation_method", "file_name", "dataset_name"
+            "interpolation_method", "resize_size", "file_name", "dataset_name"
           ]
         ]
     ],
@@ -76,6 +76,7 @@
         ]], {}, ["mlperf_inference_git_entry"] ],
     "resolution": 224,
     "crop_percentage": 87.5,
+    "resize_size": 0,
     "convert_to_bgr": false,
     "offset": 0,
     "first_n": 20,
