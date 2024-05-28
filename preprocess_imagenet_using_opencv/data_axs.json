@@ -95,5 +95,6 @@
     "convert_to_unsigned": true,
     "interpolation_method": "INTER_AREA",
     "dataset_name": "imagenet",
+    "flat_dataset_structure": true,
     "file_name": "preprocessed"
 }
