@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "shell" ] ],
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "shell" ], [ "^", "byname", "python_in_shell" ], [ "^", "byname", "llm_experiment_entry" ] ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
@@ -68,6 +68,20 @@
     "gen_len": [ "^^" , "dig","accuracy_dict.gen_len" ],
     "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
 
+    "accuracy_range_dict": { "rouge1": [ 43.986888, null ], "rouge2": [ 21.814848, null ], "rougeL": [ 28.330038, null ], "tokens_per_sample": [ 265.005, null ] },
 
-    "accuracy_range_dict": { "rouge1": [ 43.986888, null ], "rouge2": [ 21.814848, null ], "rougeL": [ 28.330038, null ], "tokens_per_sample": [ 265.005, null ] }
+    "transformers_lib": [ "^^", "python_sync_pip_package", "python_package,package_name=transformers" ],
+
+    "abs_path": [ "^^", "get_path" ],
+    "rel_log_path": "mlperf_log_accuracy.json",
+    "tokenised_accuracy_log_path": [ "^^", "substitute", "#{abs_path}#/#{rel_log_path}#" ],
+
+    "rel_output_log_path": "detokenised_mlperf_log.json",
+    "output_log_path": [ "^^", "substitute", "#{abs_path}#/#{rel_output_log_path}#" ],
+
+    "detokenised_log": [ "^^", "execute", [[
+        [ "get", "transformers_lib" ],
+        [],
+        [ "detokenise" ]
+    ]] ]
 }
