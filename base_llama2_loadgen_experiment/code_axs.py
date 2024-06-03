@@ -23,7 +23,7 @@ def detokenise(
         hex_str = item["data"]
         hex_tokens = [hex_str[i : i + 8] for i in range(0, len(hex_str), 8)]
         tokens = [
-            int.from_bytes(bytes.fromhex(tok), byteorder="big") for tok in hex_tokens
+            int.from_bytes(bytes.fromhex(tok), byteorder="little") for tok in hex_tokens
         ]
         output_log.append(tokeniser.decode(tokens))
 
