@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "shell" ], [ "^", "byname", "python_in_shell" ], [ "^", "byname", "llm_experiment_entry" ] ],
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] , [ "^", "byname", "shell" ], [ "^", "byname", "python_in_shell" ] ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
