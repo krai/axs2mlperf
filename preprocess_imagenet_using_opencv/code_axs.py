@@ -149,7 +149,7 @@ def preprocess_files(selected_filenames, images_directory, destination_dir, crop
 
         output_filenames.append(output_filename)
 
-    return output_filenames
+    return sorted(output_filenames)
 
 def quantized_to_int8(image, scale, offset):
     quant_image = (image/scale + offset).astype(np.float32)
