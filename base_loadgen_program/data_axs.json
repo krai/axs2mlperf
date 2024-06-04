@@ -5,9 +5,9 @@
     "loadgen_mode": "AccuracyOnly",
     "loadgen_dataset_size": 20,
     "loadgen_buffer_size": 8,
-    "loadgen_count_override": null,
-    "loadgen_count_override_min": ["^^", "get", "loadgen_count_override"],
-    "loadgen_count_override_max": ["^^", "get", "loadgen_count_override"],
+    "loadgen_query_count": null,
+    "loadgen_min_query_count": ["^^", "get", "loadgen_query_count"],
+    "loadgen_max_query_count": ["^^", "get", "loadgen_query_count"],
 
     "loadgen_duration_s": null,
     "loadgen_min_duration_s": ["^^", "get", "loadgen_duration_s"],
@@ -24,8 +24,8 @@
     "loadgen_server_coalesce_queries": true,
 
     "param_to_conf_pair": {
-        "loadgen_count_override_min":   ["min_query_count", 1],
-        "loadgen_count_override_max":   ["max_query_count", 1],
+        "loadgen_min_query_count":      ["min_query_count", 1],
+        "loadgen_max_query_count":      ["max_query_count", 1],
         "loadgen_multistreamness":      ["samples_per_query", 1],
         "loadgen_max_query_count":      ["max_query_count", 1],
         "loadgen_buffer_size":          ["performance_sample_count_override", 1],

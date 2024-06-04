@@ -10,8 +10,8 @@ if [ "$ONNX_DETECTION_SSD_COCO" == "on" ] || [ "$ONNX_DETECTION_RETINANET_COCO" 
         assert 'echo `axs func round $ACCURACY_OUTPUT 0`' '23.0'
         axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=AccuracyOnly,model_name=ssd_resnet34,loadgen_dataset_size=20,loadgen_buffer_size=100,execution_device=cpu --- , remove
 
-        axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,model_name=ssd_resnet34,loadgen_dataset_size=20,loadgen_buffer_size=100,loadgen_target_qps=5,loadgen_min_duration_s=60,loadgen_max_duration_s=60,loadgen_count_override=51,execution_device=cpu , get performance
-        axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,model_name=ssd_resnet34,loadgen_dataset_size=20,loadgen_buffer_size=100,loadgen_target_qps=5,loadgen_min_duration_s=60,loadgen_max_duration_s=60,loadgen_count_override=51,execution_device=cpu --- , remove
+        axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,model_name=ssd_resnet34,loadgen_dataset_size=20,loadgen_buffer_size=100,loadgen_target_qps=5,loadgen_min_duration_s=60,loadgen_max_duration_s=60,loadgen_query_count=51,execution_device=cpu , get performance
+        axs byquery loadgen_output,task=object_detection,framework=onnxrt,loadgen_scenario=Offline,loadgen_mode=PerformanceOnly,model_name=ssd_resnet34,loadgen_dataset_size=20,loadgen_buffer_size=100,loadgen_target_qps=5,loadgen_min_duration_s=60,loadgen_max_duration_s=60,loadgen_query_count=51,execution_device=cpu --- , remove
 
         axs byquery downloaded,onnx_model,model_name=ssd_resnet34 --- , remove
         axs byquery preprocessed,dataset_name=coco,resolution=1200,first_n=20 --- , remove
