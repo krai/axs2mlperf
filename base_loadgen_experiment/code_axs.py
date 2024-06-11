@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from function_access import to_num_or_not_to_num
-from pint import Quantity, UnitRegistry
+from pint import UnitRegistry
 
 
 def parse_summary(abs_log_summary_path):
