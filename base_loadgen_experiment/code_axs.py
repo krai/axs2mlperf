@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from function_access import to_num_or_not_to_num
+from pint import Quantity, UnitRegistry
 
 
 def parse_summary(abs_log_summary_path):
@@ -13,7 +14,29 @@ def parse_summary(abs_log_summary_path):
                 k = k.replace(' ', '_').replace('/', '_').replace('*', '').replace(')', '').replace('(', '')
 
                 parsed_summary[k] = to_num_or_not_to_num(v)
-    return parsed_summary
+
+    beautified_summary = {}
+    # Pretty print units
+    ureg = UnitRegistry()
+    for k, v in parsed_summary.items():
+        k: str
+        unit = None
+        if k.endswith("_ns"):
+            k = k.removesuffix("_ns")
+            unit = ureg.ns
+        elif k.endswith("_ms"):
+            k = k.removesuffix("_ms")
+            unit = ureg.ms
+        
+        if unit is None:
+            beautified_summary[k] = v
+            continue
+        
+        v = (v*unit).to_compact()
+        rounded = Quantity(round(v.m, 3), v.u)
+        beautified_summary[k] = str(rounded) + "s" if rounded.m != 1 else ""
+    
+    return beautified_summary
 
 
 def parse_performance(summary, scenario_performance_map, raw=False):
