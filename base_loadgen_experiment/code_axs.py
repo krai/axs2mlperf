@@ -37,8 +37,9 @@ def parse_summary(abs_log_summary_path):
         if v.u == ureg.us:
             v.ito(ureg.ms) # Keep everything in milliseconds
 
-        rounded = Quantity(round(v.m, 3), v.u)
-        beautified_summary[k] = str(rounded) + "s" if rounded.m != 1 else ""
+        unit_suffix = f"{v.u}{'s' if v.m != 1 else ''}"
+
+        beautified_summary[k] = f"{v.m :<.3f} {unit_suffix}"
     
     return beautified_summary
 
