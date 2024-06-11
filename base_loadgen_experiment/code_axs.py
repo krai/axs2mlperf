@@ -33,6 +33,10 @@ def parse_summary(abs_log_summary_path):
             continue
         
         v = (v*unit).to_compact()
+
+        if v.u == ureg.us:
+            v.ito(ureg.ms) # Keep everything in milliseconds
+
         rounded = Quantity(round(v.m, 3), v.u)
         beautified_summary[k] = str(rounded) + "s" if rounded.m != 1 else ""
     
