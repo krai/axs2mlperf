@@ -601,6 +601,18 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
                         map_value = map_part.split('%')[0].strip()
                         return map_value
             return "mAP value not found"
+
+        def extract_accuracy_sdxl(accuracy_metric):
+            if accuracy_metric is not None and "\"CLIP_SCORE\"" in accuracy_metric and "\"FID_SCORE\"" in accuracy_metric:
+                clip_score_part = accuracy_metric.split('\"CLIP_SCORE\":')[1]
+                clip_score_value = clip_score_part.split(',')[0].strip()
+
+                fid_score_part = accuracy_metric.split('\"FID_SCORE\":')[1]
+                fid_score_value = fid_score_part.split('}')[0].strip()
+
+                return float(clip_score_value), float(fid_score_value)
+            return "Scores not found."
+
         
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             target_entry = get_testing_entry(experiment_entry)
@@ -615,7 +627,8 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": round(76.46 * 0.99, 3),
             "retinanet": round(37.55 * 0.99, 3),
             "bert-99": round(90.874 * 0.99, 3),
-            "bert-99.9": round(90.874 * 0.999, 3)
+            "bert-99.9": round(90.874 * 0.999, 3),
+            "stable-diffusion-xl": ("CLIP_SCORE", 31.68631873, "FID_SCORE", 23.01085758)
         }
 
         # Actual accuracy for workloads
@@ -623,9 +636,17 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "resnet50": extract_accuracy_ic(accuracy_metric),
             "retinanet": extract_map(accuracy_metric),
             "bert-99": extract_accuracy_bert(accuracy_metric),
-            "bert-99.9": extract_accuracy_bert(accuracy_metric)
+            "bert-99.9": extract_accuracy_bert(accuracy_metric),
+            "stable-diffusion-xl": extract_accuracy_sdxl(accuracy_metric)
         }
 
+        # Accuracy upper limit
+        accuracy_upper_limit = {
+            "stable-diffusion-xl": ("CLIP_SCORE", 31.81331801, "FID_SCORE", 23.95007626)
+        }
+
+        target_acc = target_accuracy[model_name]
+        actual_acc = actual_accuracy[model_name]
 
         if "power_loadgen_output" in experiment_entry["tags"] and power:
             power_experiment_entry = experiment_entry
@@ -644,11 +665,35 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             status = get_result_status(mlperf_log_path)
 
         else:
-            if (target_accuracy[model_name]) <= float(actual_accuracy[model_name]):
-                status = "VALID"
-                actual_metric = actual_accuracy[model_name]
-                target = target_accuracy[model_name]
-                energy_eff = "N/A"
+            if model_name == "stable-diffusion-xl":
+                target_clip_score = target_acc[1]
+                target_fid_score = target_acc[3]
+                upper_clip_score = accuracy_upper_limit[model_name][1]
+                upper_fid_score = accuracy_upper_limit[model_name][3]
+                # Extract actual values
+                if isinstance(actual_acc, tuple) and len(actual_acc) == 2:
+                    actual_clip_score, actual_fid_score = actual_acc
+                else:
+                    print(actual_acc)
+                    raise ValueError("Invalid format for actual accuracy values")
+
+                # Compare values within the range
+                if target_clip_score <= actual_clip_score <= upper_clip_score and target_fid_score <= actual_fid_score <= upper_fid_score:
+                    status = "VALID"
+                else:
+                    status = "INVALID"
+
+                actual_metric = {"CLIP_SCORE": actual_clip_score, "FID_SCORE": actual_fid_score}
+                target_metric = {"CLIP_SCORE": target_clip_score, "FID_SCORE": target_fid_score}
+
+            else:
+                if (float(actual_acc) >= target_acc):
+                    status = "VALID"
+                else:
+                    status = "INVALID"
+                actual_metric = actual_acc
+                target = target_acc
+            energy_eff = "N/A"
 
         if scenario in ["Offline", "Server"] and mode.lower() == "performance" and not power:
             target = target_qps
