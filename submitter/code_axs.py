@@ -543,6 +543,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         accuracy_metric = experiment_entry.get("accuracy_report")
+        print(accuracy_metric)
         
         # Function to extract the actual performance metric
         def get_samples_per_second(file_path):
@@ -603,11 +604,11 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             return "mAP value not found"
 
         def extract_accuracy_sdxl(accuracy_metric):
-            if accuracy_metric is not None and "\"CLIP_SCORE\"" in accuracy_metric and "\"FID_SCORE\"" in accuracy_metric:
-                clip_score_part = accuracy_metric.split('\"CLIP_SCORE\":')[1]
+            if accuracy_metric is not None and "\'FID_SCORE\'" in accuracy_metric and "\'CLIP_SCORE\'" in accuracy_metric:
+                clip_score_part = accuracy_metric.split('\'FID_SCORE\':')[1]
                 clip_score_value = clip_score_part.split(',')[0].strip()
 
-                fid_score_part = accuracy_metric.split('\"FID_SCORE\":')[1]
+                fid_score_part = accuracy_metric.split('\'CLIP_SCORE\':')[1]
                 fid_score_value = fid_score_part.split('}')[0].strip()
 
                 return float(clip_score_value), float(fid_score_value)
@@ -674,7 +675,6 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
                 if isinstance(actual_acc, tuple) and len(actual_acc) == 2:
                     actual_clip_score, actual_fid_score = actual_acc
                 else:
-                    print(actual_acc)
                     raise ValueError("Invalid format for actual accuracy values")
 
                 # Compare values within the range
@@ -684,7 +684,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
                     status = "INVALID"
 
                 actual_metric = {"CLIP_SCORE": actual_clip_score, "FID_SCORE": actual_fid_score}
-                target_metric = {"CLIP_SCORE": target_clip_score, "FID_SCORE": target_fid_score}
+                target = {"CLIP_SCORE": target_clip_score, "FID_SCORE": target_fid_score}
 
             else:
                 if (float(actual_acc) >= target_acc):
