@@ -22,7 +22,7 @@ def parse_summary(abs_log_summary_path):
         k: str
         unit = None
         if k.endswith("_ns"):
-            k = k.removesuffix("_ns")
+            k = k[:-3]
             unit = ureg.ns
         elif k.endswith("_ms"):
             k = k.removesuffix("_ms")
