@@ -684,7 +684,7 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
                     status = "INVALID"
 
                 actual_metric =f"FID_SCORE: {actual_fid_score}\nCLIP_SCORE: {actual_clip_score}"
-                target = f"FID_SCORE: {target_fid_score}\nCLIP_SCORE: {target_clip_score}"
+                target = f"FID_SCORE range: [{target_fid_score}, {upper_fid_score}]\nCLIP_SCORE range: [{target_clip_score}, {upper_clip_score}]"
 
             else:
                 if (float(actual_acc) >= target_acc):
