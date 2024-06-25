@@ -544,7 +544,6 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
         if mode == "Accuracy":
             accuracy_metric = experiment_entry.get("accuracy_report")
-            print(accuracy_metric)
         
         # Function to extract the actual performance metric
         def get_samples_per_second(file_path):
