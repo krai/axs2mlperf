@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from function_access import to_num_or_not_to_num
+from pint import UnitRegistry
+
 
 def parse_summary(abs_log_summary_path):
 
@@ -12,7 +14,34 @@ def parse_summary(abs_log_summary_path):
                 k = k.replace(' ', '_').replace('/', '_').replace('*', '').replace(')', '').replace('(', '')
 
                 parsed_summary[k] = to_num_or_not_to_num(v)
-    return parsed_summary
+
+    beautified_summary = {}
+    # Pretty print units
+    ureg = UnitRegistry()
+    for k, v in parsed_summary.items():
+        k: str
+        unit = None
+        if k.endswith("_ns"):
+            k = k.removesuffix("_ns")
+            unit = ureg.ns
+        elif k.endswith("_ms"):
+            k = k.removesuffix("_ms")
+            unit = ureg.ms
+        
+        if unit is None:
+            beautified_summary[k] = v
+            continue
+        
+        v = (v*unit).to_compact()
+
+        if v.u == ureg.us:
+            v.ito(ureg.ms) # Keep everything in milliseconds
+
+        unit_suffix = f"{v.u}{'s' if v.m != 1 else ''}"
+
+        beautified_summary[k] = f"{v.m :<.3f} {unit_suffix}"
+    
+    return beautified_summary
 
 
 def parse_performance(summary, scenario_performance_map, raw=False):
@@ -47,7 +76,7 @@ def unpack_accuracy_log(raw_accuracy_log):
     return readable_accuracy_log
 
 
-def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_compiance_test = None, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None, sut_name = None):
+def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, loadgen_dataset_size, loadgen_buffer_size, loadgen_compliance_test = None, loadgen_target_qps = None, loadgen_target_latency=None, loadgen_multistreamness=None, sut_name = None):
 
     terms_list = [] + tags
     terms_list.append( f"framework={framework}" )
@@ -56,10 +85,10 @@ def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, l
     terms_list.append( f"model_name={model_name}" )
     terms_list.append( f"loadgen_dataset_size={loadgen_dataset_size}" )
     terms_list.append( f"loadgen_buffer_size={loadgen_buffer_size}" )
-    if loadgen_compiance_test is None:
-        terms_list.append( f"loadgen_compiance_test-" )
+    if loadgen_compliance_test is None:
+        terms_list.append( "loadgen_compliance_test-" )
     else:
-        terms_list.append( f"loadgen_compiance_test={loadgen_compiance_test}" )
+        terms_list.append( f"loadgen_compliance_test={loadgen_compliance_test}" )
     if sut_name is not None:
       terms_list.append( f"sut_name={sut_name}" )
 
