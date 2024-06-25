@@ -65,7 +65,7 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
             "object_detection":     [ 'TEST01', 'TEST05' ],
             "bert":                 [ 'TEST01', 'TEST05' ],
             "gptj":                 [ ],
-            "text_to_image":        [ ],
+            "text_to_image":        [ 'TEST01' ],
             "llm":                  [ 'TEST06' ]
         }[task]
 
