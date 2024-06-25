@@ -515,7 +515,7 @@ def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tre
                 print(f"    NOT Copying: {file_to_copy_source_path}  -->  {code_model_program_path}", file=sys.stderr)
 
 
-def generate_tables(experiment_entries, division, submitter, power, __entry__):
+def generate_table(experiment_entries, division, submitter, power, __entry__):
 
     col_names = ["SUT", "Scenario", "Mode / Compliance?", "Status", "Target metric", "Actual metric", "Power", "Efficiency"]
     table_data = []
@@ -542,8 +542,9 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
         compliance_test_name = experiment_entry.get('loadgen_compliance_test')
-        accuracy_metric = experiment_entry.get("accuracy_report")
-        print(accuracy_metric)
+        if mode == "Accuracy":
+            accuracy_metric = experiment_entry.get("accuracy_report")
+            print(accuracy_metric)
         
         # Function to extract the actual performance metric
         def get_samples_per_second(file_path):
@@ -605,13 +606,13 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
 
         def extract_accuracy_sdxl(accuracy_metric):
             if accuracy_metric is not None and "\'FID_SCORE\'" in accuracy_metric and "\'CLIP_SCORE\'" in accuracy_metric:
-                clip_score_part = accuracy_metric.split('\'FID_SCORE\':')[1]
-                clip_score_value = clip_score_part.split(',')[0].strip()
+                fid_score_part = accuracy_metric.split('\'FID_SCORE\':')[1]
+                fid_score_value = fid_score_part.split(',')[0].strip()
 
-                fid_score_part = accuracy_metric.split('\'CLIP_SCORE\':')[1]
-                fid_score_value = fid_score_part.split('}')[0].strip()
+                clip_score_part = accuracy_metric.split('\'CLIP_SCORE\':')[1]
+                clip_score_value = clip_score_part.split('}')[0].strip()
 
-                return float(clip_score_value), float(fid_score_value)
+                return float(fid_score_value), float(clip_score_value)
             return "Scores not found."
 
         
@@ -629,7 +630,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
             "retinanet": round(37.55 * 0.99, 3),
             "bert-99": round(90.874 * 0.99, 3),
             "bert-99.9": round(90.874 * 0.999, 3),
-            "stable-diffusion-xl": ("CLIP_SCORE", 31.68631873, "FID_SCORE", 23.01085758)
+            "stable-diffusion-xl": ("FID_SCORE", 23.01085758, "CLIP_SCORE", 31.68631873)
         }
 
         # Actual accuracy for workloads
@@ -643,7 +644,7 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
 
         # Accuracy upper limit
         accuracy_upper_limit = {
-            "stable-diffusion-xl": ("CLIP_SCORE", 31.81331801, "FID_SCORE", 23.95007626)
+            "stable-diffusion-xl": ("FID_SCORE", 23.95007626, "CLIP_SCORE", 31.81331801)
         }
 
         target_acc = target_accuracy[model_name]
@@ -667,24 +668,24 @@ def generate_tables(experiment_entries, division, submitter, power, __entry__):
 
         else:
             if model_name == "stable-diffusion-xl":
-                target_clip_score = target_acc[1]
-                target_fid_score = target_acc[3]
-                upper_clip_score = accuracy_upper_limit[model_name][1]
-                upper_fid_score = accuracy_upper_limit[model_name][3]
+                target_fid_score = target_acc[1]
+                target_clip_score = target_acc[3]
+                upper_fid_score = accuracy_upper_limit[model_name][1]
+                upper_clip_score = accuracy_upper_limit[model_name][3]
                 # Extract actual values
                 if isinstance(actual_acc, tuple) and len(actual_acc) == 2:
-                    actual_clip_score, actual_fid_score = actual_acc
+                    actual_fid_score, actual_clip_score = actual_acc
                 else:
                     raise ValueError("Invalid format for actual accuracy values")
 
                 # Compare values within the range
-                if target_clip_score <= actual_clip_score <= upper_clip_score and target_fid_score <= actual_fid_score <= upper_fid_score:
+                if target_fid_score <= actual_fid_score <= upper_fid_score and target_clip_score <= actual_clip_score <= upper_clip_score:
                     status = "VALID"
                 else:
                     status = "INVALID"
 
-                actual_metric = {"CLIP_SCORE": actual_clip_score, "FID_SCORE": actual_fid_score}
-                target = {"CLIP_SCORE": target_clip_score, "FID_SCORE": target_fid_score}
+                actual_metric =f"FID_SCORE: {actual_fid_score}\nCLIP_SCORE: {actual_clip_score}"
+                target = f"FID_SCORE: {target_fid_score}\nCLIP_SCORE: {target_clip_score}"
 
             else:
                 if (float(actual_acc) >= target_acc):
