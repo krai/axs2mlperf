@@ -16,13 +16,11 @@ def parse_summary(abs_log_summary_path):
                 parsed_summary[k] = to_num_or_not_to_num(v)
 
     ureg = UnitRegistry()
-    direct_unit_mapping = {
-        "min_duration": ureg.s,
-        "max_duration": ureg.s,
-        "_Early_stopping_90th_percentile_estimate": ureg.s
-    }
+
+    linked_keys = ["latency", "Early_Stopping_9", "duration"]
 
     beautified_summary = {}
+    kv_with_units = {}
     # Pretty print units
     for k, v in parsed_summary.items():
         k: str
@@ -33,8 +31,10 @@ def parse_summary(abs_log_summary_path):
         elif k.endswith("_ms"):
             k = k[:-3]
             unit = ureg.ms
-        elif k in direct_unit_mapping:
-            unit = direct_unit_mapping[k]
+        elif "Early_Stopping_9" in k:
+             # Edge case for _Early_Stopping_90th_percentile_estimate 
+             #           and _Early_Stopping_99th_percentile_estimate
+            unit = ureg.ns
         
         if unit is None:
             beautified_summary[k] = v
@@ -45,9 +45,18 @@ def parse_summary(abs_log_summary_path):
         if v.u == ureg.us:
             v.ito(ureg.ms) # Keep everything in milliseconds
 
-        unit_suffix = f"{v.u}{'s' if v.m != 1 else ''}"
+        kv_with_units[k] = v
 
-        beautified_summary[k] = f"{v.m :<.3f} {unit_suffix}"
+    for linked_key in linked_keys:
+        linked = {k:v for k,v in kv_with_units.items() if linked_key in k}
+        if len(linked) == 0:
+            continue
+
+        largest_unit = max(linked.values(), key=lambda v: v.u)
+        for k, v in linked.items():
+            v.ito(largest_unit)
+            unit_suffix = f"{v.u}{'s' if v.m != 1 else ''}"
+            beautified_summary[k] = f"{v.m :<.3f} {unit_suffix}"
     
     return beautified_summary
 
