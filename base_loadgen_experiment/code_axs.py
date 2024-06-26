@@ -15,9 +15,15 @@ def parse_summary(abs_log_summary_path):
 
                 parsed_summary[k] = to_num_or_not_to_num(v)
 
+    ureg = UnitRegistry()
+    direct_unit_mapping = {
+        "min_duration": ureg.s,
+        "max_duration": ureg.s,
+        "_Early_stopping_90th_percentile_estimate": ureg.s
+    }
+
     beautified_summary = {}
     # Pretty print units
-    ureg = UnitRegistry()
     for k, v in parsed_summary.items():
         k: str
         unit = None
@@ -25,8 +31,10 @@ def parse_summary(abs_log_summary_path):
             k = k[:-3]
             unit = ureg.ns
         elif k.endswith("_ms"):
-            k = k.removesuffix("_ms")
+            k = k[:-3]
             unit = ureg.ms
+        elif k in direct_unit_mapping:
+            unit = direct_unit_mapping[k]
         
         if unit is None:
             beautified_summary[k] = v
