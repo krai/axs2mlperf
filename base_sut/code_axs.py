@@ -92,7 +92,10 @@ Usage examples :
     """
     data_dict = {}
     data_dict.update(runtime_device_model_entry.get("scenario_independent_runtime_config"))
-    data_dict.update(runtime_device_model_entry.get(loadgen_scenario))
+    scenario_dependent_runtime_config = runtime_device_model_entry.get(loadgen_scenario)
+    if scenario_dependent_runtime_config is None:
+        raise ValueError(f"Expected runtime entry to have config related to {loadgen_scenario}")
+    data_dict.update(scenario_dependent_runtime_config)
 
     try:
         data_dict.update(override_runtime_config[model][loadgen_scenario])
@@ -244,22 +247,13 @@ def _parse_device_id(num_device, text=None, delimiter="+" ):
     return text
 
 def set_hypothetical_num_device(num_device):
-    """Dyson has 5 card, but only 4 card setting is required, especially for MultiStream.
+    """Sometimes we need a power of 2 number of cards, this function rounds down to them
     """
-    print(num_device)
-    print(num_device)
-    print(num_device)
-    print(num_device)
-    print(num_device)
-    print(num_device)
     
     MAX_SUPPORTED_NUM_DEVICE = 64
     assert num_device <= MAX_SUPPORTED_NUM_DEVICE, f"\n\n\nError: Supported up to {MAX_SUPPORTED_NUM_DEVICE} but the System-Under-Test has [{num_device}] cards.\n\n\n"
 
-    if num_device == 1:
-        return 1
-    else:
-        return 2 ** int(math.log2(num_device - 1))
+    return 2 ** int(math.log2(num_device))
 
 def get_model_config(model, device, __entry__=None):
     query = f"model_config,model={model},device={device}"
