@@ -18,14 +18,12 @@
     "loadgen_target_qps": null,
     "loadgen_compliance_test": null,
 
-    "loadgen_max_query_count": null,
     "loadgen_samples_per_query": null,
     "loadgen_offline_expected_qps": null,
     "loadgen_server_coalesce_queries": true,
 
     "param_to_conf_pair": {
         "loadgen_min_query_count":      ["min_query_count", 1],
-        "loadgen_max_query_count":      ["max_query_count", 1],
         "loadgen_multistreamness":      ["samples_per_query", 1],
         "loadgen_max_query_count":      ["max_query_count", 1],
         "loadgen_buffer_size":          ["performance_sample_count_override", 1],
