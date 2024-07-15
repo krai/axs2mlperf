@@ -1,6 +1,6 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "checkpoint", "model_name=mixtral", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "checkpoint", "model_name=mixtral_8x7b", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "file_name": [ "mixtral-8x7b-instruct-v0.1" ],
             "url": "mlc-inference:mlcommons-inference-wg-public/mixtral_8x7b/mixtral-8x7b-instruct-v0.1"
