@@ -4,7 +4,7 @@
         [ [ "downloaded", "checkpoint_tokenizer_files", "model_name=mistral" ], [[ "run" ]] ]
     ],
 
-    "model_name": "mixtral_8x7b",
+    "model_name": "mixtral-8x7b",
 
     "model_checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
