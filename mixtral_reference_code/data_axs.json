@@ -12,7 +12,6 @@
 	[ "get", "mlperf_inference_git_entry" ],
 	[ "get_path_of", "mlperf_conf_file" ]
     ]] ],
-    "user_conf_path": [ "^^", "get_path", "user.conf" ],
 
     "numpy_query": ["python_package", "package_name=numpy", "package_version=1.24.1"],
     "pybind11_query": ["python_package", "package_name=pybind11", "package_version=2.10.4"],
@@ -57,7 +56,7 @@
     
     "dataset_name": "mixtral",
     
-    "model_name": "mixtral_8x7b",
+    "model_name": "mixtral-8x7b",
 
     "model_query": [ "^^", "substitute", [ "downloaded,checkpoint,model_name=#{model_name}#"] ],
     "model_entry": [ "^^", "execute", [[
@@ -72,7 +71,7 @@
 
     "loadgen_dataset_size": 15000,
 
-    "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda"}, ["num_gpus"]],
+    "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda:0"}, ["num_gpus"]],
     "dtype": "float16",
     "total_sample_count": 15000,
     "framework": "torch",
@@ -97,6 +96,6 @@
 
 
      "script_extra_params": [ "^^", "substitute",
-        "--scenario \"#{loadgen_scenario}#\" --model-path \"#{model_path}#\" #{accuracy_cmd}# --mlperf-conf \"#{mlperf_conf_file_path}#\" --user-conf \"#{user_conf_path}#\" --total-sample-count #{total_sample_count}# --dataset-path \"#{dataset_path}#\" --output-log-dir \"#{output_dir}#\" --device \"#{device}#\" --dtype \"#{dtype}#\""
+        "--scenario \"#{loadgen_scenario}#\" --model-path \"#{model_path}#\" #{accuracy_cmd}# --mlperf-conf \"#{mlperf_conf_file_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --total-sample-count #{total_sample_count}# --dataset-path \"#{dataset_path}#\" --output-log-dir \"#{output_dir}#\" --device \"#{device}#\" --dtype \"#{dtype}#\""
      ]
 }
