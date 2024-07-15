@@ -1,4 +1,39 @@
 {
-    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ]
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+    "output_accuracy_path": ["^^", "get_path", "accuracy_results.json"],
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "abs_script_path": [ "^^", "execute", [[
+	[ "get", "mlperf_inference_git_entry" ],
+	[ "get_path_of", "mixtral_reference_accuracy_script"  ]
+    ]] ],
+
+    "dtype_value": "int32",
+    "n_workers": null,
+    "n_workers_cmd": [ "^^", "case", [ [ "^^", "get", "n_workers" ],
+        null, "" ],
+	{ "default_value": [ "^^", "substitute", "--n_workers #{n_workers}#" ] }
+    ],
+
+    "extract_accuracy_report": [ "^^", "execute", [[
+        [ "get_kernel" ],
+	[ "byname", "python_script" ],
+	[ "run", [], {
+            "abs_script_path": ["^^", "get", "abs_script_path"],
+            "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --checkpoint-path \"#{model_path}#\" --dataset-file \"#{dataset_path}#\" --dtype \"#{dtype_value}#\" #{n_workers_cmd}#" ],
+	    "capture_output": true
+	} ],
+	0,
+	[ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
+    ]], {} ],
+
+    "accuracy_dict": [ "^^", "execute", [[
+        [ "get", "accuracy_report" ],
+	0,
+	[ "func", "eval" ]
+    ]], {} ]
+
 
 }
