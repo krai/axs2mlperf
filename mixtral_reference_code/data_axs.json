@@ -45,8 +45,13 @@
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "tokenizers_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ]
     ],
-    
-    "dataset_path": "/local/mnt/workspace/mmirkina/mixtral_8x7b_reference/dataset/2024.06.06_mixtral_15k_v4.pkl",
+
+    "dataset_query": [ "^^", "substitute", [ "downloaded,preprocessed,dataset_name=#{dataset_name}#"] ],
+    "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "dataset_entry" ],
+        [ "get_path" ]
+    ]] ],
 
     "loadgen_scenario": "Offline",
     
@@ -54,7 +59,16 @@
     
     "model_name": "mixtral_8x7b",
 
-    "model_path": "/local/mnt/workspace/mmirkina/mixtral_8x7b_reference/downloaded_model_checkpoint_270624/mixtral-8x7b-instruct-v0.1/",
+    "model_query": [ "^^", "substitute", [ "downloaded,checkpoint,model_name=#{model_name}#"] ],
+    "model_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+	[ "byquery", [ [ "^^", "get", "model_query" ] ] ]
+    ]] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+	[ "get_path" ]
+    ]] ],
+
 
     "loadgen_dataset_size": 15000,
 
