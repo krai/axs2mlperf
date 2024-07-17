@@ -56,7 +56,7 @@
         "rclone_mlc_inference_config": "rclone_mlc_inference_config",
         "preprocess_imagenet_using_opencv": "preprocess_imagenet_using_opencv",
         "moe_dataset_preprocessor": "moe_dataset_preprocessor",
-        "model_mixtral_checkpoint_recipe": "model_mixtral_checkpoint_recipe",
+        "model_pytorch_mixtral_recipe": "model_pytorch_mixtral_recipe",
         "base_mixtral_loadgen_experiment": "base_mixtral_loadgen_experiment",
         "mixtral_reference_code": "mixtral_reference_code",
         "dataset_mixtral_preprocessed_recipe": "dataset_mixtral_preprocessed_recipe"
