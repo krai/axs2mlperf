@@ -58,7 +58,7 @@
     
     "model_name": "mixtral-8x7b",
 
-    "model_query": [ "^^", "substitute", [ "downloaded,checkpoint,model_name=#{model_name}#"] ],
+    "model_query": [ "^^", "substitute", [ "downloaded,pytorch_model,model_name=#{model_name}#"] ],
     "model_entry": [ "^^", "execute", [[
         [ "get_kernel" ],
 	[ "byquery", [ [ "^^", "get", "model_query" ] ] ]

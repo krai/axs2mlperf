@@ -1,11 +1,12 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "checkpoint", "model_name=mixtral-8x7b", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "pytorch_model", "model_name=mixtral-8x7b", "source?=via_rclone" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
             "file_name": [ "mixtral-8x7b-instruct-v0.1" ],
-            "url": "mlc-inference:mlcommons-inference-wg-public/mixtral_8x7b/mixtral-8x7b-instruct-v0.1"
-        } ]
-
-
-    ]
+            "url": "mlc-inference:mlcommons-inference-wg-public/mixtral_8x7b/mixtral-8x7b-instruct-v0.1",
+            "patch": "tokenizer.patch",
+            "abs_patch_path": [ "^^", "substitute", "#{this_entry_path}#/tokenizer.patch" ]
+        }, [ "this_entry_path" ] ]
+    ],
+    "this_entry_path": [ "^^", "get_path" ]
 }
