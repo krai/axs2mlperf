@@ -70,6 +70,7 @@
 
 
     "loadgen_dataset_size": 15000,
+    "loadgen_batch_size": 1,
     "loadgen_buffer_size":  [ "^^", "get", "total_sample_count" ], 
 
     "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda:0"}, ["num_gpus"]],
@@ -97,6 +98,6 @@
 
 
      "script_extra_params": [ "^^", "substitute",
-        "--scenario \"#{loadgen_scenario}#\" --model-path \"#{model_path}#\" #{accuracy_cmd}# --mlperf-conf \"#{mlperf_conf_file_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --total-sample-count #{total_sample_count}# --dataset-path \"#{dataset_path}#\" --output-log-dir \"#{output_dir}#\" --device \"#{device}#\" --dtype \"#{dtype}#\""
+        "--scenario \"#{loadgen_scenario}#\" --model-path \"#{model_path}#\" #{accuracy_cmd}# --mlperf-conf \"#{mlperf_conf_file_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --total-sample-count #{total_sample_count}# --dataset-path \"#{dataset_path}#\" --output-log-dir \"#{output_dir}#\" --device \"#{device}#\" --dtype \"#{dtype}#\" --batch-size #{loadgen_batch_size}#"
      ]
 }
