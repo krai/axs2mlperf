@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ], [ "^", "byname", "nvidia_gpu_support" ] ],
     "_producer_rules": [
-        [ [ "loadgen_output", "task=mixtral", "framework=torch" ], [["get", "pipeline"]] ]
+        [ [ "loadgen_output", "task=moe", "framework=torch" ], [["get", "pipeline"]] ]
     ],
 
     "abs_script_path": [ "^^", "execute", [[
