@@ -52,13 +52,18 @@
 	[ "func", "eval" ]
     ]], {} ],
 
-    "gsm8k": [ "^^" , "dig","accuracy_dict.gen_len" ],
-    "mbxp": [ "^^" , "dig","accuracy_dict.gen_num" ],
-    "gen_len": [ "^^" , "dig","accuracy_dict.gen_num" ],
-    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
-    "gen_tok_len": [ "^^" , "dig","accuracy_dict.gen_num" ],
-    "tokens_per_sample": [ "^^" , "dig","accuracy_dict.gen_num" ],
 
-    "accuracy_range_dict": { "gsm8k": [ 73.0422, null ], "mbxp": [ 59.5188, null ], "gen_len": [ null, null ], "gen_num": [ null, null ], "gen_tok_len": [ null, null ], "tokens_per_sample": [ 131.31, 160.49 ] }
+    "rouge1": [ "^^" , "dig","accuracy_dict.rouge1" ],
+    "rouge2": [ "^^" , "dig","accuracy_dict.rouge2" ],
+    "rougeL": [ "^^" , "dig","accuracy_dict.rougeL" ],
+    "rougeLsum": [ "^^" , "dig","accuracy_dict.rougeLsum" ],
+    "gsm8k": [ "^^" , "dig","accuracy_dict.gsm8k" ],
+    "mbxp": [ "^^" , "dig","accuracy_dict.mbxp" ],
+    "gen_len": [ "^^" , "dig","accuracy_dict.gen_len" ],
+    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
+    "gen_tok_len": [ "^^" , "dig","accuracy_dict.gen_tok_len" ],
+    "tokens_per_sample": [ "^^" , "dig","accuracy_dict.tokens_per_sample" ],
+
+    "accuracy_range_dict": { "rouge1": [ 45.036189, null ], "rouge2": [ 23.050071, null ], "rougeL": [ 30.057885, null], "rougeLsum":[ null, null ], "gsm8k": [ 73.0422, null ], "mbxp": [ 59.5188, null ], "gen_len": [ null, null ], "gen_num": [ null, null ], "gen_tok_len": [ null, null ], "tokens_per_sample": [ 131.31, 160.49 ] }
 
 }
