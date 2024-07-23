@@ -32,6 +32,10 @@
 		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=nltk,package_version=3.8.1" ],
 		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=tqdm,package_version=4.66.4" ],
 		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=scipy" ],
+		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pillow" ],
+		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=absl-py" ],
+		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=rouge_score" ],
+		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=sentencepiece" ],
 		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=mxeval,installable=git+https://github.com/shubhamugare/mxeval.git" ]
 	    ],
             "abs_script_path": ["^^", "get", "abs_script_path"],
@@ -46,7 +50,15 @@
         [ "get", "accuracy_report" ],
 	0,
 	[ "func", "eval" ]
-    ]], {} ]
+    ]], {} ],
 
+    "gsm8k": [ "^^" , "dig","accuracy_dict.gen_len" ],
+    "mbxp": [ "^^" , "dig","accuracy_dict.gen_num" ],
+    "gen_len": [ "^^" , "dig","accuracy_dict.gen_num" ],
+    "gen_num": [ "^^" , "dig","accuracy_dict.gen_num" ],
+    "gen_tok_len": [ "^^" , "dig","accuracy_dict.gen_num" ],
+    "tokens_per_sample": [ "^^" , "dig","accuracy_dict.gen_num" ],
+
+    "accuracy_range_dict": { "gsm8k": [ 73.0422, null ], "mbxp": [ 59.5188, null ], "gen_len": [ null, null ], "gen_num": [ null, null ], "gen_tok_len": [ null, null ], "tokens_per_sample": [ 131.31, 160.49 ] }
 
 }
