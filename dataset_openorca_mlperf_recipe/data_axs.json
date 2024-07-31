@@ -15,12 +15,12 @@
         [ "get_path" ]
     ]] ],
 	
+    "model_family": "llama2",
     "variant": "7b",
-    "hf_model_name": [ "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
-    "model_dir_query": [ "^^", "substitute", "downloaded,hf_model,model_name=#{hf_model_name}#" ],
-    "model_dir": [ "^^", "execute", [[
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", [[ "^^", "get", "model_dir_query" ]] ],
+        [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
         [ "get_path" ]
     ]] ],
 
@@ -47,5 +47,5 @@
     ]] ],
 
     "total_samples": 24576,
-    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{model_dir}# --seqlen_limit=1024 --export_dir=#{output_entry_path}#" ]
+    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{checkpoint_path}# --seqlen_limit=1024 --export_dir=#{output_entry_path}#" ]
 }

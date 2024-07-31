@@ -18,9 +18,12 @@
     ]] ],
     "openorca_dataset_path": [ "^^", "substitute", "#{openorca_dataset_dir}#/#{openorca_dataset_file}#" ],
   
-    "tokenizer_path": [ "^^", "execute", [[
+    "model_family": "llama2",
+    "variant": "7b",
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", "downloaded,hf_model" ],
+        [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
         [ "get_path" ]
     ]] ],
 
