@@ -614,6 +614,16 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
                 return float(fid_score_value), float(clip_score_value)
             return "Scores not found."
 
+        def extract_accuracy_mixtral(accuracy_metric):
+            if accuracy_metric is not None and "\'rouge1\'" in accuracy_metric and "\'tokens_per_sample\'" in accuracy_metric:
+                rouge_score_part = accuracy_metric.split('\'rouge1\':')[1]
+                rouge_score_value = rouge_score_part.split(',')[0].strip()
+
+                tps_part = accuracy_metric.split('\'tokens_per_sample\':')[1]
+                tps_value = tps_part.split('}')[0].strip()
+
+                return float(rouge_score_value), float(tps_value)
+            return "Scores not found."
         
         if power and "power_loadgen_output" in experiment_entry["tags"]:
             target_entry = get_testing_entry(experiment_entry)
@@ -629,7 +639,10 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
             "retinanet": round(37.55 * 0.99, 3),
             "bert-99": round(90.874 * 0.99, 3),
             "bert-99.9": round(90.874 * 0.999, 3),
-            "stable-diffusion-xl": ("FID_SCORE", 23.01085758, "CLIP_SCORE", 31.68631873)
+            "gptj-99" : ("ROUGE1", 42.9865 * 0.99, "ROUGE2", 20.1235 * 0.99, "ROUGEL", 29.9881 * 0.99, "GEN_LEN", 4016878*0.9),
+            "llama2-70b-99" : ("ROUGE1", 44.4312 * 0.99, "ROUGE2", 22.0352 * 0.99, "ROUGEL", 28.6162 * 0.99, "TOKENS_PER_SAMPLE", 294.45*0.9),
+            "stable-diffusion-xl": ("FID_SCORE", 23.01085758, "CLIP_SCORE", 31.68631873),
+            "mixtral-8x7b" : ("rouge1", 45.4911 * 0.99, "ROUGE2", 23.2829 * 0.99, "ROUGEL", 30.3615 * 0.99, "tokens_per_sample", 145.9 * 0.9, "gsm8k_accuracy", 73.78*0.99, "mbxp_accuracy", 60.12 * 0.99)
         }
 
         # Actual accuracy for workloads
@@ -639,11 +652,15 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
             "bert-99": extract_accuracy_bert(accuracy_metric),
             "bert-99.9": extract_accuracy_bert(accuracy_metric),
             "stable-diffusion-xl": extract_accuracy_sdxl(accuracy_metric)
+            "mixtral_8x7b": extract_accuracy_mixtral(accuracy_metric)
         }
 
         # Accuracy upper limit
         accuracy_upper_limit = {
-            "stable-diffusion-xl": ("FID_SCORE", 23.95007626, "CLIP_SCORE", 31.81331801)
+            "stable-diffusion-xl": ("FID_SCORE", 23.95007626, "CLIP_SCORE", 31.81331801),
+            "mixtral_8x7b": ("TOKENS_PER_SAMPLE", 145.9 * 1.1),
+            "llama2-70b-99" : ("TOKENS_PER_SAMPLE", 294.45*1.1),
+            "llama2-70b-99.9" : ("TOKENS_PER_SAMPLE", 294.45*1.1)
         }
 
         target_acc = target_accuracy[model_name]
@@ -654,7 +671,6 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
             avg_power = round(power_experiment_entry.call("avg_power"),3)
         else:
             avg_power = "N/A"
-        
 
         if mode.lower() == "performance":
             if scenario in ["Offline" , "Server"]:
@@ -683,8 +699,26 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
                 else:
                     status = "INVALID"
 
-                actual_metric =f"FID_SCORE: {actual_fid_score}\nCLIP_SCORE: {actual_clip_score}"
+                actual_metric = f"FID_SCORE: {actual_fid_score}\nCLIP_SCORE: {actual_clip_score}"
                 target = f"FID_SCORE range: [{target_fid_score}, {upper_fid_score}]\nCLIP_SCORE range: [{target_clip_score}, {upper_clip_score}]"
+            elif model_name == "mixtral_8x7b":
+                target_rouge_score = target_acc[1]
+                target_tps = target_acc[7]
+                upper_tps = accuracy_upper_limit[model_name][1]
+                # Extract actual values
+                if isinstance(actual_acc, tuple) and len(actual_acc) >= 2:
+                    actual_rouge_score, actual_tps = actual_acc
+                else:
+                    ValueError("Invalid format for actual accuracy values")
+
+                # Compare values within the range
+                if target_rouge_score <= actual_rouge_score and target_tps <= actual_tps <= upper_tps:
+                    status = "VALID"
+                else:
+                    status = "INVALID"
+
+                actual_metric = f"ROUGE1: {actual_rouge_score}\nTOKENS_PER_SAMPLE: {tokens_per_sample}"
+                target = f"ROUGE1 : {target_rouge_score}\nTOKENS_PER_SAMPLE range: [{target_tps}, {upper_tps}]"
 
             else:
                 if (float(actual_acc) >= target_acc):
