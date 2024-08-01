@@ -14,7 +14,8 @@
         [ "byquery", "downloaded,dataset_name=openorca_parquet" ],
         [ "get_path" ]
     ]] ],
-	
+
+    "desired_python_version": "3.8",
     "model_family": "llama2",
     "variant": "7b",
     "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],

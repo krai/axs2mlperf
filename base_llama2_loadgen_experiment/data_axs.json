@@ -9,6 +9,8 @@
         [ "use" ]
     ]] ],
 
+    "desired_python_version": "3.8",
+
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "abs_script_path": [ "^^", "execute", [[
@@ -43,6 +45,7 @@
         [ "byname", "python_script" ],
         [ "run", [], {
                 "python_deps": [
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=protobuf" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torch" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=transformers" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=nltk" ],
