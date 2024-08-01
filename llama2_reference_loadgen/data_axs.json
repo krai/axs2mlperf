@@ -1,0 +1,70 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ] ],
+    "_producer_rules": [
+        [ [ "loadgen_output", "task=llama2", "framework=torch" ], [["get", "pipeline"]] ]
+    ],
+
+    "hostname": [ "^", "func", "socket.gethostname" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "llama2_reference_loadgen_script" ]
+    ]] ],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", "python_package,package_name=mlperf_loadgen" ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=protobuf" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=sentencepiece" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=accelerate" ]] ]
+    ],
+
+    "loadgen_scenario": "Offline",
+    "loadgen_dataset_size": 3,
+    "loadgen_buffer_size": 1,
+    "desired_python_version": "3.8",
+
+    "loadgen_min_query_count": 2,
+    "loadgen_target_latency": 2000,
+
+    "model_name": "llama2",
+    "model_path_on_chai": "/data/llama-2/llama-2-7b-chat-hf",
+    "model_entry": [ "^", "byquery", "extracted,pytorch_model,model_name=gptj_cnndm" ],
+    "model_path": [ "^^", "case", [ [ "^^", "get", "hostname" ],
+        "chai", [[ "get", "model_path_on_chai" ]]
+    ], { "default_value": [
+            [ "get", "model_entry" ],
+            [ "get_path" ]
+    ], "execute_value": true } ],
+
+
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_llama2_loadgen_experiment" ] ],
+    "output_entry_param_names": [
+        "loadgen_multistreamness",
+
+        "gpu_id"
+    ],
+
+    "accuracy_flag": [ "^^", "case",[ ["^^", "get", "loadgen_mode"], "AccuracyOnly", "--accuracy" ], {"default_value": ""} ],
+    "gpu": true,
+    "gpu_flag": [ "^^", "case",[ ["^^", "get", "gpu"], ["", false], "--device cpu" ], {"default_value": "--dtype float32 --device cuda:0"} ],
+    "gpu_id":   [ "^^", "case",[ ["^^", "get", "gpu"], false, "", true, 0 ], {"default_value": ["^^", "get", "gpu"]} ],
+
+    "extra_env": {
+        "CUDA_VISIBLE_DEVICES": [ "^^", "get", "gpu_id" ]
+    },
+
+    "dataset_name": "openorca",
+    "dataset_path": [ "^", "execute", [[
+        [ "byquery", "downloaded,dataset_name=openorca" ],
+        [ "get_path", "open_orca_gpt4_tokenized_llama.sampled_24576.pkl" ]
+    ]] ],
+
+    "script_extra_params": [ "^^", "substitute",
+        "--mlperf-conf \"#{loadgen_mlperf_conf_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --scenario #{loadgen_scenario}# --model-path \"#{model_path}#\" --dataset-path \"#{dataset_path}#\" --total-sample-count #{loadgen_dataset_size}# --output-log-dir #{output_dir}# #{gpu_flag}# #{accuracy_flag}#"
+    ]
+}
