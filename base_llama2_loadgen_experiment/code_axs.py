@@ -44,7 +44,12 @@ def detokenise(
         tokens = [
             int.from_bytes(bytes.fromhex(tok), byteorder="little") for tok in hex_tokens
         ]
-        output_log.append(tokeniser.decode(tokens))
+        output_log.append({
+            "seq_id" : item["seq_id"],
+            "qsl_idx" : item["qsl_idx"],
+            "data": tokeniser.decode(tokens),
+            "token_count" : item["token_count"]
+        })
 
     with open(output_log_path, "w") as f:
         json.dump(output_log, f, indent=2)
