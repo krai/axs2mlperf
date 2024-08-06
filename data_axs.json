@@ -39,6 +39,7 @@
         "gptj_reference_loadgen": "gptj_reference_loadgen",
         "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment",
         "base_llama2_loadgen_experiment": "base_llama2_loadgen_experiment",
+        "base_moe_loadgen_experiment": "base_moe_loadgen_experiment",
         "power_measurement": "power_measurement",
         "model_pytorch_gptj_cnndm_recipe": "model_pytorch_gptj_cnndm_recipe",
         "base_power_measurement_experiment": "base_power_measurement_experiment",
@@ -54,7 +55,12 @@
         "base_sut": "base_sut",
         "rclone_mlc_inference_config": "rclone_mlc_inference_config",
         "preprocess_imagenet_using_opencv": "preprocess_imagenet_using_opencv",
-        "llama2_reference_loadgen": "llama2_reference_loadgen"
+        "llama2_reference_loadgen": "llama2_reference_loadgen",
+        "moe_dataset_preprocessor": "moe_dataset_preprocessor",
+        "model_pytorch_mixtral_recipe": "model_pytorch_mixtral_recipe",
+        "base_mixtral_loadgen_experiment": "base_mixtral_loadgen_experiment",
+        "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen",
+        "dataset_mixtral_preprocessed_recipe": "dataset_mixtral_preprocessed_recipe"
     },
     "repo_name": "axs2mlperf",
     "submodules": false

@@ -1,0 +1,28 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
+    "_producer_rules": [
+        [ [ "downloaded", "dataset_name=moe_dataset" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "url": "https://inference.mlcommons-storage.org/mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl",
+            "md5": "78823c13e0e73e518872105c4b09628b"
+        } ],
+        [ [ "preprocessed", "dataset_name=moe_dataset" ], [["get", "pipeline"]] ]
+    ],
+
+    "dataset_path": [ "^", "execute", [[
+        [ "byquery", "downloaded,dataset_name=moe_dataset" ],
+        [ "get_path", "mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl" ]
+    ]]],
+
+    "newborn_entry_name": "preprocessed_moe_dataset",
+    "newborn_entry_tags": [ "preprocessed" ],
+    "newborn_entry_param_names": [ "dataset_name" ],
+
+    "rel_script_path": "preprocess.py",
+    "script_extra_params": [ "^^", "substitute", "--dataset-path #{dataset_path}# --output-path #{newborn_entry_path}#"],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [],
+        [ "get", "stored_newborn_entry" ]
+    ]] ]
+}

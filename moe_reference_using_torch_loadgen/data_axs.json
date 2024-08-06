@@ -1,0 +1,98 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "base_loadgen_program" ], [ "^", "byname", "nvidia_gpu_support" ] ],
+    "_producer_rules": [
+        [ [ "loadgen_output", "task=moe", "framework=torch" ], [["get", "pipeline"]] ]
+    ],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "mixtral_reference_script" ]
+    ]] ],
+
+    "numpy_query": ["python_package", "package_name=numpy", "package_version=1.24.1"],
+    "pybind11_query": ["python_package", "package_name=pybind11", "package_version=2.10.4"],
+    "pandas_query": ["python_package", "package_name=pandas", "package_version=2.2.2"],
+    "transformers_query": ["python_package", "package_name=transformers", "package_version=4.41.2"],
+    "nltk_query": ["python_package", "package_name=nltk", "package_version=3.8.1"],
+    "evaluate_query": ["python_package", "package_name=evaluate", "package_version=0.4.0"],
+    "absl_py_query": ["python_package", "package_name=absl-py", "package_version=1.4.0"],
+    "rouge_score_query": ["python_package", "package_name=rouge-score", "package_version=0.1.2"],
+    "sentencepiece_query": ["python_package", "package_name=sentencepiece", "package_version=0.1.99"],
+
+    "accelerate_query": ["python_package", "package_name=accelerate", "package_version=0.21.0"],
+    "torch_query": ["python_package", "package_name=torch", "package_version=2.3.1"],
+    "tokenizers_query": ["python_package", "package_name=tokenizers", "package_version=0.19.1"],
+    "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
+            
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "numpy_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "pybind11_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "pandas_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "transformers_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "nltk_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "evaluate_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "absl_py_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "rouge_score_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "sentencepiece_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "accelerate_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "torch_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "tokenizers_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ]
+    ],
+
+    "dataset_query": [ "^^", "substitute", [ "downloaded,preprocessed,dataset_name=#{dataset_name}#"] ],
+    "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "dataset_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "loadgen_scenario": "Offline",
+    
+    "dataset_name": "mixtral",
+    
+    "model_name": "mixtral-8x7b",
+
+    "model_query": [ "^^", "substitute", [ "downloaded,pytorch_model,model_name=#{model_name}#"] ],
+    "model_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+	[ "byquery", [ [ "^^", "get", "model_query" ] ] ]
+    ]] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+	[ "get_path" ]
+    ]] ],
+
+
+    "loadgen_dataset_size": 15000,
+    "loadgen_batch_size": 1,
+    "loadgen_buffer_size":  [ "^^", "get", "total_sample_count" ], 
+
+    "device": [ "^", "case",[ ["^^", "get", "num_gpus"], "0", "cpu" ], {"default_value": "cuda:0"}, ["num_gpus"]],
+    "dtype": "float16",
+    "total_sample_count": 15000,
+    "framework": "torch",
+    "accuracy_cmd": [ "^^", "case", [ [ "^^", "get", "loadgen_mode"],
+        "AccuracyOnly", "--accuracy" ],
+        { "default_value": "" }
+    ],
+
+
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_mixtral_loadgen_experiment" ] ],
+    "output_entry_param_names": [
+        "loadgen_compliance_test",
+        "dataset_name",
+        "dataset_path",
+
+        "model_name",
+        "model_path",
+        "device",
+        "dtype",
+        "total_sample_count"
+     ],
+
+
+     "script_extra_params": [ "^^", "substitute",
+        "--scenario \"#{loadgen_scenario}#\" --model-path \"#{model_path}#\" #{accuracy_cmd}# --mlperf-conf \"#{loadgen_mlperf_conf_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --total-sample-count #{total_sample_count}# --dataset-path \"#{dataset_path}#\" --output-log-dir \"#{output_dir}#\" --device \"#{device}#\" --dtype \"#{dtype}#\" --batch-size #{loadgen_batch_size}#"
+     ]
+}
