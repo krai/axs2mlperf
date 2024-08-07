@@ -16,9 +16,9 @@
     ]] ],
 
     "desired_python_version": "3.8",
-    "model_family": "llama2",
+    "model_name": "llama2",
     "variant": "7b",
-    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_name=#{model_name}#,variant=#{variant}#" ],
     "checkpoint_path": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],

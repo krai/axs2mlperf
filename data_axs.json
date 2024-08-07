@@ -59,8 +59,7 @@
         "moe_dataset_preprocessor": "moe_dataset_preprocessor",
         "model_pytorch_mixtral_recipe": "model_pytorch_mixtral_recipe",
         "base_mixtral_loadgen_experiment": "base_mixtral_loadgen_experiment",
-        "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen",
-        "dataset_moe_preprocessed_recipe": "dataset_moe_preprocessed_recipe"
+        "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
