@@ -23,7 +23,7 @@
         [ "get_path", "dataset.pkl" ]
     ]]],
 
-    "newborn_entry_name": "preprocessed_moe_dataset",
+    "newborn_entry_name": [ "^^", "substitute", "preprocessed_moe_dataset_#{dataset_type}#" ],
     "newborn_entry_tags": [ "preprocessed" ],
     "newborn_entry_param_names": [ "dataset_name" ],
 
