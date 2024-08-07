@@ -4,8 +4,8 @@
         [ [ "preprocessed", "dataset_name=openorca" ], [[ "run" ]] ]
     ],
 
-    "openorca_dataset_type": "full",
-    "openorca_dataset_file": [ "^^", "case", [[ "^^", "get", "openorca_dataset_type" ],
+    "dataset_type": "full",
+    "openorca_dataset_file": [ "^^", "case", [[ "^^", "get", "dataset_type" ],
         "full", "open_orca_gpt4_tokenized_llama.sampled_24576.pkl",
         "calibration", "open_orca_gpt4_tokenized_llama.calibration_1000.pkl"
     ]],
@@ -34,8 +34,8 @@
     ],
 
     "newborn_entry_tags": [ "preprocessed", "dataset_name=openorca" ],
-    "newborn_name_template": [ "preprocessed_openorca_dataset_#{openorca_dataset_type}#" ],
-    "newborn_entry_param_names": [ "openorca_dataset_type" ],
+    "newborn_name_template": [ "preprocessed_openorca_dataset_#{dataset_type}#" ],
+    "newborn_entry_param_names": [ "dataset_type" ],
     "return_this_entry": [ "^^", "substitute", "#{newborn_entry}#" ],
 
     "rel_script_path": "main.py",
