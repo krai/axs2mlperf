@@ -1,19 +1,29 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
     "_producer_rules": [
-        [ [ "downloaded", "dataset_name=moe_dataset" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "url": "https://inference.mlcommons-storage.org/mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl",
-            "md5": "78823c13e0e73e518872105c4b09628b"
+        [ [ "downloaded", "dataset_name=moe_dataset", "dataset_type=full", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "newborn_entry_name": "downloaded_moe_dataset_full",
+            "file_path": "dataset.pkl",
+            "url": "https://inference.mlcommons-storage.org/mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl"
+        } ],
+        [ [ "downloaded", "dataset_name=moe_dataset", "dataset_type=calibration", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "newborn_entry_name": "downloaded_moe_dataset_calibration",
+            "file_path": "dataset.pkl",
+            "url": "https://inference.mlcommons-storage.org/mixtral_8x7b%2F2024.06.06_mixtral_15k_calibration_v4.pkl"
         } ],
         [ [ "preprocessed", "dataset_name=moe_dataset" ], [["get", "pipeline"]] ]
     ],
 
-    "dataset_path": [ "^", "execute", [[
-        [ "byquery", "downloaded,dataset_name=moe_dataset" ],
-        [ "get_path", "mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl" ]
+    "dataset_type": "full",
+
+    "dataset_query": [ "^^", "substitute", "downloaded,dataset_name=moe_dataset,dataset_type=#{dataset_type}#" ],
+    "dataset_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [ "^^", "get", "dataset_query" ] ],
+        [ "get_path", "dataset.pkl" ]
     ]]],
 
-    "newborn_entry_name": "preprocessed_moe_dataset",
+    "newborn_entry_name": [ "^^", "substitute", "preprocessed_moe_dataset_#{dataset_type}#" ],
     "newborn_entry_tags": [ "preprocessed" ],
     "newborn_entry_param_names": [ "dataset_name" ],
 

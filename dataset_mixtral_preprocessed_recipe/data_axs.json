@@ -1,8 +1,0 @@
-{
-    "_producer_rules": [
-        [ [ "downloaded", "preprocessed", "dataset_name=mixtral", "source?=via_wget" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "file_path": "2024.06.06_mixtral_15k_v4.pkl",
-            "url": "https://inference.mlcommons-storage.org/mixtral_8x7b%2F2024.06.06_mixtral_15k_v4.pkl"
-	} ]
-    ]
-}

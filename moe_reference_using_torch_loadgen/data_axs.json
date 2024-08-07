@@ -40,7 +40,9 @@
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ]
     ],
 
-    "dataset_query": [ "^^", "substitute", [ "downloaded,preprocessed,dataset_name=#{dataset_name}#"] ],
+    "dataset_type": "full",
+
+    "dataset_query": [ "^^", "substitute", [ "downloaded,dataset_name=moe_dataset,dataset_type=#{dataset_type}#"] ],
     "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
     "dataset_path": [ "^^", "execute", [[
         [ "get", "dataset_entry" ],
@@ -48,8 +50,6 @@
     ]] ],
 
     "loadgen_scenario": "Offline",
-    
-    "dataset_name": "mixtral",
     
     "model_name": "mixtral-8x7b",
 
@@ -81,7 +81,7 @@
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_mixtral_loadgen_experiment" ] ],
     "output_entry_param_names": [
         "loadgen_compliance_test",
-        "dataset_name",
+        "dataset_type",
         "dataset_path",
 
         "model_name",
