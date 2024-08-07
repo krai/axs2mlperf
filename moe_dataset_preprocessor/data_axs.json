@@ -16,6 +16,8 @@
 
     "dataset_type": "full",
 
+    "python_deps": [[ "^^", "python_sync_pip_package", "python_package,package_name=pandas" ]],
+
     "dataset_query": [ "^^", "substitute", "downloaded,dataset_name=moe_dataset,dataset_type=#{dataset_type}#" ],
     "dataset_path": [ "^^", "execute", [[
         [ "get_kernel" ],
