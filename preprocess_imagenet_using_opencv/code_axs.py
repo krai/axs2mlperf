@@ -2,9 +2,7 @@
 import os
 import cv2
 import numpy as np
-import json
-import sys
-import shutil
+from tqdm import trange
 
 def get_files_from_subdirs(directory, supported_extensions):
     all_files = []
@@ -117,7 +115,8 @@ def preprocess_files(selected_filenames, images_directory, destination_dir, crop
     "Go through the selected_filenames and preprocess all the files (optionally normalize and subtract mean)"
     output_filenames = []
 
-    for current_idx in range(len(selected_filenames)):
+    print("Preprocessing images...")
+    for current_idx in trange(len(selected_filenames)):
         input_filename = selected_filenames[current_idx]
 
         full_input_path = os.path.join(images_directory, input_filename)
@@ -144,9 +143,6 @@ def preprocess_files(selected_filenames, images_directory, destination_dir, crop
 
         full_output_path = os.path.join(destination_dir, output_filename)
         image_data.tofile(full_output_path)
-
-        print("[{}]:  Stored {}".format(current_idx+1, full_output_path) )
-
         output_filenames.append(output_filename)
 
     return sorted(output_filenames)
