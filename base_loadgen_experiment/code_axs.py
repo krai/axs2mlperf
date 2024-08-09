@@ -17,6 +17,7 @@ def parse_summary(abs_log_summary_path):
     
     return parsed_summary
 
+
 def beautify_summary(parsed_summary):
 
     ureg = UnitRegistry()
@@ -71,7 +72,8 @@ def calc_latency_cutoff_ratio(parsed_summary):
 
     if scenario == "Server":
         return parsed_summary["99.00_percentile_latency_ns"]/parsed_summary["target_latency_ns"]
-    
+
+
 #returns list of formatted performance metrics (as strings) for given experiment  
 def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_performance_map, raw=False):
 
@@ -82,7 +84,7 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_perform
         return None  
 
     performance_metrics = scenario_performance_map[scenario][validity] 
-    formatted_performance_metrics = ['{} :'.format(validity)] # set first element 
+    formatted_performance_metrics = ['{}'.format(validity)] # set first element 
 
     for key_name in performance_metrics:
 
