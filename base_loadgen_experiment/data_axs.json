@@ -9,28 +9,32 @@
     "rel_log_summary_path": "mlperf_log_summary.txt",
     "abs_log_summary_path": [ "^^", "get_path_from", "rel_log_summary_path" ],
 
-    "summary": [ "^^", "parse_summary" ],
+    "parsed_summary": [ "^^", "parse_summary" ],
+
+    "beautified_summary": [ "^^", "beautify_summary" ],
+
+    "latency_cutoff_ratio": [ "^^", "calc_latency_cutoff_ratio" ],
 
     "scenario_performance_map": {
         "Offline":      {
-            "VALID":    ["Samples_per_second", 1, ".3f", ""],
-            "INVALID":  ["Samples_per_second", 1, ".3f", ""]
+            "VALID":    ["Samples_per_second", "target_qps"],
+            "INVALID":  ["Samples_per_second", "target_qps"]
         },
         "SingleStream": {
-            "VALID":    ["_Early_stopping_90th_percentile_estimate", 1e-6, ".3f", " (milliseconds)"],
-            "INVALID":  ["90th_percentile_latency_ns", 1e-6, ".3f", " (milliseconds)"]
+            "VALID":    ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate"],
+            "INVALID":  ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate"]
         },
         "MultiStream":  {
-            "VALID":    ["_Early_stopping_99th_percentile_estimate", 1e-6, ".3f", " (milliseconds)"],
-            "INVALID":  ["99th_percentile_latency_ns", 1e-6, ".3f", " (milliseconds)"]
+            "VALID":    ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate"],
+            "INVALID":  ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate"]
         },
         "Server":       {
-            "VALID":    ["Scheduled_samples_per_second", 1, ".3f", ""],
-            "INVALID":  ["99.00_percentile_latency_ns", 1e-6, ".3f", " (milliseconds)"]
+            "VALID":    ["target_qps", "99.00_percentile_latency", "target_latency", "latency_cutoff_ratio", "Completed_samples_per_second"],
+            "INVALID":  ["target_qps", "99.00_percentile_latency", "target_latency", "latency_cutoff_ratio", "Completed_samples_per_second"]
         }
     },
 
-    "performance": ["^^", "parse_performance"],
+    "performance": ["^^", "parse_performance"], 
 
     "accuracy_report": [ "^^", "execute", [[
         [ "plant", ["accuracy_report", [ "^^", "get", "extract_accuracy_report" ]] ],
@@ -45,6 +49,7 @@
         0,
         [ "func", "ufun.load_json" ]
     ]] ],
+
     "readable_accuracy_log": [ "^^", "unpack_accuracy_log" ],
 
     "accuracy_range_dict": {},
