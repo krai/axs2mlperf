@@ -48,5 +48,5 @@
     ]] ],
 
     "total_samples": 24576,
-    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{checkpoint_path}# --seqlen_limit=1024 --export_dir=#{output_entry_path}#" ]
+    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{checkpoint_path}# --seqlen_limit=1024 --export_dir=#{output_entry_path}# --num_total_samples=#{total_samples}#" ]
 }
