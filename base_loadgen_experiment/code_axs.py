@@ -96,7 +96,7 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_perform
                
         else: #no need for multiplier, formatting, units in scenario_performance_map - the beautify_summary function does all of this already 
             if key_name == "latency_cutoff_ratio":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_cutoff_ratio))
+                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio))
             else:
                 formatted_performance_metrics.append('{}={}'.format(key_name, beautified_summary[key_name]))
 
