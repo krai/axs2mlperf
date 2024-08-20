@@ -5,8 +5,9 @@
     ],
 
     "model_family": "llama2",
-    "variant": "70b",
+    "variant": "7b",
     "dataset_type": "full",
+    "desired_python_version": "3.8",
 
     "openorca_dataset_file": [ "^^", "case", [[ "^^", "get", "dataset_type" ],
         "full", "open_orca_gpt4_tokenized_llama.sampled_24576.pkl",

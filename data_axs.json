@@ -39,7 +39,6 @@
         "gptj_reference_loadgen": "gptj_reference_loadgen",
         "base_gptj_loadgen_experiment": "base_gptj_loadgen_experiment",
         "base_llama2_loadgen_experiment": "base_llama2_loadgen_experiment",
-        "base_moe_loadgen_experiment": "base_moe_loadgen_experiment",
         "power_measurement": "power_measurement",
         "model_pytorch_gptj_cnndm_recipe": "model_pytorch_gptj_cnndm_recipe",
         "base_power_measurement_experiment": "base_power_measurement_experiment",
@@ -59,7 +58,9 @@
         "moe_dataset_preprocessor": "moe_dataset_preprocessor",
         "model_pytorch_mixtral_recipe": "model_pytorch_mixtral_recipe",
         "base_mixtral_loadgen_experiment": "base_mixtral_loadgen_experiment",
-        "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen"
+        "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen",
+        "llm_hf_weights_recipe": "llm_hf_weights_recipe",
+        "huggingface_tool_detector": "huggingface_tool_detector"
     },
     "repo_name": "axs2mlperf",
     "submodules": false

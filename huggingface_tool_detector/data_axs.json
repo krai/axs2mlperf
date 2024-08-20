@@ -1,0 +1,25 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "tool_detector" ]
+    ],
+    "_producer_rules": [
+	    [ ["shell_tool", "can_download_url_from_huggingface" ] , [["detect"]],
+            {   "tool_name": "huggingface-cli",
+                "newborn_parent_names": [ "python_in_shell" ],
+                "python_deps": [
+                    [ "AS^IS", "^", "byquery", "python_package,package_name=huggingface_hub" ]
+                ],
+                "hf_token": "",
+                "hf_token_insert": [ "AS^IS", "^^", "case", [ ["^^", "get", "hf_token"],
+                    "", ""
+                ], {"default_value": ["^^", "substitute", "--token=#{hf_token}#"] } ],
+                "shell_cmd_templates": {
+                    "help": "\"#{tool_path}#\" --help",
+                    "dload": "\"#{tool_path}#\" download \"#{url}#\" --local-dir \"#{record_entry_path}#\" --local-dir-use-symlinks False #{hf_token_insert}#",
+                    "dload_tokeniser": "\"#{tool_path}#\" download \"#{url}#\" --include \"tokenizer*\" --local-dir \"#{record_entry_path}#\" --local-dir-use-symlinks False #{hf_token_insert}#"
+                },
+                "cmd_key": "dload_tokeniser"
+            }
+        ]
+    ]
+}
