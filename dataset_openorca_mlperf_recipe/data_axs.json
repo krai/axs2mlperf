@@ -17,7 +17,7 @@
 
     "desired_python_version": "3.8",
     "model_family": "llama2",
-    "variant": "70b",
+    "variant": "7b",
 
     "tokenizer_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
     "tokenizer_path": [ "^^", "execute", [[
