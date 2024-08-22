@@ -272,6 +272,9 @@ def get_config(config_target, model, device, card, system_type, num_device, hypo
 
     if model in ["bert-99.9", "gptj-99", "gptj-99.9"] and config_target == "compile_profile":
         return None
+    
+    if device in ["uai"] and config_target == "compile_profile":
+        return None
 
     number_of_device = copy.deepcopy(num_device)
     if config_target != "runtime":

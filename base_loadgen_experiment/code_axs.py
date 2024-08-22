@@ -14,6 +14,11 @@ def parse_summary(abs_log_summary_path):
                 k = k.replace(' ', '_').replace('/', '_').replace('*', '').replace(')', '').replace('(', '')
 
                 parsed_summary[k] = to_num_or_not_to_num(v)
+    
+    return parsed_summary
+
+
+def beautify_summary(parsed_summary):
 
     ureg = UnitRegistry()
 
@@ -42,7 +47,7 @@ def parse_summary(abs_log_summary_path):
         
         v = (v*unit).to_compact()
 
-        if v.u == ureg.us:
+        if v.u == ureg.us: 
             v.ito(ureg.ms) # Keep everything in milliseconds
 
         kv_with_units[k] = v
@@ -61,21 +66,41 @@ def parse_summary(abs_log_summary_path):
     return beautified_summary
 
 
-def parse_performance(summary, scenario_performance_map, raw=False):
+def calc_latency_cutoff_ratio(parsed_summary):
+    
+    scenario = parsed_summary["Scenario"]
 
-    scenario = summary["Scenario"]
-    validity = summary["Result_is"]
+    if scenario == "Server":
+        return parsed_summary["99.00_percentile_latency_ns"]/parsed_summary["target_latency_ns"]
+
+
+#returns list of formatted performance metrics (as strings) for given experiment  
+def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_performance_map, raw=False):
+
+    scenario = beautified_summary["Scenario"]
+    validity = beautified_summary["Result_is"]
 
     if raw and validity == "INVALID":
-        return None
+        return None  
 
-    key_name, multiplier, formatting, units = scenario_performance_map[scenario][validity]
-    if raw:
-        return summary[key_name]
-    else:
-        formatted_value = ('{:'+formatting+'}').format(summary[key_name]*multiplier)
-        display_key_name = key_name.replace('_ns', '')
-        return '{} : {}={}{}'.format(validity, display_key_name, formatted_value, units)
+    performance_metrics = scenario_performance_map[scenario][validity] 
+    formatted_performance_metrics = ['{}'.format(validity)] # set first element 
+
+    for key_name in performance_metrics:
+
+        if raw:
+            if key_name == "latency_cutoff_ratio":
+                formatted_performance_metrics.append(latency_cutoff_ratio)
+            else:
+                formatted_performance_metrics.append(beautified_summary[key_name])
+               
+        else: #no need for multiplier, formatting, units in scenario_performance_map - the beautify_summary function does all of this already 
+            if key_name == "latency_cutoff_ratio":
+                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio))
+            else:
+                formatted_performance_metrics.append('{}={}'.format(key_name, beautified_summary[key_name]))
+
+    return formatted_performance_metrics
 
 
 def unpack_accuracy_log(raw_accuracy_log):
@@ -124,7 +149,7 @@ def guess_command(tags, framework, loadgen_scenario, loadgen_mode, model_name, l
     return "axs byquery "+','.join(terms_list)
 
 
-def validate_accuracy(accuracy_dict, accuracy_range_dict ):
+def validate_accuracy(accuracy_dict, accuracy_range_dict):
     result_list = []
     for key in accuracy_dict:
         if key not in accuracy_range_dict:

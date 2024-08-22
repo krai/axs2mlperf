@@ -17,6 +17,23 @@
 	{ "default_value": [ "^^", "substitute", "--n_workers #{n_workers}#" ] }
     ],
 
+    "dataset_pkl_query": [ "^^", "substitute", "downloaded,dataset_name=moe_dataset,dataset_type=#{dataset_type}#" ],
+    "dataset_pkl_entry": [ "^", "byquery", [[ "^^", "get", "kilt_dataset_query" ]], {}, [ "kilt_dataset_query" ] ] ,
+    "dataset_pkl_file_name": [ "^^", "execute", [[ 
+    	[ "get", "dataset_entry" ],
+        [ "get", "file_path" ]
+    ]] ],
+    "dataset_pkl_path": [ "^^", "execute", [[ 
+    	[ "get", "dataset_entry" ],
+        [ "get_path", [ "^^", "get", "dataset_file_name" ] ]
+    ]] ],
+
+    "checkpoint_path_entry": [ "^", "byquery", "downloaded,hf_tokeniser,model_family=mixtral,variant=8x7b" ],
+    "checkpoint_path": [ "^^", "execute", [[
+        [ "get", "checkpoint_path_entry" ],
+        [ "get_path" ]
+    ]] ],
+
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
 	[ "byname", "python_script" ],
@@ -39,7 +56,7 @@
 		[ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=mxeval,installable=git+https://github.com/shubhamugare/mxeval.git" ]
 	    ],
             "abs_script_path": ["^^", "get", "abs_script_path"],
-            "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --checkpoint-path \"#{model_path}#\" --dataset-file \"#{dataset_path}#\" --dtype \"#{dtype_value}#\" #{n_workers_cmd}#" ],
+            "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file \"#{accuracy_log_path}#\" --checkpoint-path \"#{checkpoint_path}#\" --dataset-file \"#{dataset_pkl_path}#\" --dtype \"#{dtype_value}#\" #{n_workers_cmd}#" ],
 	    "capture_output": true
 	} ],
 	0,
