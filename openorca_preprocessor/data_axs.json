@@ -4,11 +4,23 @@
         [ [ "preprocessed", "dataset_name=openorca" ], [[ "run" ]] ]
     ],
 
+    "model_family": "llama2",
+    "variant": "7b",
     "dataset_type": "full",
+    "desired_python_version": "3.8",
+
     "openorca_dataset_file": [ "^^", "case", [[ "^^", "get", "dataset_type" ],
         "full", "open_orca_gpt4_tokenized_llama.sampled_24576.pkl",
         "calibration", "open_orca_gpt4_tokenized_llama.calibration_1000.pkl"
     ]],
+
+
+    "tokenizer_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "tokenizer_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "tokenizer_query" ]] ],
+        [ "get_path" ]
+    ]] ],
 
     "openorca_dataset_query": [ "^^", "substitute", "downloaded,dataset_name=openorca,model_dir=#{tokenizer_path}#" ],
     "openorca_dataset_entry": [ "^", "byquery", [[ "^^", "get", "openorca_dataset_query" ]], {}, [ "openorca_dataset_query" ] ],
@@ -18,15 +30,6 @@
     ]] ],
     "openorca_dataset_path": [ "^^", "substitute", "#{openorca_dataset_dir}#/#{openorca_dataset_file}#" ],
   
-    "model_family": "llama2",
-    "variant": "7b",
-    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
-    "checkpoint_path": [ "^^", "execute", [[
-        [ "get_kernel" ],
-        [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
-        [ "get_path" ]
-    ]] ],
-
     "python_deps": [
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pandas" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ],

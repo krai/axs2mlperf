@@ -1,11 +1,11 @@
 {
-    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
     "_producer_rules": [
         [ [ "downloaded", "dataset_name=openorca_parquet" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca/resolve/main/1M-GPT4-Augmented.parquet",
             "md5": "ed5a8dfd509ac465017f1b7a8183a525"
         } ],
-        [ [ "downloaded", "dataset_name=openorca" ], [["run"]], { "return_saved_record_entry": true } ]
+        [ [ "downloaded", "dataset_name=openorca" ], [["run"]] ]
     ],
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
@@ -18,10 +18,11 @@
     "desired_python_version": "3.8",
     "model_family": "llama2",
     "variant": "7b",
-    "checkpoint_path_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
-    "checkpoint_path": [ "^^", "execute", [[
+
+    "tokenizer_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "tokenizer_path": [ "^^", "execute", [[
         [ "get_kernel" ],
-        [ "byquery", [[ "^^", "get", "checkpoint_path_query" ]] ],
+        [ "byquery", [[ "^^", "get", "tokenizer_query" ]] ],
         [ "get_path" ]
     ]] ],
 
@@ -38,15 +39,11 @@
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy" ]] ]
     ],
 
-    "output_entry_path": [ "^^", "execute", [[
-        [ "get", "__record_entry__" ],
-        [ "set_path", "downloaded_openorca_mlperf_dataset" ],
-        [ "plant", [ "tags", [ "downloaded" ], "dataset_name", "openorca" ] ],
-        [ "attach", [ "^", "work_collection" ] ],
-        [ "save" ],
-        [ "get_path", "" ]
-    ]] ],
+    "newborn_entry_tags": [ "downloaded", "dataset_name=openorca" ],
+    "newborn_name_template": [ "downloaded_openorca_mlperf_dataset" ],
+    "newborn_entry_param_names": ["openorca_dataset_path", "tokeniser_path"],
+    "return_this_entry": [ "^^", "substitute", "#{newborn_entry}#" ],
 
     "total_samples": 24576,
-    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{checkpoint_path}# --seqlen_limit=1024 --export_dir=#{output_entry_path}# --num_total_samples=#{total_samples}#" ]
+    "script_extra_params": [ "^^", "substitute", "--dataset_pq_path=#{openorca_dataset_path}# --model_dir=#{tokenizer_path}# --seqlen_limit=1024 --export_dir=#{newborn_entry_path}# --num_total_samples=#{total_samples}#" ]
 }
