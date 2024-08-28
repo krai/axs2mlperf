@@ -20,11 +20,11 @@
     "dataset_pkl_query": [ "^^", "substitute", "downloaded,dataset_name=moe_dataset,dataset_type=#{dataset_type}#" ],
     "dataset_pkl_entry": [ "^", "byquery", [[ "^^", "get", "dataset_pkl_query" ]], {}, [ "dataset_pkl_query" ] ] ,
     "dataset_pkl_file_name": [ "^^", "execute", [[ 
-    	[ "get", "dataset_entry" ],
+        [ "get", "dataset_pkl_entry" ],
         [ "get", "file_path" ]
     ]] ],
     "dataset_pkl_path": [ "^^", "execute", [[ 
-    	[ "get", "dataset_entry" ],
+        [ "get", "dataset_pkl_entry" ],
         [ "get_path", [ "^^", "get", "dataset_file_name" ] ]
     ]] ],
 
