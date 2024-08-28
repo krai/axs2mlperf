@@ -41,7 +41,7 @@
     "output_entry_path": [ "^^", "execute", [[
         [ "get", "__record_entry__" ],
         [ "set_path", "downloaded_openorca_mlperf_dataset" ],
-        [ "plant", [ "tags", [ "downloaded" ], "dataset", "openorca" ] ],
+        [ "plant", [ "tags", [ "downloaded" ], "dataset_name", "openorca" ] ],
         [ "attach", [ "^", "work_collection" ] ],
         [ "save" ],
         [ "get_path", "" ]
