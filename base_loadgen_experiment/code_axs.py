@@ -22,7 +22,7 @@ def beautify_summary(parsed_summary):
 
     ureg = UnitRegistry()
 
-    linked_keys = ["latency", "Early_Stopping_9", "duration"]
+    linked_keys = ["latency", "Early_stopping_9", "duration"]
 
     beautified_summary = {}
     kv_with_units = {}
@@ -36,9 +36,9 @@ def beautify_summary(parsed_summary):
         elif k.endswith("_ms"):
             k = k[:-3]
             unit = ureg.ms
-        elif "Early_Stopping_9" in k:
-             # Edge case for _Early_Stopping_90th_percentile_estimate 
-             #           and _Early_Stopping_99th_percentile_estimate
+        elif k.startswith("_Early_stopping_9"):
+             # Edge case for _Early_stopping_90th_percentile_estimate
+             #           and _Early_stopping_99th_percentile_estimate
             unit = ureg.ns
         
         if unit is None:
