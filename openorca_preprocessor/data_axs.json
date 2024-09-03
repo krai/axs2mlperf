@@ -22,7 +22,7 @@
         [ "get_path" ]
     ]] ],
 
-    "openorca_dataset_query": [ "^^", "substitute", "downloaded,dataset_name=openorca,model_dir=#{tokenizer_path}#" ],
+    "openorca_dataset_query": [ "^^", "substitute", "downloaded,dataset_name=openorca,model_family=#{model_family}#,variant=#{variant}#" ],
     "openorca_dataset_entry": [ "^", "byquery", [[ "^^", "get", "openorca_dataset_query" ]], {}, [ "openorca_dataset_query" ] ],
     "openorca_dataset_dir": [ "^^", "execute", [[
         [ "get", "openorca_dataset_entry" ],
@@ -37,8 +37,8 @@
     ],
 
     "newborn_entry_tags": [ "preprocessed", "dataset_name=openorca" ],
-    "newborn_name_template": [ "preprocessed_openorca_dataset_#{dataset_type}#" ],
-    "newborn_entry_param_names": [ "dataset_type" ],
+    "newborn_name_template": [ "preprocessed_openorca_dataset_#{dataset_type}#_#{model_family}#_#{variant}#" ],
+    "newborn_entry_param_names": [ "dataset_type", "model_family", "variant" ],
     "return_this_entry": [ "^^", "substitute", "#{newborn_entry}#" ],
 
     "rel_script_path": "main.py",
