@@ -74,8 +74,18 @@ def calc_latency_cutoff_ratio(parsed_summary):
         return parsed_summary["99.00_percentile_latency_ns"]/parsed_summary["target_latency_ns"]
 
 
+def calc_early_stopping_overhead(parsed_summary):
+
+    scenario = parsed_summary["Scenario"]
+
+    if scenario == "SingleStream":
+        return 100*(parsed_summary["_Early_stopping_90th_percentile_estimate"]/parsed_summary["90.00_percentile_latency_ns"]-1)
+    elif scenario == "MultiStream":
+        return 100*(parsed_summary["_Early_stopping_99th_percentile_estimate"]/parsed_summary["99.00_percentile_latency_ns"]-1)
+
+
 #returns list of formatted performance metrics (as strings) for given experiment  
-def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_performance_map, raw=False):
+def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_overhead, scenario_performance_map, raw=False):
 
     scenario = beautified_summary["Scenario"]
     validity = beautified_summary["Result_is"]
@@ -91,12 +101,16 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, scenario_perform
         if raw:
             if key_name == "latency_cutoff_ratio":
                 formatted_performance_metrics.append(latency_cutoff_ratio)
+            elif key_name == "early_stopping_overhead":
+                formatted_performance_metrics.append(early_stopping_overhead)
             else:
                 formatted_performance_metrics.append(beautified_summary[key_name])
                
         else: #no need for multiplier, formatting, units in scenario_performance_map - the beautify_summary function does all of this already 
             if key_name == "latency_cutoff_ratio":
                 formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio))
+            elif key_name == "early_stopping_overhead":
+                formatted_performance_metrics.append('{}={:.2f}{}'.format(key_name, early_stopping_overhead, "%"))
             else:
                 formatted_performance_metrics.append('{}={}'.format(key_name, beautified_summary[key_name]))
 

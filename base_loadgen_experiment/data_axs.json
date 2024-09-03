@@ -15,18 +15,20 @@
 
     "latency_cutoff_ratio": [ "^^", "calc_latency_cutoff_ratio" ],
 
+    "early_stopping_overhead": [ "^^", "calc_early_stopping_overhead" ],
+
     "scenario_performance_map": {
         "Offline":      {
             "VALID":    ["Samples_per_second", "target_qps"],
             "INVALID":  ["Samples_per_second", "target_qps"]
         },
         "SingleStream": {
-            "VALID":    ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate"],
-            "INVALID":  ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate"]
+            "VALID":    ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate", "early_stopping_overhead"],
+            "INVALID":  ["90th_percentile_latency", "_Early_stopping_90th_percentile_estimate", "early_stopping_overhead"]
         },
         "MultiStream":  {
-            "VALID":    ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate"],
-            "INVALID":  ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate"]
+            "VALID":    ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate", "early_stopping_overhead"],
+            "INVALID":  ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate", "early_stopping_overhead"]
         },
         "Server":       {
             "VALID":    ["target_qps", "99.00_percentile_latency", "target_latency", "latency_cutoff_ratio", "Completed_samples_per_second"],
