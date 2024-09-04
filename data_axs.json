@@ -60,7 +60,8 @@
         "base_mixtral_loadgen_experiment": "base_mixtral_loadgen_experiment",
         "moe_reference_using_torch_loadgen": "moe_reference_using_torch_loadgen",
         "llm_hf_weights_recipe": "llm_hf_weights_recipe",
-        "huggingface_tool_detector": "huggingface_tool_detector"
+        "huggingface_tool_detector": "huggingface_tool_detector",
+        "model_llama3_recipe": "model_llama3_recipe"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
