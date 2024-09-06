@@ -4,6 +4,7 @@ import re
 import copy
 import shutil
 import math
+from itertools import count, groupby
 
 def merge(sut, model, model_config_entry, model_compiletime_device_model_entry, runtime_device_model_entry, loadgen_scenario, num_device,
           system=None, with_power=None, power_server_address=None, power_server_port=None, power_max_amps=None, power_max_volts=None,
@@ -143,7 +144,12 @@ Usage examples :
         __record_entry__.plant("_parent_entries", [system_entry])
         print(f"WARNING: Unable to find system=[{system}] in axs2system. Assume it will be base_system. Will not be able to inherit fan functionality.")
 
-    return __record_entry__.save(f"assembled_{sut}_{data_dict['device_id']}_for_{model}_{loadgen_scenario}")
+    # Convert comma-separated device_ids into (groups of) ranges, e.g. '0,1,2,4,8' -> '0-2,4,8'
+    device_id_int = list(map(int, data_dict["device_id"].split(",")))
+    groups = (list(x) for _,x in groupby(device_id_int, lambda x,c=count(): next(c)-x))
+    device_id_grouped = ",".join("-".join(map(str,(g[0],g[-1])[:len(g)])) for g in groups)
+
+    return __record_entry__.save(f"assembled_{sut}_{device_id_grouped}_for_{model}_{loadgen_scenario}")
 
 def gen_description(sut, num_device, system_type, with_power, __entry__=None, __record_entry__ = None):
     """Generate system description for MLPerf submissions.
@@ -250,7 +256,7 @@ def set_hypothetical_num_device(num_device):
     """Sometimes we need a power of 2 number of cards, this function rounds down to them
     """
     
-    MAX_SUPPORTED_NUM_DEVICE = 64
+    MAX_SUPPORTED_NUM_DEVICE = 128
     assert num_device <= MAX_SUPPORTED_NUM_DEVICE, f"\n\n\nError: Supported up to {MAX_SUPPORTED_NUM_DEVICE} but the System-Under-Test has [{num_device}] cards.\n\n\n"
 
     return 2 ** int(math.log2(num_device))
