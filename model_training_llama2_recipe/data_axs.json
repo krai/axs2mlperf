@@ -1,0 +1,10 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "training_model", "model_name=llama2", "variant=70b" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
+            "url": "mlc-llama2:Llama2-70b-fused-qkv-mlperf",
+	    "newborn_entry_name": "downloaded_mlc_llama2",
+	    "file_path": "Llama2-70b-fused-qkv-mlperf"
+        }, [] ]
+    ]
+}
