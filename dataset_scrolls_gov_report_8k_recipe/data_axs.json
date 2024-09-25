@@ -1,0 +1,10 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "preprocessed", "dataset_name=scrolls_gov_report_8k" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
+            "url": "mlc-llama2:training/scrolls_gov_report_8k",
+	    "newborn_entry_name": "downloaded_dataset_scrolls_gov_report_8k",
+	    "file_path": "training/scrolls_gov_report_8k"
+        }, [] ]
+    ]
+}
