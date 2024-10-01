@@ -1,0 +1,19 @@
+{
+    "_parent_entries": [ [ "^", "byname", "entry_creator" ] , [ "^", "byname", "shell" ] ],
+    "_producer_rules": [
+        [ [ "rclone_config", "rclone_remote_name=mlc_llama2" ], [[ "get", "pipeline"]] ] ],	
+					       
+    "rclone_remote_name": "mlc_llama2",
+    "file_name": "rclone.conf",
+    "this_entry_path": [ "^^", "get_path" ],
+
+    "newborn_name_template": [ "^^", "substitute", "rclone_config_#{rclone_remote_name}#" ],
+    "newborn_entry_tags": [ "rclone_config" ],
+    "newborn_entry_param_names": [ "rclone_remote_name" ],
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+	[],
+	[ "get", "stored_newborn_entry" ]
+	]] ],
+    "shell_cmd_with_subs": "cp #{this_entry_path}# #{newborn_entry_path}#"
+}

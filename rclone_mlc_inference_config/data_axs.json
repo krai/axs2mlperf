@@ -1,4 +1,5 @@
 {
-    "tags": [ "rclone_config", "mlc_inference" ],
+    "tags": [ "rclone_config" ],
+    "rclone_remote_name": "mlc_inference",
     "file_name": "rclone.conf"
 }
