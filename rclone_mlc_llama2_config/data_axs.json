@@ -15,6 +15,7 @@
 	[],
 	[ "get", "stored_newborn_entry" ]
 	]] ],
+    "rclone_config_path": [ "^^", "substitute", "#{newborn_entry_path}#/#{file_name}#" ],
     "shell_cmd_prefix_with_subs": "cp #{this_entry_path}# #{newborn_entry_path}# ; ",
     "cmd_key": "reconnect"
 }
