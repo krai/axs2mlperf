@@ -1,5 +1,5 @@
 {
-    "_parent_entries": [ [ "^", "byname", "entry_creator" ] , [ "^", "byname", "shell" ] ],
+    "_parent_entries": [ [ "^", "byname", "rclone_tool" ], [ "^", "byname", "entry_creator" ]  ],
     "_producer_rules": [
         [ [ "rclone_config", "rclone_remote_name=mlc_llama2" ], [[ "get", "pipeline"]] ] ],	
 					       
@@ -9,11 +9,12 @@
 
     "newborn_name_template": [ "^^", "substitute", "rclone_config_#{rclone_remote_name}#" ],
     "newborn_entry_tags": [ "rclone_config" ],
-    "newborn_entry_param_names": [ "rclone_remote_name" ],
+    "newborn_entry_param_names": [ "rclone_remote_name", "file_name" ],
     "pipeline": [ "^^", "execute", [[
         [ "run" ],
 	[],
 	[ "get", "stored_newborn_entry" ]
 	]] ],
-    "shell_cmd_with_subs": "cp #{this_entry_path}# #{newborn_entry_path}#"
+    "shell_cmd_prefix_with_subs": "cp #{this_entry_path}# #{newborn_entry_path}# ; ",
+    "cmd_key": "reconnect"
 }
