@@ -64,7 +64,8 @@
         "model_llama3_recipe": "model_llama3_recipe",
         "model_training_llama2_recipe": "model_training_llama2_recipe",
         "dataset_scrolls_gov_report_8k_recipe": "dataset_scrolls_gov_report_8k_recipe",
-	"rclone_mlc_llama2_config": "rclone_mlc_llama2_config"
+        "rclone_mlc_llama2_config": "rclone_mlc_llama2_config",
+        "model_llama3_1_recipe": "model_llama3_1_recipe"
     },
     "repo_name": "axs2mlperf",
     "submodules": false
