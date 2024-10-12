@@ -1,12 +1,12 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_in_shell" ], [ "^", "byname", "entry_creator" ] ],
     "_producer_rules": [
-        [ [ "downloaded", "hf_model", "model_family=llama3_1", "variant=8b" ], [[ "get", "pipeline" ]] ]
+        [ [ "downloaded", "hf_model", "model_family=llama3_1" ], [[ "get", "pipeline" ]] ]
     ],
 
     "model_family": "llama3_1",
-    "variant": "8b",
-    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "variant": "8B",
+    "model_name": [ "^^", "substitute", "meta-llama/Llama-3.1-#{variant}#-Instruct" ],
     "desired_python_version": "3.8",
 
     "hf_query": ["python_package", "package_name=\"huggingface_hub[cli]\"" ],
