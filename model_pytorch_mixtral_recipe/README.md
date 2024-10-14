@@ -1,4 +1,4 @@
-# How to download model mixtral with different variants
+# How to download model mixtral
 
 ## 1. Install rclone:
 ```
