@@ -1,4 +1,4 @@
-# How to download model mixtral
+# How to download `mixtral-8x7b` model 
 
 ## 1. Install rclone:
 ```
