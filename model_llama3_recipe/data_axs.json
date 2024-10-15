@@ -5,8 +5,8 @@
     ],
 
     "model_family": "llama3",
-    "variant": "8b",
-    "model_name": "meta-llama/Meta-Llama-3-8B",
+    "variant": "8B",
+    "model_name": [ "^^", "substitute", "meta-llama/Meta-Llama-3-#{variant}#" ],
 
     "hf_query": ["python_package", "package_name=\"huggingface_hub[cli]\"" ],
 
