@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_in_shell" ], [ "^", "byname", "entry_creator" ] ],
     "_producer_rules": [
-        [ [ "downloaded", "hf_model", "model_family=llama3", "variant=8b" ], [[ "get", "pipeline" ]] ]
+        [ [ "downloaded", "hf_model", "model_family=llama3" ], [[ "get", "pipeline" ]] ]
     ],
 
     "model_family": "llama3",
