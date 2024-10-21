@@ -1,36 +1,45 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "hf_model", "model_family=llama2" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "hf_model" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
             "type": "model"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=llama2" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        }, ["url", "newborn_entry_name", "uncompressed_split_file_path", "model_publisher", "model_name", "model_family", "variant" ] ],
+        [ [ "downloaded", "hf_tokeniser" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
             "downloading_tool_cmd_key": "dload_tokeniser",
             "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=llama3" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Meta-Llama-3-8B" ],
-            "downloading_tool_cmd_key": "dload_tokeniser",
-            "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=mixtral", "variant=8x7b" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "mistralai",
-            "model_name": "Mixtral-8x7B-Instruct-v0.1",
-            "downloading_tool_cmd_key": "dload_tokeniser",
-            "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ]
+        }, ["url", "newborn_entry_name", "uncompressed_split_file_path", "model_publisher", "model_name", "model_family" ] ]
     ],
 
+    "model_family": "llama2",
     "variant": "7b",
 
+    "model_family_information": {
+        "llama2": {
+            "name_format": "Llama-2-#{variant}#-chat-hf",
+            "model_publisher": "meta-llama"
+        },
+        "llama3": {
+            "name_format": "Meta-Llama-3-#{variant}#-Instruct",
+            "model_publisher": "meta-llama"
+        },
+        "llama3_1": {
+            "name_format": "Llama-3.1-#{variant}#-Instruct",
+            "model_publisher": "meta-llama"
+        },
+        "mixtral": {
+            "name_format": "Mixtral-#{variant}#-Instruct-v0.1",
+            "model_publisher": "mistralai"
+        }
+    },
+
+    "model_family_metadata": [ "^^", "execute", [[
+        [ "get", "model_family_information" ],
+        [ "get", [ "^^", "get", "model_family" ] ]
+    ]]],
+
+    "model_name": [ "^^", "substitute", [ "^^", "dig", "model_family_metadata.name_format" ]],
+    "model_publisher": [ "^^", "dig", "model_family_metadata.model_publisher" ],
 
     "uncompressed_split_file_path": [],
     "url": [ "AS^IS", "^^", "substitute", "#{model_publisher}#/#{model_name}#"],
