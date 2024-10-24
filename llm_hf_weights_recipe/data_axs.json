@@ -14,6 +14,16 @@
     "variant": "7b",
 
     "model_family_information": {
+        "tiniest_llama": {
+            "name_format": "tinyllama-#{variant}#",
+            "model_publisher": "nickypro",
+            "allowed_variants": ["15m"]
+        },
+        "tiny_llama": {
+            "name_format": "TinyLlama-#{variant}#-Chat-v1.0",
+            "model_publisher": "TinyLlama",
+            "allowed_variants": ["1.1b"]
+        },
         "llama2": {
             "name_format": "Llama-2-#{variant}#-chat-hf",
             "model_publisher": "meta-llama",
