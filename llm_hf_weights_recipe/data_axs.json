@@ -1,40 +1,50 @@
 {
+    "_parent_entries": [ [ "^", "byname", "downloader" ] ],
     "_producer_rules": [
-        [ [ "downloaded", "hf_model", "model_family=llama2" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
+        [ [ "downloaded", "hf_model" ], [["download"]], {
             "type": "model"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=llama2" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Llama-2-#{variant}#-chat-hf" ],
-            "downloading_tool_cmd_key": "dload_tokeniser",
-            "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=llama3" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "meta-llama",
-            "model_name": [ "AS^IS", "^^", "substitute", "Meta-Llama-3-8B" ],
-            "downloading_tool_cmd_key": "dload_tokeniser",
-            "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ],
-        [ [ "downloaded", "hf_tokeniser", "model_family=mixtral", "variant=8x7b" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": [ "AS^IS", "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
-            "model_publisher": "mistralai",
-            "model_name": "Mixtral-8x7B-Instruct-v0.1",
-            "downloading_tool_cmd_key": "dload_tokeniser",
-            "type": "tokeniser"
-        }, ["url", "newborn_entry_name", "uncompressed_split_file_path" ] ]
+        } ],
+        [ [ "downloaded", "hf_tokeniser" ], [["download"]], {
+            "type": "tokeniser",
+            "downloading_tool_cmd_key": "dload_tokeniser"
+        } ]
     ],
 
+    "model_family": "llama2",
     "variant": "7b",
 
+    "model_family_information": {
+        "llama2": {
+            "name_format": "Llama-2-#{variant}#-chat-hf",
+            "model_publisher": "meta-llama",
+            "allowed_variants": ["7b", "13b", "70b"]
+        },
+        "llama3": {
+            "name_format": "Meta-Llama-3-#{variant}#-Instruct",
+            "model_publisher": "meta-llama",
+            "allowed_variants": ["8b", "70b"]
+        },
+        "llama3_1": {
+            "name_format": "Llama-3.1-#{variant}#-Instruct",
+            "model_publisher": "meta-llama",
+            "allowed_variants": ["8b", "70b", "405b"]
+        },
+        "mixtral": {
+            "name_format": "Mixtral-#{variant}#-Instruct-v0.1",
+            "model_publisher": "mistralai",
+            "allowed_variants": ["8x7b", "8x22b"]
+        }
+    },
+    
+    "model_info": [ "^^", "get_model_info" ],
 
+    "model_name": [ "^^", "dig", "model_info.model_name"],
+    "model_publisher": [ "^^", "dig", "model_info.model_publisher" ],
+    
+    "downloading_tool_query": [ "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
     "uncompressed_split_file_path": [],
-    "url": [ "AS^IS", "^^", "substitute", "#{model_publisher}#/#{model_name}#"],
-    "newborn_entry_name": [ "AS^IS", "^^", "substitute", "downloaded_#{model_name}#_#{type}#" ],
+    "url": [ "^^", "substitute", "#{model_publisher}#/#{model_name}#"],
+    "newborn_entry_name": [ "^^", "substitute", "downloaded_#{model_name}#_#{type}#" ],
 
     "hf_token": [ "^", "throw", "Must provide a hf_token. You can get this from huggingface" ]
 }
