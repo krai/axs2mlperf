@@ -39,6 +39,11 @@
             "model_publisher": "meta-llama",
             "allowed_variants": ["8b", "70b", "405b"]
         },
+        "llama3_2": {
+            "name_format": "Llama-3.2-#{variant}#-Instruct",
+            "model_publisher": "meta-llama",
+            "allowed_variants": ["1b", "3b", "11b-Vision", "90b-Vision"]
+        },
         "mixtral": {
             "name_format": "Mixtral-#{variant}#-Instruct-v0.1",
             "model_publisher": "mistralai",
