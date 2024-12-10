@@ -1,0 +1,17 @@
+{
+    "_parent_entries": [ [ "^", "byname", "entry_creator" ] ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "retrieve_and_execute_commands" ],
+        [ ],
+        [ "get", "stored_newborn_entry" ]
+    ]] ],
+
+    "newborn_name_template": [ "^^", "get_entry_name" ],
+
+    "target_collection_name": "experiments",
+    "csv_file_name": "parameters.csv",
+    "dry_run": false,
+
+    "csv_path": [ "^^", "parse_and_store_commands" ]
+}
