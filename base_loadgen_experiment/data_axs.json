@@ -40,7 +40,7 @@
 
     "accuracy_report": [ "^^", "execute", [[
         [ "plant", ["accuracy_report", [ "^^", "get", "extract_accuracy_report" ]] ],
-        [ "save" ],
+        [ "save", [], { "completed": [ "^^", "get", "__completed" ] } ],
         [ "get", "accuracy_report" ]
     ]] ],
 
