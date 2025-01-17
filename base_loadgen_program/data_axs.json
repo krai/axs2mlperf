@@ -21,6 +21,7 @@
     "loadgen_samples_per_query": null,
     "loadgen_offline_expected_qps": null,
     "loadgen_server_coalesce_queries": true,
+    "loadgen_sample_concatenate_permutation": null,
     "loadgen_ttft_latency": null,
     "loadgen_tpot_latency": null,
 
@@ -37,6 +38,7 @@
         "loadgen_offline_expected_qps": ["offline_expected_qps", 1],
         "loadgen_use_token_latencies":  ["use_token_latencies", 1],
         "loadgen_server_coalesce_queries":  ["coalesce_queries", 1],
+        "loadgen_sample_concatenate_permutation":  ["sample_concatenate_permutation", 1],
         "loadgen_ttft_latency":  ["ttft_latency", 1],
         "loadgen_tpot_latency":  ["tpot_latency", 1]
     },
