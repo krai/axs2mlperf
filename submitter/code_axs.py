@@ -61,9 +61,9 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
 
     if division == "closed":
         compliance_test_list = {
-            "image_classification": [ 'TEST01', 'TEST04', 'TEST05' ],
-            "object_detection":     [ 'TEST01', 'TEST05' ],
-            "bert":                 [ 'TEST01', 'TEST05' ],
+            "image_classification": [ 'TEST01', 'TEST04' ],
+            "object_detection":     [ 'TEST01' ],
+            "bert":                 [ 'TEST01' ],
             "gptj":                 [ ],
             "text_to_image":        [ 'TEST01' ],
             "llm":                  [ 'TEST06' ]
@@ -254,7 +254,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
             results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
-        elif compliance_test_name  in [ "TEST01", "TEST04", "TEST05" ]:
+        elif compliance_test_name  in [ "TEST01", "TEST04" ]:
             results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name == "TEST01":
                 results_path_syll_TEST01_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
@@ -268,7 +268,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             if not with_power:
                 results_path_syll.append( 'run_1' )
 
-        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST05", "TEST06" ]:
+        if mode=='performance' and compliance_test_name in [ "TEST01", "TEST04", "TEST06" ]:
             results_path_syll.extend(( mode, 'run_1' ))
 
         results_path = make_local_dir( results_path_syll, submitted_tree_path )
@@ -329,7 +329,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             shutil.copytree( src_images_dir, results_images_path, dirs_exist_ok=True)
 
         # -------------------------------[ compliance , verification ]--------------------------------------
-        if compliance_test_name in [ "TEST01", "TEST04", "TEST05", "TEST06" ]:
+        if compliance_test_name in [ "TEST01", "TEST04", "TEST06" ]:
             compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
