@@ -76,7 +76,7 @@ def retrieve_and_execute_commands(csv_path, newborn_entry=None, __entry__=None, 
     # Prepare and execute commands based on the combinations
     cmd_list = []
     query_list = []
-    for combination in combinations:
+    for index, combination in enumerate(combinations):
         # Map parameter names to their corresponding values
         config_cmd = dict(zip(headers, combination))
 
@@ -96,6 +96,9 @@ def retrieve_and_execute_commands(csv_path, newborn_entry=None, __entry__=None, 
             # Add keys without values as tags
             else:
                 cmd_tag_list.append(key)
+
+        # Add an iteration number to the command
+        cmd_tag_list.append(f"iteration={index}")        
 
         # Construct the query
         new_query = ','.join(cmd_tag_list)
