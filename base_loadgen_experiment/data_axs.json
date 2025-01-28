@@ -13,7 +13,23 @@
 
     "beautified_summary": [ "^^", "beautify_summary" ],
 
+    "99.00_percentile_latency_ms": [ "^^", "get_latency_classic" ],
+
+    "target_latency_ms": [ "^^", "get_target_latency_classic" ],
+
     "latency_cutoff_ratio": [ "^^", "calc_latency_cutoff_ratio" ],
+
+    "99.00_percentile_ttft_ms": [ "^^", "get_latency_ttft" ],
+
+    "target_ttft_ms": [ "^^", "get_target_latency_ttft" ],
+
+    "cutoff_ratio_ttft": [ "^^", "calc_latency_cutoff_ratio_ttft" ],
+
+    "99.00_percentile_tpot_ms": [ "^^", "get_latency_tpot" ],
+
+    "target_tpot_ms": [ "^^", "get_target_latency_tpot" ],
+
+    "cutoff_ratio_tpot": [ "^^", "calc_latency_cutoff_ratio_tpot" ],
 
     "early_stopping_overhead": [ "^^", "calc_early_stopping_overhead" ],
 
@@ -31,8 +47,8 @@
             "INVALID":  ["99th_percentile_latency", "_Early_stopping_99th_percentile_estimate", "early_stopping_overhead"]
         },
         "Server":       {
-            "VALID":    ["target_qps", "99.00_percentile_latency", "target_latency", "latency_cutoff_ratio", "Completed_samples_per_second"],
-            "INVALID":  ["target_qps", "99.00_percentile_latency", "target_latency", "latency_cutoff_ratio", "Completed_samples_per_second"]
+            "VALID":    ["target_qps", "99.00_percentile_latency_ms", "target_latency_ms", "latency_cutoff_ratio", "99.00_percentile_ttft_ms", "target_ttft_ms", "cutoff_ratio_ttft", "99.00_percentile_tpot_ms", "target_tpot_ms", "cutoff_ratio_tpot", "Completed_samples_per_second"],
+            "INVALID":  ["target_qps", "99.00_percentile_latency_ms", "target_latency_ms", "latency_cutoff_ratio", "99.00_percentile_ttft_ms", "target_ttft_ms", "cutoff_ratio_ttft", "99.00_percentile_tpot_ms", "target_tpot_ms", "cutoff_ratio_tpot", "Completed_samples_per_second"]
         }
     },
 
