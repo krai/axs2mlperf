@@ -157,9 +157,9 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_o
             if key_name == "latency_cutoff_ratio":
                 formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio))
             elif key_name == "cutoff_ratio_ttft":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_cutoff_ratio_ttft))
+                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio_ttft))
             elif key_name == "cutoff_ratio_tpot":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_cutoff_ratio_tpot))
+                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio_tpot))
             elif key_name == "early_stopping_overhead":
                 formatted_performance_metrics.append('{}={:.2f}{}'.format(key_name, early_stopping_overhead, "%"))
             else:
