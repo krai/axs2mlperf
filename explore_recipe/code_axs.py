@@ -1,6 +1,7 @@
 import csv
 from itertools import product
 import hashlib
+import time
 
 # Function to preprocess the input query by removing a specific prefix
 def preprocess_query(query, beginning_to_remove = "explore,"):
@@ -66,7 +67,7 @@ def parse_and_store_commands(__query, stored_newborn_entry=None, csv_file_name="
     return csv_path
 
 # Function to retrieve results of parsing, combine and execute commands
-def retrieve_and_execute_commands(csv_path, newborn_entry=None, __entry__=None, dry_run=False):
+def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=None, __entry__=None, dry_run=False):
     # Read headers and combinations from the csv file
     with open(csv_path, mode="r", newline="", encoding="utf-8") as file:
         reader = csv.reader(file)
@@ -116,6 +117,9 @@ def retrieve_and_execute_commands(csv_path, newborn_entry=None, __entry__=None, 
             print(new_query)
         else:
             __entry__.get_kernel().byquery(new_query)
+        
+        if explore_timeout_s > 0 and index < len(combinations) - 1:
+            time.sleep(explore_timeout_s)
 
     # Store the list of commands in the newborn entry and save it
     newborn_entry.plant("query_list", query_list)
