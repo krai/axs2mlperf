@@ -65,104 +65,57 @@ def beautify_summary(parsed_summary):
     
     return beautified_summary
 
-def get_latency_classic(parsed_summary):
+def calc_latency_cutoff_ratio(parsed_summary, latency, target_latency):
 
     scenario = parsed_summary["Scenario"]
     if scenario == "Server":
-        if "target_latency_ns" in parsed_summary.keys():
-            latency_classic_ms = '{:.2f}'.format(parsed_summary["99.00_percentile_latency_ns"]*0.000001)
-        else:
-            latency_classic_ms = "None"
+        if target_latency in parsed_summary.keys():
+            return parsed_summary[latency]/parsed_summary[target_latency]
 
-    return latency_classic_ms
+latency_classic = "99.00_percentile_latency_ns"
+latency_ttft = "99.00_percentile_first_token_latency_ns"
+latency_tpot = "99.00_percentile_time_to_output_token_ns"
 
-def get_latency_ttft(parsed_summary):
+target_latency_classic = "target_latency_ns"
+target_latency_ttft = "ttft_latency_ns"
+target_latency_tpot = "tpot_latency_ns"
 
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "ttft_latency_ns" in parsed_summary.keys():
-            latency_ttft_ms = '{:.2f}'.format(parsed_summary["99.00_percentile_first_token_latency_ns"]*0.000001)
-        else:
-            latency_ttft_ms = "None"
+latency_cutoff_ratio = calc_latency_cutoff_ratio(parsed_summary, latency_classic, target_latency_classic)
+latency_cutoff_ratio_ttft = calc_latency_cutoff_ratio(parsed_summary, latency_ttft, target_latency_ttft)
+latency_cutoff_ratio_tpot = calc_latency_cutoff_ratio(parsed_summary, latency_tpot, target_latency_tpot)
 
-    return latency_ttft_ms
-
-def get_latency_tpot(parsed_summary):
-
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "tpot_latency_ns" in parsed_summary.keys():
-            latency_tpot_ms = '{:.2f}'.format(parsed_summary["99.00_percentile_time_to_output_token_ns"]*0.000001)
-        else:
-            latency_tpot_ms = "None"
-
-    return latency_tpot_ms
-
-def get_target_latency_classic(parsed_summary):
-
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "target_latency_ns" in parsed_summary.keys():
-            target_latency_classic_ms = '{:.2f}'.format(parsed_summary["target_latency_ns"]*0.000001)
-        else:
-            target_latency_classic_ms = "None"
-
-    return target_latency_classic_ms
-
-def get_target_latency_ttft(parsed_summary):
-
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "ttft_latency_ns" in parsed_summary.keys():
-            target_latency_ttft_ms = '{:.2f}'.format(parsed_summary["ttft_latency_ns"]*0.000001)
-        else:
-            target_latency_ttft_ms = "None"
-
-    return target_latency_ttft_ms
-
-def get_target_latency_tpot(parsed_summary):
-
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "tpot_latency_ns" in parsed_summary.keys():
-            target_latency_tpot_ms = '{:.2f}'.format(parsed_summary["tpot_latency_ns"]*0.000001)
-        else:
-            target_latency_tpot_ms = "None"
-
-    return target_latency_tpot_ms
-
-def calc_latency_cutoff_ratio(parsed_summary):
+# def calc_latency_cutoff_ratio(parsed_summary):
     
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "target_latency_ns" in parsed_summary.keys():
-            latency_cutoff_ratio = parsed_summary["99.00_percentile_latency_ns"]/parsed_summary["target_latency_ns"]
-        else:
-            latency_cutoff_ratio = "None"
+#     scenario = parsed_summary["Scenario"]
+#     if scenario == "Server":
+#         if "target_latency_ns" in parsed_summary.keys():
+#             latency_cutoff_ratio = parsed_summary["99.00_percentile_latency_ns"]/parsed_summary["target_latency_ns"]
+#         else:
+#             latency_cutoff_ratio = "None"
 
-    return latency_cutoff_ratio
+#     return latency_cutoff_ratio
 
-def calc_latency_cutoff_ratio_ttft(parsed_summary):
+# def calc_latency_cutoff_ratio_ttft(parsed_summary):
 
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "ttft_latency_ns" in parsed_summary.keys():
-            latency_cutoff_ratio_ttft = parsed_summary["99.00_percentile_first_token_latency_ns"]/parsed_summary["ttft_latency_ns"]
-        else:
-            latency_cutoff_ratio_ttft = "None"
+#     scenario = parsed_summary["Scenario"]
+#     if scenario == "Server":
+#         if "ttft_latency_ns" in parsed_summary.keys():
+#             latency_cutoff_ratio_ttft = parsed_summary["99.00_percentile_first_token_latency_ns"]/parsed_summary["ttft_latency_ns"]
+#         else:
+#             latency_cutoff_ratio_ttft = "None"
 
-    return latency_cutoff_ratio_ttft
+#     return latency_cutoff_ratio_ttft
 
-def calc_latency_cutoff_ratio_tpot(parsed_summary):
+# def calc_latency_cutoff_ratio_tpot(parsed_summary):
 
-    scenario = parsed_summary["Scenario"]
-    if scenario == "Server":
-        if "tpot_latency_ns" in parsed_summary.keys():
-            latency_cutoff_ratio_tpot = parsed_summary["99.00_percentile_time_to_output_token_ns"]/parsed_summary["tpot_latency_ns"]
-        else:
-            latency_cutoff_ratio_tpot = "None"
+#     scenario = parsed_summary["Scenario"]
+#     if scenario == "Server":
+#         if "tpot_latency_ns" in parsed_summary.keys():
+#             latency_cutoff_ratio_tpot = parsed_summary["99.00_percentile_time_to_output_token_ns"]/parsed_summary["tpot_latency_ns"]
+#         else:
+#             latency_cutoff_ratio_tpot = "None"
 
-    return latency_cutoff_ratio_tpot
+#     return latency_cutoff_ratio_tpot
 
 def calc_early_stopping_overhead(parsed_summary):
 
@@ -189,19 +142,7 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_o
     for key_name in performance_metrics:
 
         if raw:
-            if  key_name == "99.00_percentile_latency_ms":
-                formatted_performance_metrics.append(latency_classic_ms)
-            elif key_name == "99.00_percentile_ttft_ms":
-                formatted_performance_metrics.append(latency_ttft_ms)
-            elif key_name == "99.00_percentile_tpot_ms":
-                formatted_performance_metrics.append(latency_tpot_ms)
-            elif key_name == "target_latency_ms":
-                formatted_performance_metrics.append(target_latency_classic_ms)
-            elif key_name == "target_ttft_ms":
-                formatted_performance_metrics.append(target_latency_ttft_ms)
-            elif key_name == "target_tpot_ms":
-                formatted_performance_metrics.append(target_latency_tpot_ms)
-            elif key_name == "latency_cutoff_ratio":
+            if key_name == "latency_cutoff_ratio":
                 formatted_performance_metrics.append(latency_cutoff_ratio)
             elif key_name == "cutoff_ratio_ttft":
                 formatted_performance_metrics.append(latency_cutoff_ratio_ttft)
@@ -213,19 +154,7 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_o
                 formatted_performance_metrics.append(beautified_summary[key_name])
                
         else: #no need for multiplier, formatting, units in scenario_performance_map - the beautify_summary function does all of this already 
-            if  key_name == "99.00_percentile_latency_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_classic_ms))
-            elif key_name == "99.00_percentile_ttft_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_ttft_ms))
-            elif key_name == "99.00_percentile_tpot_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, latency_tpot_ms))
-            elif key_name == "target_latency_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, target_latency_classic_ms))
-            elif key_name == "target_ttft_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, target_latency_ttft_ms))
-            elif key_name == "target_tpot_ms":
-                formatted_performance_metrics.append('{}={}'.format(key_name, target_latency_tpot_ms))
-            elif key_name == "latency_cutoff_ratio":
+            if key_name == "latency_cutoff_ratio":
                 formatted_performance_metrics.append('{}={:.2f}'.format(key_name, latency_cutoff_ratio))
             elif key_name == "cutoff_ratio_ttft":
                 formatted_performance_metrics.append('{}={}'.format(key_name, latency_cutoff_ratio_ttft))
