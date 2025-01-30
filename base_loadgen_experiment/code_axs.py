@@ -65,12 +65,12 @@ def beautify_summary(parsed_summary):
     
     return beautified_summary
 
-def calc_latency_cutoff_ratio(parsed_summary, latency, target_latency):
+def calc_latency_cutoff_ratio(beautified_summary, latency, target_latency):
 
-    scenario = parsed_summary["Scenario"]
+    scenario = beautified_summary["Scenario"]
     if scenario == "Server":
-        if target_latency in parsed_summary.keys():
-            return parsed_summary[latency]/parsed_summary[target_latency]
+        if target_latency in beautified_summary.keys():
+            return beautified_summary[latency]/beautified_summary[target_latency]
 
 def calc_early_stopping_overhead(parsed_summary):
 
@@ -83,7 +83,7 @@ def calc_early_stopping_overhead(parsed_summary):
 
 
 #returns list of formatted performance metrics (as strings) for given experiment  
-def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_overhead, scenario_performance_map, raw=False):
+def parse_performance(beautified_summary, early_stopping_overhead, scenario_performance_map, raw=False):
 
     scenario = beautified_summary["Scenario"]
     validity = beautified_summary["Result_is"]
@@ -96,29 +96,24 @@ def parse_performance(beautified_summary, latency_cutoff_ratio, early_stopping_o
 
     for key_name in performance_metrics:
 
-        if raw:
-            if key_name == "latency_cutoff_ratio":
-                formatted_performance_metrics.append(calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_latency_ns", "target_latency_ns"))
-            elif key_name == "cutoff_ratio_ttft":
-                formatted_performance_metrics.append(calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_first_token_latency_ns", "ttft_latency_ns"))
-            elif key_name == "cutoff_ratio_tpot":
-                formatted_performance_metrics.append(calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_time_to_output_token_ns", "tpot_latency_ns"))
-            elif key_name == "early_stopping_overhead":
-                formatted_performance_metrics.append(early_stopping_overhead)
+        if key_name == "latency_cutoff_ratio":
+            fmt, value = '{}={:.2f}', calc_latency_cutoff_ratio(beautified_summary, "99.00_percentile_latency", "target_latency")
+        elif key_name == "cutoff_ratio_ttft":
+            fmt, value = '{}={:.2f}', calc_latency_cutoff_ratio(beautified_summary, "99.00_percentile_first_token_latency", "ttft_latency")
+        elif key_name == "cutoff_ratio_tpot":
+            fmt, value = '{}={:.2f}', calc_latency_cutoff_ratio(beautified_summary, "99.00_percentile_time_to_output_token", "tpot_latency")
+        elif key_name == "early_stopping_overhead":
+            fmt, value = '{}={:.2f}%', early_stopping_overhead
+        elif key_name in beautified_summary:
+            fmt, value = '{}={}', beautified_summary[key_name]
+        else:
+            value = None
+
+        if value is not None:
+            if raw:
+                formatted_performance_metrics.append( value )
             else:
-                formatted_performance_metrics.append(beautified_summary[key_name])
-               
-        else: #no need for multiplier, formatting, units in scenario_performance_map - the beautify_summary function does all of this already 
-            if key_name == "latency_cutoff_ratio":
-                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_latency_ns", "target_latency_ns")))
-            elif key_name == "cutoff_ratio_ttft":
-                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_first_token_latency_ns", "ttft_latency_ns")))
-            elif key_name == "cutoff_ratio_tpot":
-                formatted_performance_metrics.append('{}={:.2f}'.format(key_name, calc_latency_cutoff_ratio(parsed_summary, "99.00_percentile_time_to_output_token_ns", "tpot_latency_ns")))
-            elif key_name == "early_stopping_overhead":
-                formatted_performance_metrics.append('{}={:.2f}{}'.format(key_name, early_stopping_overhead, "%"))
-            else:
-                formatted_performance_metrics.append('{}={}'.format(key_name, beautified_summary[key_name]))
+                formatted_performance_metrics.append( fmt.format(key_name, value) )
 
     return formatted_performance_metrics
 
