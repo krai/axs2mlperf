@@ -40,7 +40,9 @@
         "bert": 10833,
         "gptj": 13368,
         "text_to_image": 5000,
-        "llm": 24576
+        "llm": 24576,
+        "llama2": 24576,
+        "moe": 24576
     },
 
     "program_entry": [ "^^", "execute", [[
@@ -79,18 +81,27 @@
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
     "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],
     "scenario_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
-        "llm" , [ "^^", "substitute", "--scenario #{scenario}#"] ],
+        "llm" , [ "^^", "substitute", "--scenario #{scenario}#"],
+        "llama2" , [ "^^", "substitute", "--scenario #{scenario}#"],
+        "moe" , [ "^^", "substitute", "--scenario #{scenario}#"]
+        ],
         { "default_value": ""  }
     ],
 
     "result_dir_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
-        "llm" , "" ],
+        "llm" , "",
+        "llama2" , "",
+        "moe" , ""
+        ],
         { "default_value": [ "^^", "substitute", "--results_dir #{results_dir}#" ] }
     ],
 
 
     "dtype_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
-        "llm" , [ "^^", "substitute", "--dtype #{dtype}#"] ],
+        "llm" , [ "^^", "substitute", "--dtype #{dtype}#"],
+        "llama2" , [ "^^", "substitute", "--dtype #{dtype}#"],
+        "moe" , [ "^^", "substitute", "--dtype #{dtype}#"]
+        ],
         { "default_value": "" }
     ],
 

@@ -14,7 +14,7 @@ def create_run_verification_input_dict(task, tmp_dir, verify_script_path, result
         "compliance_dir": compliance_dir,
         "output_dir": output_dir
     }
-    if task == "llm":
+    if task in ["llm", "llama2", "moe"]:
         result_dict [ "scenario" ] = scenario
         result_dict [ "dtype" ] = dtype
     else:
@@ -66,7 +66,9 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
             "bert":                 [ 'TEST01' ],
             "gptj":                 [ ],
             "text_to_image":        [ 'TEST01' ],
-            "llm":                  [ 'TEST06' ]
+            "llm":                  [ 'TEST06' ],
+            "llama2":               [ 'TEST06' ],
+            "moe":                  [ 'TEST06' ]
         }[task]
 
         for compliance_test_name in compliance_test_list:
@@ -339,7 +341,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             compliance_dir = src_dir
             output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
-            if task == "llm":
+            if task in ["llm", "llama2", "moe"]:
                 dtype = experiment_entry['benchmark_output_data_type']
             else:
                 dtype = ""
