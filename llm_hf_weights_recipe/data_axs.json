@@ -48,6 +48,11 @@
             "name_format": "Mixtral-#{variant}#-Instruct-v0.1",
             "model_publisher": "mistralai",
             "allowed_variants": ["8x7b", "8x22b"]
+        },
+        "qwen2_5": {
+            "name_format": "Qwen2.5-#{variant}#-Instruct",
+            "model_publisher": "Qwen",
+            "allowed_variants": ["3b"]
         }
     },
     
