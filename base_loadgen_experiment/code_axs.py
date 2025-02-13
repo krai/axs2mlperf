@@ -2,6 +2,7 @@
 
 from function_access import to_num_or_not_to_num
 from pint import UnitRegistry
+import numpy as np      # needed for denumpify_scalar() and denumpify_dict()
 
 
 def parse_summary(abs_log_summary_path):
@@ -185,3 +186,21 @@ def validate_accuracy(accuracy_dict, accuracy_range_dict):
             else:
                 validity = "INVALID"
         print('{} : {}={}'.format(validity, key, accuracy_dict[key]) )
+
+
+def denumpify_scalar(scalar):
+    "Transform individual values like np.int32(12345) or np.float32(12.3456) into Python's own 12345 and 12.3456"
+
+    if hasattr(scalar, 'item'):
+        return scalar.item()
+    else:
+        return scalar
+
+
+def denumpify_dict(np_dict):
+    "Transform a dictionary's values using denumpify_scalar()"
+
+    if type(np_dict)==str:
+        np_dict = eval(np_dict)
+
+    return { k: denumpify_scalar(np_dict[k]) for k in np_dict }

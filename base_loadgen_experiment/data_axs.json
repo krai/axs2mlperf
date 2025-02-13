@@ -1,6 +1,11 @@
 {
+    "numpy_query": [ "python_package", "package_name=numpy", ["desired_python_version", ["^", "kernel_python_major_dot_minor"]] ],
     "better_units_query": [ "python_package", "package_name=pint", ["desired_python_version", ["^", "kernel_python_major_dot_minor"]] ],
     "_BEFORE_CODE_LOADING": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "numpy_query" ]] ],
+        [ "use" ],
+        [ ],
         [ "get_kernel" ],
         [ "byquery", [[ "^^", "get", "better_units_query" ]] ],
         [ "use" ]
