@@ -40,7 +40,11 @@
                 "capture_output": true,
                 "split_to_lines": true
             } ],
-        [ "__getitem__", 0 ]
+        [ "__getitem__", 0 ],
+        0,
+        [ "denumpify_dict" ],
+        0,
+        [ "func", "str" ]
     ]], {} ],
     "accuracy_dict": [ "^^", "execute", [[
         ["get", "accuracy_report" ],
