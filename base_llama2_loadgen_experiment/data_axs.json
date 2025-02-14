@@ -62,7 +62,11 @@
                 "capture_output": true
             } ],
         0,
-        [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ]
+        [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ],
+        0,
+        [ "denumpify_dict" ],
+        0,
+        [ "func", "str" ]
     ]], {} ],
 
     "accuracy_dict_full": [ "^^", "execute", [[
