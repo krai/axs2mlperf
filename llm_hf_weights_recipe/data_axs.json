@@ -62,6 +62,9 @@
     "model_publisher": [ "^^", "dig", "model_info.model_publisher" ],
     
     "downloading_tool_query": [ "^^", "substitute", "shell_tool,can_download_url_from_huggingface,hf_token=#{hf_token}#" ],
+    "downloading_tool_params": {
+        "revision": [ "^^", "get", "revision" ]
+    },
     "uncompressed_split_file_path": [],
     "url": [ "^^", "substitute", "#{model_publisher}#/#{model_name}#"],
     "newborn_entry_name": [ "^^", "substitute", "downloaded_#{model_name}#_#{type}#" ],

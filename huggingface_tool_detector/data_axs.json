@@ -9,13 +9,18 @@
                 "python_deps": [
                     [ "AS^IS", "^", "byquery", "python_package,package_name=huggingface_hub" ]
                 ],
-                "hf_token": "",
-                "hf_token_insert": [ "AS^IS", "^^", "case", [ ["^^", "get", "hf_token"],
+
+                "hf_token_insert": [ "AS^IS", "AS^IS", "AS^IS", "^^", "case", [ ["^^", "get", ["hf_token", ""]],
                     "", ""
                 ], {"default_value": ["^^", "substitute", "--token=#{hf_token}#"] } ],
+
+                "revision_insert": [ "AS^IS", "AS^IS", "AS^IS", "^^", "case", [ ["^^", "get", ["revision", ""]],
+                    "", ""
+                ], {"default_value": ["^^", "substitute", "--revision=#{revision}#"] } ],
+
                 "shell_cmd_templates": {
                     "help": "\"#{tool_path}#\" --help",
-                    "dload": "\"#{tool_path}#\" download \"#{url}#\" --local-dir \"#{record_entry_path}#\" --local-dir-use-symlinks False #{hf_token_insert}#",
+                    "dload": "\"#{tool_path}#\" download \"#{url}#\" --local-dir \"#{record_entry_path}#\" --local-dir-use-symlinks False #{hf_token_insert}# #{revision_insert}#",
                     "dload_tokeniser": "\"#{tool_path}#\" download \"#{url}#\" --include \"tokenizer*\" --local-dir \"#{record_entry_path}#\" --local-dir-use-symlinks False #{hf_token_insert}#"
                 },
                 "cmd_key": "dload_tokeniser"
