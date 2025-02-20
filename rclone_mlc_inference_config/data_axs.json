@@ -1,5 +1,21 @@
 {
-    "tags": [ "rclone_config" ],
+    "_parent_entries": [ [ "^", "byname", "rclone_tool" ], [ "^", "byname", "entry_creator" ]  ],
+    "_producer_rules": [
+        [ [ "rclone_config", "rclone_remote_name=mlc_inference" ], [[ "get", "pipeline"]] ] ],	
+					       
     "rclone_remote_name": "mlc_inference",
-    "file_name": "rclone.conf"
+    "file_name": "rclone.conf",
+    "this_entry_path": [ "^^", "get_path" ],
+
+    "newborn_name_template": [ "^^", "substitute", "rclone_config_#{rclone_remote_name}#" ],
+    "newborn_entry_tags": [ "rclone_config" ],
+    "newborn_entry_param_names": [ "rclone_remote_name", "file_name" ],
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+	[],
+	[ "get", "stored_newborn_entry" ]
+	]] ],
+    "rclone_config_path": [ "^^", "substitute", "#{newborn_entry_path}#/#{file_name}#" ],
+    "shell_cmd_prefix_with_subs": "cp #{this_entry_path}# #{newborn_entry_path}# ; ",
+    "cmd_key": "reconnect"
 }

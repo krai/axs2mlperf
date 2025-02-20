@@ -1,0 +1,13 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "dataset_name=llrg", "model_family=llama3_1", "variant=405b" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
+            "url": "mlc_inference:mlcommons-inference-wg-public/llama3.1_405b/mlperf_llama3.1_405b_dataset_8313_processed_fp16_eval.pkl",
+            "downloading_tool_params": {
+                "rclone_remote_name": "mlc_inference"
+	        },
+	        "newborn_entry_name": "downloaded_mlc_llrg",
+	        "file_path": "mlcommons-inference-wg-public/llama3.1_405b/mlperf_llama3.1_405b_dataset_8313_processed_fp16_eval.pkl"
+        }, [] ]
+    ]
+}
