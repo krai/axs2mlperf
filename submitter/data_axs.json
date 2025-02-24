@@ -32,7 +32,8 @@
         "coco-1024": 5000,
         "squad_v1_1": 10833,
         "cnndm_v3_0_0": 13368,
-        "openorca": 24576
+        "openorca": 24576,
+	"llrg": 8313
     },
     "task2buffer_size": {
         "image_classification": 1024,
@@ -42,6 +43,7 @@
         "text_to_image": 5000,
         "llm": 24576,
         "llama2": 24576,
+	"llama3_1": 8313,
         "moe": 24576
     },
 
@@ -83,6 +85,7 @@
     "scenario_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , [ "^^", "substitute", "--scenario #{scenario}#"],
         "llama2" , [ "^^", "substitute", "--scenario #{scenario}#"],
+	"llama3_1" , [ "^^", "substitute", "--scenario #{scenario}#"],
         "moe" , [ "^^", "substitute", "--scenario #{scenario}#"]
         ],
         { "default_value": ""  }
@@ -91,6 +94,7 @@
     "result_dir_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , "",
         "llama2" , "",
+	"llama3_1", "",
         "moe" , ""
         ],
         { "default_value": [ "^^", "substitute", "--results_dir #{results_dir}#" ] }
@@ -100,6 +104,7 @@
     "dtype_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , [ "^^", "substitute", "--dtype #{dtype}#"],
         "llama2" , [ "^^", "substitute", "--dtype #{dtype}#"],
+	"llama3_1" , [ "^^", "substitute", "--dtype #{dtype}#"],
         "moe" , [ "^^", "substitute", "--dtype #{dtype}#"]
         ],
         { "default_value": "" }
