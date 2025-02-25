@@ -11,11 +11,11 @@
                 ],
 
                 "hf_token_insert": [ "AS^IS", "AS^IS", "AS^IS", "^^", "case", [ ["^^", "get", ["hf_token", ""]],
-                    "", ""
+                    ["", null], ""
                 ], {"default_value": ["^^", "substitute", "--token=#{hf_token}#"] } ],
 
                 "revision_insert": [ "AS^IS", "AS^IS", "AS^IS", "^^", "case", [ ["^^", "get", ["revision", ""]],
-                    "", ""
+                    ["", null], ""
                 ], {"default_value": ["^^", "substitute", "--revision=#{revision}#"] } ],
 
                 "shell_cmd_templates": {
