@@ -157,7 +157,7 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
@@ -165,6 +165,11 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
     sut_descriptions_dictionary      = {}
     experiment_cmd_list = []
+
+    if division=="open" and model_mapping_path:
+        dst_file_path = os.path.join(submitter_path, "model_mapping.json")
+        print(f"    Copying: {model_mapping_path}  -->  {dst_file_path}", file=sys.stderr)
+        shutil.copy( model_mapping_path, dst_file_path)
 
     copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
@@ -401,13 +406,13 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
 
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submitted_tree_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
