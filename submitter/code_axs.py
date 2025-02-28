@@ -127,6 +127,8 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
                     presence_msg = "Missing"
 
                 print(f"[{presence_msg}]\t\taxs byquery {joined_query}")
+                if candidate_entry:
+                    print(f"Location:\t\t{candidate_entry.get_path()}")
                 print("")
 
     return experiment_entries
