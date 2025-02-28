@@ -36,7 +36,7 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
     return scenarios
 
 
-def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, require_compliance=None, __entry__=None):
     common_attributes = {
         "framework":            framework,
         "task":                 task,
@@ -59,7 +59,10 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
         [ "loadgen_mode=PerformanceOnly", "loadgen_compliance_test-" ],
     ]
 
-    if division == "closed":
+    if require_compliance is None:  # but it can be forced as True or False via --require_compliance+ or --require_compliance-
+        require_compliance = division == "closed"
+
+    if require_compliance:
         compliance_test_list = {
             "image_classification": [ 'TEST01', 'TEST04' ],
             "object_detection":     [ 'TEST01' ],
