@@ -455,7 +455,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         else:
             target_value = ""
 
-        round = 4.0 # set as a default value as of now
+        mlperf_round = 5.0 # FIXME: turn into a data_axs.json level parameter
 
         mode = loadgen_mode.replace("Only", "")
 
@@ -481,7 +481,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
                 template = input_fd.read()
             with open(path_model_readme, "w") as output_fd:
                 # Write the formatted template to the target file
-                output_fd.write( template.format( round=round, division=division, submitter=submitter, sut=sut_name,  model=mlperf_model_name, scenario=scenario ) )
+                output_fd.write( template.format( mlperf_round=mlperf_round, division=division.capitalize(), submitter=submitter, sut=sut_name,  model=mlperf_model_name, scenario=scenario ) )
         
         with open(path_model_readme, "a") as fd:
             if mode == 'Accuracy':
