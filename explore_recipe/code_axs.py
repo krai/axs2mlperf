@@ -66,6 +66,25 @@ def parse_and_store_commands(__query, stored_newborn_entry=None, csv_file_name="
     
     return csv_path
 
+# Function to select which of the available commands to execute
+def select_combination_to_execute(combinations, results, headers):
+    if len(combinations) != len(results):
+        raise ValueError("The number of combinations and results must match")
+
+    selection = None
+    # Loop through the combinations and select the first one that has not been executed
+    # This simple implementation does not use any criteria for selection
+    for index, result in enumerate(results):
+        if result is None:
+            selection = index
+            break
+    return selection
+
+# Function to extract the result from the entry
+def extract_result(new_entry):
+    result = new_entry.get_name()
+    return result
+
 # Function to retrieve results of parsing, combine and execute commands
 def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=None, __entry__=None, dry_run=False):
     # Read headers and combinations from the csv file
@@ -74,10 +93,16 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
         headers = next(reader)
         combinations = [row for row in reader]
 
+    # Create a new list to store the results
+    results = [None] * len(combinations)
+
     # Prepare and execute commands based on the combinations
     cmd_list = []
     query_list = []
-    for index, combination in enumerate(combinations):
+
+    selection = select_combination_to_execute(combinations, results, headers)
+    while selection is not None:
+        combination = combinations[selection]
         # Map parameter names to their corresponding values
         config_cmd = dict(zip(headers, combination))
 
@@ -99,7 +124,7 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
                 cmd_tag_list.append(key)
 
         # Add an iteration number to the command
-        cmd_tag_list.append(f"iteration={index}")        
+        cmd_tag_list.append(f"iteration={selection}")        
 
         # Construct the query
         new_query = ','.join(cmd_tag_list)
@@ -115,13 +140,18 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
         # Print the command in dry-run mode; execute it otherwise
         if dry_run:
             print(new_query)
+            results[selection] = new_query
         else:
-            __entry__.get_kernel().byquery(new_query)
+            new_entry = __entry__.get_kernel().byquery(new_query)
+            results[selection] = extract_result(new_entry)
         
-        if explore_timeout_s > 0 and index < len(combinations) - 1:
+        if explore_timeout_s > 0 and selection < len(combinations) - 1:
             time.sleep(explore_timeout_s)
+        
+        selection = select_combination_to_execute(combinations, results, headers)
 
     # Store the list of commands in the newborn entry and save it
     newborn_entry.plant("query_list", query_list)
     newborn_entry.plant("cmd_list", cmd_list)
+    newborn_entry.plant("results", results)
     newborn_entry.save()
