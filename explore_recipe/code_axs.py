@@ -143,7 +143,7 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
             results[selection] = new_query
         else:
             new_entry = __entry__.get_kernel().byquery(new_query)
-            results[selection] = extract_result(new_entry)
+            results[selection] = __entry__.call("extract_result", [ new_entry ], {})
         
         if explore_timeout_s > 0 and selection < len(combinations) - 1:
             time.sleep(explore_timeout_s)
