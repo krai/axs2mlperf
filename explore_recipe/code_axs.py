@@ -100,7 +100,7 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
     cmd_list = []
     query_list = []
 
-    selection = select_combination_to_execute(combinations, results, headers)
+    selection = __entry__.call("select_combination_to_execute", [ combinations, results, headers ], {})
     while selection is not None:
         combination = combinations[selection]
         # Map parameter names to their corresponding values
@@ -148,7 +148,7 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
         if explore_timeout_s > 0 and selection < len(combinations) - 1:
             time.sleep(explore_timeout_s)
         
-        selection = select_combination_to_execute(combinations, results, headers)
+        selection = __entry__.call("select_combination_to_execute", [ combinations, results, headers ], {})
 
     # Store the list of commands in the newborn entry and save it
     newborn_entry.plant("query_list", query_list)
