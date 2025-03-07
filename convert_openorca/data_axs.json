@@ -34,7 +34,7 @@
 
     "total_samples": 24576,
 
-    "dataset_openorca_query": [ "^^", "substitute", [ "downloaded,dataset_name=openorca,model_family=#{model_family}#,variant=#{variant}#,total_samples=#{total_samples}#"] ],
+    "dataset_openorca_query": [ "^^", "substitute", [ "downloaded,dataset_name=openorca,total_samples=#{total_samples}#"] ],
     "dataset_openorca_entry": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", [ [ "^^", "get", "dataset_openorca_query" ] ] ]
