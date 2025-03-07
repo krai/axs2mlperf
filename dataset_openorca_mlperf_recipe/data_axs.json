@@ -15,7 +15,7 @@
         [ "get_path" ]
     ]] ],
 
-    "desired_python_version": "3.8",
+    "desired_python_version": "3.10",
     "model_family": "llama2",
     "variant": "7b",
 
