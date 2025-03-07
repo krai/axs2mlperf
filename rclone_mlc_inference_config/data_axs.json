@@ -1,9 +1,9 @@
 {
     "_parent_entries": [ [ "^", "byname", "rclone_tool" ], [ "^", "byname", "entry_creator" ]  ],
     "_producer_rules": [
-        [ [ "rclone_config", "rclone_remote_name=mlc_inference" ], [[ "get", "pipeline"]] ] ],	
+        [ [ "rclone_config", "rclone_remote_name=mlc-inference" ], [[ "get", "pipeline"]] ] ],	
 					       
-    "rclone_remote_name": "mlc_inference",
+    "rclone_remote_name": "mlc-inference",
     "file_name": "rclone.conf",
     "this_entry_path": [ "^^", "get_path" ],
 
