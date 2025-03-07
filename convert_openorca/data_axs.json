@@ -28,7 +28,7 @@
         [ "^^", "python_sync_pip_package", [[ "^^", "get", "transformers_query" ]] ]
     ],
 
-    "script_name": "convert_openorca_llama2_to_llama3.py",
+    "script_name": "convert_openorca.py",
     "abs_script_path": [ "^^", "get_path",[ "^^", "substitute",[ "#{script_name}#"]] ],
     "this_entry_path": [ "^^", "get_path", "" ],
 
@@ -52,7 +52,7 @@
     ]] ],
 
     "newborn_entry_tags": [ "downloaded", "dataset_name=openorca", [ "^^", "substitute", "model_family=#{model_family}#" ] ],
-    "newborn_name_template": [ "^^", "substitute", "mlperf_openorca_dataset_converted_for_#{model_family}#_#{variant}#" ],
+    "newborn_name_template": [ "^^", "substitute", "mlperf_openorca_dataset_converted_for_#{model_family}#" ],
     "newborn_entry_param_names": [ "input_pkl_path" ],
     "newborn_parent_names": [],
     "pipeline": [ "^^", "execute", [[
@@ -61,5 +61,5 @@
          [ "get", "stored_newborn_entry" ]
      ]] ],
          
-    "script_extra_params": [ "^^", "substitute", "--input_pkl_path #{input_pkl_path}# --output_pkl_path #{newborn_entry_path}#/open_orca_gpt4_tokenized_llama.sampled_#{total_samples}#.pkl --tokeniser_path=#{tokeniser_path}#" ]
+    "script_extra_params": [ "^^", "substitute", "--input_pkl_path #{input_pkl_path}# --output_pkl_path #{newborn_entry_path}#/open_orca_gpt4_tokenized_llama.sampled_#{total_samples}#.pkl --tokeniser_path=#{tokeniser_path}# --model_family=#{model_family}#" ]
 }
