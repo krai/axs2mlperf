@@ -145,10 +145,10 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
             new_entry = __entry__.get_kernel().byquery(new_query)
             results[selection] = __entry__.call("extract_result", [ new_entry ], {})
         
-        if explore_timeout_s > 0 and selection < len(combinations) - 1:
-            time.sleep(explore_timeout_s)
-        
         selection = __entry__.call("select_combination_to_execute", [ combinations, results, headers ], {})
+
+        if explore_timeout_s > 0 and selection is not None:
+            time.sleep(explore_timeout_s)
 
     # Store the list of commands in the newborn entry and save it
     newborn_entry.plant("query_list", query_list)
