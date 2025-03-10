@@ -1,18 +1,24 @@
 {
+    "tags": [
+        "collection",
+        "git_repo"
+    ],
     "_parent_entries": [
-        [
-            "^",
-            "core_collection"
-        ],
         [
             "^",
             "byname",
             "git"
+        ],
+        [
+            "^",
+            "byname",
+            "core_collection"
         ]
     ],
-    "tags": [
-        "collection",
-        "git_repo"
+    "__query": "git_repo,collection,repo_name=axs2mlperf",
+    "newborn_parent_names": [
+        "git",
+        "core_collection"
     ],
     "contained_entries": {
         "loadgen_example": "loadgen_example",
@@ -66,8 +72,10 @@
         "rclone_mlc_llama2_config": "rclone_mlc_llama2_config",
         "explore_recipe": "explore_recipe",
         "base_llama3_1_loadgen_experiment": "base_llama3_1_loadgen_experiment",
-        "dataset_llrg_mlperf_recipe": "dataset_llrg_mlperf_recipe"
+        "dataset_llrg_mlperf_recipe": "dataset_llrg_mlperf_recipe",
+        "convert_openorca": "convert_openorca"
     },
     "repo_name": "axs2mlperf",
-    "submodules": false
+    "checkout": null,
+    "__completed": "2025.03.07_11h42m33s"
 }

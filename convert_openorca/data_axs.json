@@ -1,0 +1,65 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
+    "_producer_rules": [
+        [ [ "converted", "dataset_name=openorca" ], [[ "get", "pipeline" ]] ]
+
+    ],
+
+    "model_family": "llama3_1",
+    "variant": "8b",
+
+    "numpy_query": ["python_package", "package_name=numpy" ],
+    "tqdm_query": ["python_package", "package_name=tqdm" ],
+    
+    "pandas_query": [ "python_package", "package_name=pandas" ],
+    "dataset_query": [ "python_package", "package_name=dataset" ],
+    "onnx_query": [ "python_package", "package_name=onnx" ],
+    "tokenizers_query": [ "python_package", "package_name=tokenizers" ],
+    "onnxruntime_query": [ "python_package", "package_name=onnxruntime" ],
+    "transformers_query": [ "python_package", "package_name=transformers" ],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "numpy_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "tqdm_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "pandas_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "dataset_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "onnx_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "tokenizers_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "transformers_query" ]] ]
+    ],
+
+    "script_name": "convert_openorca.py",
+    "abs_script_path": [ "^^", "get_path",[ "^^", "substitute",[ "#{script_name}#"]] ],
+    "this_entry_path": [ "^^", "get_path", "" ],
+
+    "total_samples": 24576,
+
+    "dataset_openorca_query": [ "^^", "substitute", [ "downloaded,dataset_name=openorca,total_samples=#{total_samples}#"] ],
+    "dataset_openorca_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [ [ "^^", "get", "dataset_openorca_query" ] ] ]
+	]] ],
+    "input_pkl_path": [ "^^", "execute", [[
+        [ "get", "dataset_openorca_entry" ],
+        [ "get_path", [ [ [ "^^", "substitute", "open_orca_gpt4_tokenized_llama.sampled_#{total_samples}#.pkl" ] ] ]]
+     ]] ],
+
+    "tokeniser_query": [ "^^", "substitute", "downloaded,hf_tokeniser,model_family=#{model_family}#,variant=#{variant}#" ],
+    "tokeniser_path": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "tokeniser_query" ]] ],
+        [ "get_path" ]
+    ]] ],
+
+    "newborn_entry_tags": [ "downloaded", "dataset_name=openorca", [ "^^", "substitute", "model_family=#{model_family}#" ] ],
+    "newborn_name_template": [ "^^", "substitute", "mlperf_openorca_dataset_converted_for_#{model_family}#" ],
+    "newborn_entry_param_names": [ "input_pkl_path" ],
+    "newborn_parent_names": [],
+    "pipeline": [ "^^", "execute", [[
+         [ "run" ],
+         [ ],
+         [ "get", "stored_newborn_entry" ]
+     ]] ],
+         
+    "script_extra_params": [ "^^", "substitute", "--input_pkl_path #{input_pkl_path}# --output_pkl_path #{newborn_entry_path}#/open_orca_gpt4_tokenized_llama.sampled_#{total_samples}#.pkl --tokeniser_path=#{tokeniser_path}# --model_family=#{model_family}#" ]
+}
