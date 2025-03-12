@@ -36,7 +36,35 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
     return scenarios
 
 
-def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, require_compliance=None, __entry__=None):
+def list_experiment_entries( power, sut_name, sut_system_type, task, division, experiment_tags, framework, device, loadgen_dataset_size, loadgen_buffer_size, scenarios, model_name=None, mlperf_model_name=None, generate=False, infer_from_ss=False, extra_common_attributes=None, per_scenario_attributes=None, require_compliance=None, substitution_map=None, __entry__=None):
+    """Generate a list of entries that are expected to be used for a particular submission.
+        --generate+ enforces immediate creation of those entries (off by default)
+
+        --division=close among other things requires compliance tests to be run ; --require_compliance- overrides this.
+        --division=open among other things does not require compliance tests ; --require_compliance+ overrides this.
+
+Usage examples:
+
+    # This submission is supposed to be complete on its own: {[nonInteractive_]Server,Offline} x {Accuracy,Performance,TEST06}
+    axs byname submitter , list_experiment_entries  --framework=openai --task=llama2  --division=open --require_compliance+ --sut_name=xd670_h200_x8_sglang --program_name=llama2_using_openai_loadgen --sut_system_type=datacenter --submitter=Krai  --submission_entry_name=laid_out_sglang --extra_common_attributes,::=mlperf_model_name:llama3_1-70b-fp8_pre
+
+    # While this one has 3 explicit experiments: {[Interactive_]Server} x {Accuracy,Performance,TEST06}, and we want to Infer (import with substitution) Offline from the previous group.
+    axs byname submitter , list_experiment_entries  --framework=openai --task=llama2  --division=open --require_compliance+ --sut_name=xd670_h200_x8_sglang --program_name=llama2_using_openai_loadgen --sut_system_type=datacenter --submitter=Krai  --submission_entry_name=laid_out_sglang --extra_common_attributes,::=mlperf_model_name:llama3_1-70b-interactive-fp8_pre
+
+    # We use --substitution_map to infer Offline experiments from another mlperf_model_name while using "own" Server experiments:
+    axs byname submitter , list_experiment_entries  --framework=openai --task=llama2  --division=open --require_compliance+ --sut_name=xd670_h200_x8_sglang --program_name=llama2_using_openai_loadgen --sut_system_type=datacenter --submitter=Krai  --submission_entry_name=laid_out_sglang --extra_common_attributes,::=mlperf_model_name:llama3_1-70b-interactive-fp8_pre ---substitution_map='{"mlperf_model_name":{"llama3_1-70b-interactive-fp8_pre":"llama3_1-70b-fp8_pre"}}'
+    """
+
+    if infer_from_ss:
+        substitution_map = {
+            "loadgen_scenario": {
+                "Offline":      "SingleStream",
+                "MultiStream":  "SingleStream"
+            }
+        }
+    elif substitution_map is None:
+        substitution_map = {}
+
     common_attributes = {
         "framework":            framework,
         "task":                 task,
@@ -102,13 +130,26 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
             joined_query = ','.join( list_query )
 
             candidate_entry = __entry__.get_kernel().byquery(joined_query, False)
-            inferrable_case = infer_from_ss and sc!="SingleStream"
+
+            inferrable_case, inferred_entry = False, False
+            for substituted_param in substitution_map:
+                for target_value in substitution_map[substituted_param]:
+                    if f"{substituted_param}={target_value}" in joined_query:
+                        source_value    = substitution_map[substituted_param][target_value]
+                        inferred_query  = joined_query.replace(f"{substituted_param}={target_value}",f"{substituted_param}={source_value}")
+                        inferrable_case = [ substituted_param, target_value, source_value, inferred_query ]    # 4-tuple
+
+            if inferrable_case:
+                [ substituted_param, target_value, source_value, inferred_query ] = inferrable_case
+                inferred_entry  = __entry__.get_kernel().byquery(inferred_query, False)
+                inferrable_case.append( inferred_entry )    # extended to 5-tuple ( still adding None if not found )
 
             if generate:
                 if inferrable_case and not candidate_entry:
                     print(f"Entry {joined_query} is missing, but INFERRABLE, adding it as a mapping\n")
-                    ss_entry = __entry__.get_kernel().byquery(joined_query.replace(f"loadgen_scenario={sc}","loadgen_scenario=SingleStream"), True)
-                    experiment_entries.append( [ss_entry, sc] )
+                    [ substituted_param, target_value, source_value, inferred_query, inferred_entry ] = inferrable_case
+                    candidate_entry = inferred_entry or __entry__.get_kernel().byquery(inferred_query, True)
+                    candidate_entry[substituted_param] = target_value
                 else:
                     if candidate_entry:
                         print(f"Entry {joined_query} was already PRESENT, adding it to the list\n")
@@ -116,7 +157,7 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
                         print(f"Entry {joined_query} was MISSING and not inferrable, generating it now\n")
                         candidate_entry = candidate_entry or __entry__.get_kernel().byquery(joined_query, True)    # now generating for real
 
-                    experiment_entries.append( candidate_entry )
+                experiment_entries.append( candidate_entry )
 
             else:
                 if candidate_entry:
@@ -128,7 +169,9 @@ def list_experiment_entries( power, sut_name, sut_system_type, task, division, e
 
                 print(f"[{presence_msg}]\t\taxs byquery {joined_query}")
                 if candidate_entry:
-                    print(f"Location:\t\t{candidate_entry.get_path()}")
+                    print(f"Present Location:\t\t{candidate_entry.get_path()}")
+                elif inferred_entry:
+                    print(f"Inferred Location:\t\t{inferred_entry.get_path()}")
                 print("")
 
     return experiment_entries
@@ -157,7 +200,7 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
@@ -177,11 +220,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     
     for experiment_entry in experiment_entries:
 
-        if type(experiment_entry)==list:
-            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
-        else:
-            target_scenario = experiment_entry['loadgen_scenario']
-
+        target_scenario = experiment_entry['loadgen_scenario']
         scenario = target_scenario.lower()
 
         experiment_parameters = []
@@ -406,13 +445,21 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, infer_from_ss=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+    """First run lay_out() to build the submission tree, then run_checker() to check its integrity.
+
+Usage examples:
+
+    # Here we use --substitution_map to infer Offline experiments from another mlperf_model_name while using "own" Server experiments.
+    # In order to pacify submission_checker we pass in --model_mapping_path that maps all unrecognized "open" models onto "closed" ones known by the script.
+    axs byname submitter , full_run  --framework=openai --task=llama2  --division=open --require_compliance+ --sut_name=xd670_h200_x8_sglang --program_name=llama2_using_openai_loadgen --sut_system_type=datacenter --submitter=Krai  --submission_entry_name=laid_out_sglang --extra_common_attributes,::=mlperf_model_name:llama3_1-70b-interactive-fp8_pre ---substitution_map='{"mlperf_model_name":{"llama3_1-70b-interactive-fp8_pre":"llama3_1-70b-fp8_pre"}}' --model_mapping_path=$HOME/work_collection/sglang_collection/model_mapping.json
+    """
 
     if os.path.exists(submitted_tree_path):
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, infer_from_ss, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
@@ -422,17 +469,9 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
     
     readme_template_path = __entry__.get_path("README_template.md")
 
-    target_scenario = None
-
     for experiment_entry in experiment_entries:
 
-        if type(experiment_entry)==list:
-            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
-        else:
-            target_scenario = experiment_entry['loadgen_scenario']
-
-        scenario = target_scenario.lower()
-
+        scenario        = experiment_entry['loadgen_scenario'].lower()
 
         src_dir         = experiment_entry.get_path("")
         sut_name        = experiment_entry.get('sut_name')
@@ -534,12 +573,7 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
     table_data = []
     for experiment_entry in experiment_entries:
         
-        if type(experiment_entry)==list:
-            experiment_entry, target_scenario = experiment_entry    # unpacking a pair to infer target_scenario
-        else:
-            target_scenario = experiment_entry['loadgen_scenario']
-
-        scenario = target_scenario
+        scenario = experiment_entry['loadgen_scenario']
 
         entry_path = experiment_entry.get_path("")
         if power:
