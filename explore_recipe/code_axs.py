@@ -143,7 +143,10 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
             results[selection] = new_query
         else:
             new_entry = __entry__.get_kernel().byquery(new_query)
-            results[selection] = __entry__.call("extract_result", [ new_entry ], {})
+            result = __entry__.call("extract_result", [ new_entry ], {})
+            new_entry.plant("performance_result", result)
+            new_entry.save()
+            results[selection] = result
         
         selection = __entry__.call("select_combination_to_execute", [ combinations, results, headers ], {})
 
