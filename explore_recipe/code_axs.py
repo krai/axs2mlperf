@@ -117,7 +117,7 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
             elif value and value[0] in ("+", "-"):
                 cmd_tag_list.append(f"{key}{value[0]}")
             # Add key-value pairs to the command
-            elif value:
+            elif value or value == 0:
                 cmd_tag_list.append(f"{key}={value}")
             # Add keys without values as tags
             else:
