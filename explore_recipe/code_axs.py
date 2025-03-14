@@ -4,13 +4,13 @@ import hashlib
 import time
 
 # Function to preprocess the input query by removing a specific prefix
-def preprocess_query(query, beginning_to_remove = "explore,"):
+def preprocess_query(query, beginning_to_remove):
     # Check if the query starts with the specified prefix, and remove it
     if query.startswith(beginning_to_remove):
         return query[len(beginning_to_remove):].strip()
     else:
         # Raise an error if the prefix is missing
-        raise ValueError("The command must begin with \"explore\"")
+        raise ValueError(f"The command must begin with \"{beginning_to_remove}\".")
 
 # Function to generate an entry name by replacing specific characters in the query
 def get_entry_name(__query, prefix="explored_"):
@@ -21,9 +21,9 @@ def get_entry_name(__query, prefix="explored_"):
     return name
 
 # Function to parse the query and store results of parsing into a csv file
-def parse_and_store_commands(__query, stored_newborn_entry=None, csv_file_name="parameters.csv", target_collection_name="experiments"):
+def parse_and_store_commands(__query, beginning_to_remove, stored_newborn_entry=None, csv_file_name="parameters.csv", target_collection_name="experiments"):
     # Preprocess the query and remove 'dry_run' flags
-    query = preprocess_query(__query)
+    query = preprocess_query(__query, beginning_to_remove)
     query = query.replace(',dry_run+', '').replace(',dry_run-', '')
 
     # Split the query into individual parameters

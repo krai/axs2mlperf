@@ -12,7 +12,7 @@
     "target_collection_name": "experiments",
     "csv_file_name": "parameters.csv",
     "dry_run": false,
-
+    "beginning_to_remove": "explore,",
     "explore_timeout_s": 0,
 
     "csv_path": [ "^^", "parse_and_store_commands" ]
