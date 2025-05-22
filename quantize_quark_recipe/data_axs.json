@@ -44,7 +44,7 @@
     "num_calib_data":               512,
     "skip_quantization":            false,
     "group_size":                   128,
-    "quant_scheme":                 "None",
+    "quant_scheme":                 "w_fp8_a_fp8",
     "kv_cache_dtype":               "fp8",
     "min_kv_scale":                 0.0,
     "model_export":                 "hf_format",
