@@ -1,0 +1,105 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
+    "_producer_rules": [
+        [ [ "quantized", "method=quark" ], [[ "run" ]] ],
+
+        [ [ "git_repo", "repo_name=quark" ], [ [ "get_kernel" ], [ "byname", "git" ], [ "clone" ] ], {
+            "url": "https://github.com/amd/Quark",
+            "checkout": "release/0.8"
+        } ],
+
+        [ [ "python_package", "contains_deps", "package_name=quantize_quark_python_deps" ],
+            [ [ "get_kernel" ], [ "byname", "pip" ], [ "install" ] ], {
+                "path_to_requirements": [ "^^", "execute", [[
+                    [ "get", "quark_source_entry" ],
+                    [ "get_path", "examples/torch/language_modeling/llm_ptq/requirements.txt" ]
+                ]] ],
+                "installable": [ "AS^IS", "^^", "substitute", "-r #{path_to_requirements}#" ]
+            }, [ "quark_source_entry" ]
+        ]
+    ],
+
+    "model_family": "llama3_1",
+    "model_variant": "8b",
+
+    "model_query": [ "^^", "substitute", [[
+        "downloaded",
+        "hf_model",
+        [ "model_family", "#{model_family}#" ],
+        [ "variant", "#{model_variant}#" ]
+    ]] ],
+    "model_entry": [ "^", "byquery", [[ "^^", "get", "model_query" ]], {}, [ "model_query" ] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "device":                       "cuda",
+    "multi_gpu":                    false,
+    "model_attn_implementation":    "eager",
+    "dataset":                      "pileval",
+    "data_type":                    "auto",
+    "seq_len":                      512,
+    "batch_size":                   1,
+    "num_calib_data":               512,
+    "skip_quantization":            false,
+    "group_size":                   128,
+    "quant_scheme":                 "None",
+    "kv_cache_dtype":               "None",
+    "min_kv_scale":                 0.0,
+    "quant_algo":                   "None",
+    "model_export":                 "None",
+    "torch_compile":                false,
+    "pack_method":                  "reorder",
+    "output_dir":                   [ "^^", "get", "newborn_entry_path" ],
+    "weight_matrix_merge":          false,
+    "export_weight_format":         "real_quantized",
+    "params_save":                  false,
+    "save_dir":                     [ "^^", "get", "newborn_entry_path" ],
+
+    "desired_python_version": "3.10",
+
+    "quark_source_entry": [ "^", "byquery", "git_repo,repo_name=quark" ],
+ 
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=amd-quark" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "contains_deps", "package_name=quantize_quark_python_deps" ]] ]
+    ],
+
+    "newborn_entry_tags": [ "quantized", "method=quark" ],
+    "newborn_name_template": [ "quantized_using_quark_model_#{model_family}#_#{model_variant}#" ],
+    "newborn_entry_param_names": [ "model_family", "model_variant" ],
+
+    "abs_script_path": [ "^^", "execute", [[
+        [ "get", "quark_source_entry" ],
+        [ "get_path", "examples/torch/language_modeling/llm_ptq/quantize_quark.py" ]
+    ]] ],
+
+    "script_extra_params_dict": {
+        "model_dir":                    [ "^^", "get", "model_path" ],
+        "device":                       [ "^^", "get", "device" ],
+        "multi_gpu":                    [ "^^", "get", "multi_gpu" ],
+        "model_attn_implementation":    [ "^^", "get", "model_attn_implementation" ],
+        "dataset":                      [ "^^", "get", "dataset" ],
+        "data_type":                    [ "^^", "get", "data_type" ],
+        "seq_len":                      [ "^^", "get", "seq_len" ],
+        "batch_size":                   [ "^^", "get", "batch_size" ],
+        "num_calib_data":               [ "^^", "get", "num_calib_data" ],
+        "skip_quantization":            [ "^^", "get", "skip_quantization" ],
+        "group_size":                   [ "^^", "get", "group_size" ],
+        "quant_scheme":                 [ "^^", "get", "quant_scheme" ],
+        "kv_cache_dtype":               [ "^^", "get", "kv_cache_dtype" ],
+        "min_kv_scale":                 [ "^^", "get", "min_kv_scale" ],
+        "quant_algo":                   [ "^^", "get", "quant_algo" ],
+        "model_export":                 [ "^^", "get", "model_export" ],
+        "torch_compile":                [ "^^", "get", "torch_compile" ],
+        "pack_method":                  [ "^^", "get", "pack_method" ],
+        "output_dir":                   [ "^^", "get", "output_dir" ],
+        "weight_matrix_merge":          [ "^^", "get", "weight_matrix_merge" ],
+        "export_weight_format":         [ "^^", "get", "export_weight_format" ],
+        "params_save":                  [ "^^", "get", "params_save" ],
+        "save_dir":                     [ "^^", "get", "save_dir" ]
+    },
+
+    "script_extra_params": [ "^^", "get_script_extra_params" ]
+}
