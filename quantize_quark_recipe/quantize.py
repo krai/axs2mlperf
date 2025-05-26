@@ -48,10 +48,12 @@ min_kv_scale                        = float(input_parameters["min_kv_scale"])
 custom_mode                         = input_parameters["custom_mode"]
 
 # Additional imports
-sys.path.append(os.path.join(quark_source_path), 'examples/torch/language_modeling')
-from llm_ptq.configuration_preparation import get_config, get_export_config
+sys.path.append(os.path.join(quark_source_path, 'examples/torch/language_modeling'))
 from llm_utils.model_preparation import MODEL_NAME_KV_LAYERS_MAP
 from llm_utils.export_import_hf_model import export_hf_model
+
+sys.path.append(os.path.join(quark_source_path, 'examples/torch/language_modeling/llm_ptq'))
+from configuration_preparation import get_config, get_export_config
 
 # Load the model
 model = AutoModelForCausalLM.from_pretrained(model_path, device_map=device,
