@@ -14,7 +14,9 @@ from quark.torch.quantization import (Config, QuantizationConfig,
 from quark.torch.export import ExporterConfig, JsonExporterConfig, OnnxExporterConfig
 
 # Load the input parameters
-input_parameters_file_path = sys.argv[1]
+base_dir = sys.argv[1]
+output_dir = os.path.join(base_dir, "quantized_model")
+input_parameters_file_path = os.path.join(base_dir, "data_axs.json")
 input_parameters = {}
 with open(input_parameters_file_path) as f:
     input_parameters = json.load(f)
@@ -28,7 +30,6 @@ data_type                           = input_parameters["data_type"]
 model_attn_implementation           = input_parameters["model_attn_implementation"]
 dataset_name                        = input_parameters["dataset_name"]
 dataset_path                        = input_parameters["dataset_path"]
-output_dir                          = input_parameters["output_dir"]
 quark_source_path                   = input_parameters["quark_source_path"]
 quant_scheme                        = input_parameters["quant_scheme"]
 group_size                          = int(input_parameters["group_size"])
@@ -93,7 +94,7 @@ quant_config = get_config(
     kv_cache_dtype,
     fp8_attention_quant,
     exclude_layers if exclude_layers else None,
-    pre_quantization_optimization if pre_quantization_optimization else None,
+    pre_quantization_optimization if pre_quantization_optimization else [],
     pre_optimization_config_file_path if pre_quantization_optimization else None,
     quant_algo if quant_algo else None,
     quant_algo_config_file_path if quant_algo else None,

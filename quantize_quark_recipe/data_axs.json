@@ -1,7 +1,7 @@
 {
     "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
     "_producer_rules": [
-        [ [ "quantized", "method=quark" ], [[ "run" ]] ],
+        [ [ "quantized", "method=quark" ], [[ "get", "pipeline" ]] ],
 
         [ [ "git_repo", "repo_name=quark" ], [ [ "get_kernel" ], [ "byname", "git" ], [ "clone" ] ], {
             "url": "https://github.com/amd/Quark",
@@ -18,6 +18,12 @@
             }, [ "quark_source_entry" ]
         ]
     ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [ ],
+        [ "get", "stored_newborn_entry" ]
+    ]] ], 
 
     "model_family": "llama3_1",
     "model_variant": "8b",
@@ -53,8 +59,6 @@
     "quant_algo":                       "",
     "group_size_per_layer":             "",
     "custom_mode":                      "quark",
-
-    "output_dir":                       [ "^^", "get", "newborn_entry_path" ],
 
     "model_type": [ "^^", "case", [[ "^^", "get", "model_family" ],
         "llama2", "llama",
@@ -112,6 +116,7 @@
     ]] ],
  
     "python_deps": [
+	[ "^^", "python_sync_pip_package", [[ "python_package", "package_name=nltk" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=amd-quark" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "contains_deps", "package_name=quantize_quark_python_deps" ]] ]
     ],
@@ -130,7 +135,6 @@
         "model_attn_implementation",
         "dataset_name",
         "dataset_path",
-        "output_dir",
         "quark_source_path",
         "quant_scheme",
         "group_size",
@@ -152,5 +156,5 @@
 
     "rel_script_path": "quantize.py",
 
-    "script_extra_params": [ "^^", "substitute", "#{newborn_entry_path}#/data_axs.json" ]
+    "script_extra_params": [ "^^", "substitute", "#{newborn_entry_path}#" ]
 }
