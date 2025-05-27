@@ -3,14 +3,10 @@ import json
 import os
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from datasets import load_dataset
 import torch
 from torch.utils.data import DataLoader
 
 from quark.torch import ModelQuantizer, ModelExporter
-from quark.torch.quantization import (Config, QuantizationConfig,
-                                     FP8E4M3PerTensorSpec,
-                                     load_quant_algo_config_from_file)
 from quark.torch.export import ExporterConfig, JsonExporterConfig, OnnxExporterConfig
 
 # Load the input parameters
@@ -54,7 +50,7 @@ from llm_utils.model_preparation import MODEL_NAME_KV_LAYERS_MAP
 from llm_utils.export_import_hf_model import export_hf_model
 
 sys.path.append(os.path.join(quark_source_path, 'examples/torch/language_modeling/llm_ptq'))
-from configuration_preparation import get_config, get_export_config
+from configuration_preparation import get_config
 
 # Load the model
 model = AutoModelForCausalLM.from_pretrained(model_path, device_map=device,
