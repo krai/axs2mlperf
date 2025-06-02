@@ -20,7 +20,7 @@
 
         [ [ "python_package", "package_name=torch", "target=rocm" ],
             [ [ "get_kernel" ], [ "byname" , "pip" ], [ "install" ] ], {
-                "pip_options": "--index-url https://download.pytorch.org/whl/rocm6.3",
+                "pip_options": "--no-cache-dir --index-url https://download.pytorch.org/whl/rocm6.3",
                 "newborn_name_template": "#{package_name}##{version_suffix_name}#_package_for_python#{python_major_dot_minor}#-#{target}#"
             }
         ]
@@ -123,10 +123,10 @@
     ]] ],
  
     "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch", "target=rocm" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=nltk" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=amd-quark" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "python_package", "contains_deps", "package_name=quantize_quark_python_deps" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch", "target=rocm" ]] ]
+        [ "^^", "python_sync_pip_package", [[ "python_package", "contains_deps", "package_name=quantize_quark_python_deps" ]] ]
     ],
 
     "newborn_entry_tags": [ "quantized", "method=quark" ],
@@ -161,6 +161,10 @@
         "min_kv_scale",
         "custom_mode"
     ],
+
+    "extra_env": {
+	"CPLUS_INCLUDE_PATH": "/usr/include/c++/11:/usr/include/x86_64-linux-gnu/c++/11"
+    },
 
     "rel_script_path": "quantize.py",
 
