@@ -73,7 +73,8 @@
         "explore_recipe": "explore_recipe",
         "base_llama3_1_loadgen_experiment": "base_llama3_1_loadgen_experiment",
         "dataset_llrg_mlperf_recipe": "dataset_llrg_mlperf_recipe",
-        "convert_openorca": "convert_openorca"
+        "convert_openorca": "convert_openorca",
+        "quantize_quark_recipe": "quantize_quark_recipe"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
