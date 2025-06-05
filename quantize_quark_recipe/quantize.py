@@ -44,6 +44,8 @@ pack_method                         = input_parameters["pack_method"]
 min_kv_scale                        = float(input_parameters["min_kv_scale"])
 custom_mode                         = input_parameters["custom_mode"]
 
+quant_algo = None if quant_algo == "None" else quant_algo
+
 # Additional imports
 sys.path.append(os.path.join(quark_source_path, 'examples/torch/language_modeling'))
 from llm_utils.model_preparation import MODEL_NAME_KV_LAYERS_MAP

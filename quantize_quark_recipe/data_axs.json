@@ -63,7 +63,7 @@
     "fp8_attention_quant":              false,
     "exclude_layers":                   "",
     "pre_quantization_optimization":    "",
-    "quant_algo":                       "",
+    "quant_algo":                       "None",
     "group_size_per_layer":             "",
     "custom_mode":                      "quark",
 
@@ -80,7 +80,7 @@
     ]],
 
     "quant_algo_config_file_path": [ "^^", "case", [[ "^^", "get", "quant_algo" ],
-        "", "",
+        "None", "",
         "awq", [ "^^", "substitute", "#{quark_models_path}#/awq_config.json" ],
         "gptq", [ "^^", "substitute", "#{quark_models_path}#/gptq_config.json" ],
         "autosmoothquant", [ "^^", "substitute", "#{quark_models_path}#/autosmoothquant_config.json" ]
