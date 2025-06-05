@@ -159,12 +159,15 @@
         "export_weight_format",
         "pack_method",
         "min_kv_scale",
-        "custom_mode"
+        "custom_mode",
+        "file_name"
     ],
 
     "extra_env": {
 	"CPLUS_INCLUDE_PATH": "/usr/include/c++/11:/usr/include/x86_64-linux-gnu/c++/11"
     },
+
+    "file_name": "quantized_model",
 
     "rel_script_path": "quantize.py",
 
