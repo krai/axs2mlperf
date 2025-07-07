@@ -40,6 +40,7 @@
         "model_pytorch_resnet50": "model_pytorch_resnet50",
         "mlperf_power_git_recipe": "mlperf_power_git_recipe",
         "dataset_cnndm_mlperf_recipe": "dataset_cnndm_mlperf_recipe",
+	"dataset_small_llm_cnndm_mlperf_recipe": "dataset_small_llm_cnndm_mlperf_recipe",
         "dataset_lambada_recipe": "dataset_lambada_recipe",
         "dataset_coco2014_images_recipe": "dataset_coco2014_images_recipe",
         "gptj_reference_loadgen": "gptj_reference_loadgen",
@@ -74,7 +75,8 @@
         "base_llama3_1_loadgen_experiment": "base_llama3_1_loadgen_experiment",
         "dataset_llrg_mlperf_recipe": "dataset_llrg_mlperf_recipe",
         "convert_openorca": "convert_openorca",
-        "quantize_quark_recipe": "quantize_quark_recipe"
+        "quantize_quark_recipe": "quantize_quark_recipe",
+	"base_small_llm_loadgen_experiment": "base_small_llm_loadgen_experiment"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
