@@ -15,7 +15,7 @@
 
     "abs_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "llama3_1_8b_accuracy_script" ]
+        [ "get_path_of", "llama3_1_8b_cnndm_accuracy_script" ]
     ]] ],
 
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
@@ -57,7 +57,7 @@
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=evaluate" ]
                 ],
                 "abs_script_path": ["^^", "get", "abs_script_path"],
-                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}# --checkpoint-path #{checkpoint_path}#" ],
+                "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}#" ],
                 "desired_python_version": ["^", "kernel_python_major_dot_minor"],
                 "capture_output": true
             } ],
