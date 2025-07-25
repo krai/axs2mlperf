@@ -55,6 +55,8 @@
 
     "sut_name": ["^", "func", "socket.gethostname" ],
 
+    "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
+
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
     "original_loadgen_mlperf_conf_path": [ "^^", "execute", [[

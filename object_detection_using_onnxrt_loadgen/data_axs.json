@@ -4,8 +4,6 @@
         [ [ "loadgen_output", "task=object_detection", "framework=onnxrt" ], [["get", "pipeline"]] ]
     ],
 
-    "loadgen_query":    [ "python_package", "package_name=mlperf_loadgen" ],
-
     "python_deps": [
         [ "^^", "python_sync_pip_package", [ [ "^^", "get", "onnxruntime_query" ] ] ],
         [ "^", "byquery", "data_loader,coco_images" ],

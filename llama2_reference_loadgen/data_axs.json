@@ -13,7 +13,7 @@
     ]] ],
 
     "python_deps": [
-        [ "^^", "python_sync_pip_package", "python_package,package_name=mlperf_loadgen" ],
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=torch" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=protobuf" ]] ],
