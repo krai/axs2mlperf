@@ -96,7 +96,7 @@ Usage examples:
             "object_detection":     [ 'TEST01' ],
             "bert":                 [ 'TEST01' ],
             "gptj":                 [ ],
-            "text_to_image":        [ 'TEST01' ],
+            "text_to_image":        [ 'TEST01', 'TEST04' ],
             "llm":                  [ 'TEST06' ],
             "llama2":               [ 'TEST06' ],
             "llama3_1":               [ 'TEST06' ],
