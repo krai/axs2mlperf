@@ -6,6 +6,7 @@ from ufun import load_json, save_json
 
 def generate_user_conf(loadgen_param_dictionary, param_to_conf_pair, shortened_mlperf_model_name, loadgen_scenario, target_user_conf_path, submission_compliance_tests_dir, target_audit_conf_path, loadgen_compliance_test, compliance_test_config):
 
+    mlperf_conf_scenario = 'Server' if loadgen_scenario=='Interactive' else loadgen_scenario
 
     user_conf   = []
     for param_name in loadgen_param_dictionary.keys():
@@ -15,7 +16,7 @@ def generate_user_conf(loadgen_param_dictionary, param_to_conf_pair, shortened_m
             new_value = float(orig_value * multiplier)
             if float(int(new_value)) == new_value:
                 new_value = int(new_value)
-            user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, loadgen_scenario, config_category_name, new_value))
+            user_conf.append("{}.{}.{} = {}\n".format(shortened_mlperf_model_name, mlperf_conf_scenario, config_category_name, new_value))
 
     with open(target_user_conf_path, 'w') as user_conf_file:
          user_conf_file.writelines(user_conf)
