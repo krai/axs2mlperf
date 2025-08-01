@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import json
+import subprocess
 from ufun import save_json
 from tabulate import tabulate
 
@@ -96,7 +97,7 @@ Usage examples:
             "object_detection":     [ 'TEST01' ],
             "bert":                 [ 'TEST01' ],
             "gptj":                 [ ],
-            "text_to_image":        [ 'TEST01' ],
+            "text_to_image":        [ 'TEST01' , 'TEST04' ],
             "llm":                  [ 'TEST06' ],
             "llama2":               [ 'TEST06' ],
             "llama3_1":               [ 'TEST06' ],
@@ -396,7 +397,61 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             else:
                 dtype = ""
             result_verify =  __entry__.call('get', 'run_verify', create_run_verification_input_dict(task, tmp_dir, verify_script_path, results_dir, compliance_dir, output_dir, target_scenario, dtype))
-            if result_verify == "":
+
+            verify_accuracy_file = os.path.join(output_dir, 'TEST01', 'verify_accuracy.txt')
+            accuracy_failed = False
+            if os.path.isfile(verify_accuracy_file):
+                with open(verify_accuracy_file, 'r') as fd:
+                    content = fd.read()
+                if 'Accuracy check pass: False' in content or 'TEST FAIL' in content:
+                    accuracy_failed = True
+
+            if compliance_test_name == 'TEST01' and accuracy_failed:
+                baseline_script_path = os.path.join(compliance_path, 'TEST01', 'create_accuracy_baseline.sh')
+                accuracy_log = os.path.join(results_dir, 'accuracy', 'mlperf_log_accuracy.json')
+                compliance_log = os.path.join(compliance_dir, 'mlperf_log_accuracy.json')
+                subprocess.run(['bash', baseline_script_path, accuracy_log, compliance_log], cwd=tmp_dir, check=True)
+
+                #import pdb;pdb.set_trace()
+                print(os.path.join(tmp_dir, 'mlperf_log_accuracy_baseline.json'), compliance_log)
+                baseline_log = os.path.join(tmp_dir, 'mlperf_log_accuracy_baseline.json')
+                dst_accuracy_dir = os.path.join(output_dir, 'TEST01', 'accuracy')
+                os.makedirs(dst_accuracy_dir, exist_ok=True)
+                dst_baseline_log = os.path.join(dst_accuracy_dir, 'mlperf_log_accuracy_baseline.json')
+                if os.path.exists(baseline_log):
+                    shutil.move(baseline_log, dst_baseline_log)
+
+                baseline_report = experiment_entry.call(
+                    'get',
+                    [ 'extract_accuracy_report' ],
+                    {'accuracy_log_path': dst_baseline_log},
+                )
+                with open(
+                    os.path.join(dst_accuracy_dir, 'baseline_accuracy.txt'),
+                    'w',
+                ) as fd:
+                    if isinstance(baseline_report, list):
+                        fd.write('\n'.join(baseline_report))
+                    else:
+                        fd.write(str(baseline_report))
+
+                compliance_report = experiment_entry.call(
+                    'get',
+                    [ 'extract_accuracy_report' ],
+                    {'abs_accuracy_log_path': compliance_log},
+                )
+                with open(
+                    os.path.join(dst_accuracy_dir, 'compliance_accuracy.txt'),
+                    'w',
+                ) as fd:
+                    if isinstance(compliance_report, list):
+                        fd.write('\n'.join(compliance_report))
+                    else:
+                        fd.write(str(compliance_report))
+                print(f"Cleanup: remove {dst_baseline_log}")
+                os.remove(dst_baseline_log)
+
+            if result_verify == 0:
                 shutil.rmtree(tmp_dir, ignore_errors=True)
             else:
                 raise RuntimeError(f"[get run_verify] failed to execute: {result_verify}")
