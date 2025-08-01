@@ -421,38 +421,35 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
                 if os.path.exists(baseline_log):
                     shutil.move(baseline_log, dst_baseline_log)
 
-                if True:
-                    baseline_report = experiment_entry.call(
-                        'get',
-                        [ 'extract_accuracy_report' ],
-                        {'accuracy_log_path': dst_baseline_log},
-                    )
-                    print(baseline_report)
-                    with open(
-                        os.path.join(dst_accuracy_dir, 'baseline_accuracy.txt'),
-                        'w',
-                    ) as fd:
-                        if isinstance(baseline_report, list):
-                            fd.write('\n'.join(baseline_report))
-                        else:
-                            fd.write(str(baseline_report))
+                baseline_report = experiment_entry.call(
+                    'get',
+                    [ 'extract_accuracy_report' ],
+                    {'accuracy_log_path': dst_baseline_log},
+                )
+                with open(
+                    os.path.join(dst_accuracy_dir, 'baseline_accuracy.txt'),
+                    'w',
+                ) as fd:
+                    if isinstance(baseline_report, list):
+                        fd.write('\n'.join(baseline_report))
+                    else:
+                        fd.write(str(baseline_report))
 
-                    compliance_report = experiment_entry.call(
-                        'get',
-                        [ 'extract_accuracy_report' ],
-                        {'abs_accuracy_log_path': compliance_log},
-                    )
-                    print(compliance_report)
-                    with open(
-                        os.path.join(dst_accuracy_dir, 'compliance_accuracy.txt'),
-                        'w',
-                    ) as fd:
-                        if isinstance(compliance_report, list):
-                            fd.write('\n'.join(compliance_report))
-                        else:
-                            fd.write(str(compliance_report))
-                    print(f"Cleanup: remove {dst_baseline_log}")
-                    os.remove(dst_baseline_log)
+                compliance_report = experiment_entry.call(
+                    'get',
+                    [ 'extract_accuracy_report' ],
+                    {'abs_accuracy_log_path': compliance_log},
+                )
+                with open(
+                    os.path.join(dst_accuracy_dir, 'compliance_accuracy.txt'),
+                    'w',
+                ) as fd:
+                    if isinstance(compliance_report, list):
+                        fd.write('\n'.join(compliance_report))
+                    else:
+                        fd.write(str(compliance_report))
+                print(f"Cleanup: remove {dst_baseline_log}")
+                os.remove(dst_baseline_log)
 
             if result_verify == 0:
                 shutil.rmtree(tmp_dir, ignore_errors=True)
