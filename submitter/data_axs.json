@@ -122,7 +122,7 @@
             "abs_script_path": ["^^", "get", "verify_script_path"],
             "script_extra_params": [ "^^", "substitute", "#{result_dir_cmd}# --compliance_dir \"#{compliance_dir}#\" --output_dir \"#{output_dir}#\" #{scenario_cmd}# #{dtype_cmd}#" ],
             "capture_output": false,
-            "capture_stderr": true,
+            "capture_stderr": false,
             "results_dir_cmd": [ "^^", "get", "results_dir_cmd" ],
             "compliance_dir": [ "^^", "get", "compliance_dir" ],
             "output_dir": [ "^^", "get", "output_dir" ],
