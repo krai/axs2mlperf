@@ -55,17 +55,14 @@ def detokenise(
         json.dump(output_log, f, indent=2)
     return output_log_path
 
-def extract_result(new_entry, ignore_invalid, keep_prefixes):
+def extract_result(ignore_invalid, keep_prefixes, performance, iteration=-1, loadgen_scenario="UNSET", output_entry=None):
 # Parsing the entry and extracting results.
     extracted_result = {}
-
-    # Extracting the loadgen scenario from the experiment.
-    loadgen_scenario = new_entry.get("loadgen_scenario")
 
     # Checking if the experiment is valid.
     # It will be invalid if at least one request was not delivered to a server.
     try:
-        program_output_path = new_entry.get_path("program_output.json")
+        program_output_path = output_entry.get_path()
         with open(program_output_path) as f:
             output_parameters = json.load(f)
         experiment_valid = output_parameters["result_valid"]
@@ -79,19 +76,15 @@ def extract_result(new_entry, ignore_invalid, keep_prefixes):
         ignore_invalid = True
 
     if experiment_valid:
-        # Running the performance report script.
-        performance_report = new_entry.get("performance")
-
         result_valid = True
         # Extracting and filtering the report, building a dictionary.
-        for item in performance_report:
+        for item in performance:
             if "=" in item:
                 key, value = item.split("=")
                 if key in keep_prefixes:
                     extracted_result[key] = value
             elif item == "INVALID" and not ignore_invalid:
                 result_valid = False
-        
         # Calculating the quality.
         if loadgen_scenario == "Offline":
             extracted_result["Quality"] = extracted_result["Samples_per_second"]
@@ -114,6 +107,6 @@ def extract_result(new_entry, ignore_invalid, keep_prefixes):
             extracted_result["Quality"] = -50.0
 
     # Adding the iteration number.
-    extracted_result["Iteration"] = new_entry.get("iteration")
+    extracted_result["Iteration"] = iteration
 
     return extracted_result
