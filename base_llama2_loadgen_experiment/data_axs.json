@@ -89,16 +89,5 @@
     "tokenised_accuracy_log_path": [ "^^", "get_path", "mlperf_log_accuracy.json" ],
     "output_log_path": [ "^^", "get_path", "detokenised_mlperf_log.json" ],
 
-    "detokenised_log": [ "^^", "detokenise" ],
-
-    "ignore_invalid": false,
-    "keep_prefixes": [
-        "Samples_per_second",
-        "99.00_percentile_first_token_latency",
-        "99.00_percentile_time_to_output_token",
-        "Completed_samples_per_second",
-        "cutoff_ratio_ttft",
-        "cutoff_ratio_tpot"
-    ],
-    "extracted_result": [ "^^", "extract_result"]
+    "detokenised_log": [ "^^", "detokenise" ]
 }
