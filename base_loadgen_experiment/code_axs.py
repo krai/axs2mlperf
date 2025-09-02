@@ -3,6 +3,7 @@
 from function_access import to_num_or_not_to_num
 from pint import UnitRegistry
 import numpy as np      # needed for denumpify_scalar() and denumpify_dict()
+import json
 
 
 def parse_summary(abs_log_summary_path):
