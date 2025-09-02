@@ -58,5 +58,20 @@
     "sut_description": [ "^^", "execute", [[
         [ "get", "sut_description_entry" ],
         [ "get", "data" ]
+    ]] ],
+
+    "ignore_invalid": false,
+    "keep_prefixes": [
+        "Samples_per_second",
+        "99.00_percentile_first_token_latency",
+        "99.00_percentile_time_to_output_token",
+        "Completed_samples_per_second",
+        "cutoff_ratio_ttft",
+        "cutoff_ratio_tpot"
+    ],
+    "extracted_result": [ "^^", "execute", [[
+        [ "plant", ["extracted_result", [ "^^", "extract_result" ]] ],
+        [ "save", [], { "completed": [ "^^", "get", "__completed" ] } ],
+        [ "get", "extracted_result" ]
     ]] ]
 }
