@@ -55,14 +55,14 @@ def detokenise(
         json.dump(output_log, f, indent=2)
     return output_log_path
 
-def extract_result(ignore_invalid, keep_prefixes, performance, iteration=-1, loadgen_scenario="UNSET", output_entry=None):
+def extract_result(ignore_invalid, keep_prefixes, performance, iteration=-1, loadgen_scenario="UNSET", __entry__=None):
 # Parsing the entry and extracting results.
     extracted_result = {}
 
     # Checking if the experiment is valid.
     # It will be invalid if at least one request was not delivered to a server.
     try:
-        program_output_path = output_entry.get_path()
+        program_output_path = __entry__.get_path("program_output.json")
         with open(program_output_path) as f:
             output_parameters = json.load(f)
         experiment_valid = output_parameters["result_valid"]
