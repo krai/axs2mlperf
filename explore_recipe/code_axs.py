@@ -50,7 +50,8 @@ def parse_and_store_commands(__query, beginning_to_remove, stored_newborn_entry=
             parameters[substring] = [""]
 
     # Add the target collection name to the parameters
-    parameters["collection_name"] = [ target_collection_name ]
+    if target_collection_name:
+        parameters["collection_name"] = [ target_collection_name ]
 
     # Generate combinations of parameter values
     headers = list(parameters.keys())
