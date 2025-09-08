@@ -9,11 +9,17 @@
     "abs_script_path": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "text_to_image_using_loadgen" ],
-        [ "get_path",[[ "text_to_image", "tools", "accuracy_coco.py"]] ]
+        [ "get_path", [ [ "text_to_image", "tools", "accuracy_coco.py" ] ] ]
     ]] ],
-    
-    "caption_path": "/home/ubuntu/work_collection/axs2stg-dev/text_to_image_using_loadgen/text_to_image/coco2014/captions/captions.tsv",
-    "ids_path": "/home/ubuntu/work_collection/axs2stg-dev/text_to_image_using_loadgen/text_to_image/tools/sample_ids.txt",
+    "caption_path": [ "^", "execute", [[
+        [ "byname", "text_to_image_using_loadgen" ],
+        [ "get_path", [ [ "text_to_image", "coco2014", "captions", "captions.tsv" ] ] ]
+    ]] ],
+    "ids_path": [ "^", "execute", [[
+        [ "byname", "text_to_image_using_loadgen" ],
+        [ "get_path", [ [ "text_to_image", "tools", "sample_ids.txt" ] ] ]
+    ]] ],
+
     "compliance_images_path": [ "^^", "get", "output_path" ],
     "compliance_images_path_cmd": [ "^^", "compliance_images_cmd" ],
 
@@ -21,7 +27,7 @@
         [ "get_kernel" ],
         [ "byname", "python_script" ],
         [ "run", [], {
-                "python_deps": [ 
+                "python_deps": [
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy,package_version=1.26.0" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=scipy" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torchvision" ],
