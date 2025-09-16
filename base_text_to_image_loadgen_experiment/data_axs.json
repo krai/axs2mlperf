@@ -29,7 +29,7 @@
         [ "run", [], {
                 "python_deps": [
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=numpy,package_version=1.26.0" ],
-                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pandas,package_version=1.5.3,no_deps" ],
+                    [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=pandas,no_deps" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=scipy" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=torchvision" ],
                     [ "AS^IS", "^^", "python_sync_pip_package", "python_package,package_name=transformers,package_version=4.52.3" ],
