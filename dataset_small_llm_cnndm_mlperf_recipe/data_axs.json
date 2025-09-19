@@ -1,11 +1,8 @@
 {
     "_producer_rules": [
         [ [ "downloaded", "dataset_name=cnndm", "model_family=llama3_1", "variant=8b" ], [["get_kernel"],["byname","downloader"],["download"]], {
-            "downloading_tool_query": "shell_tool,can_download_url_from_rclone",
-            "url": "mlc-inference:mlcommons-inference-wg-public/llama3.1_8b/cnn_eval.json",
-            "downloading_tool_params": {
-                "rclone_remote_name": "mlc-inference"
-            },
+            "downloading_tool_query": "shell_tool,can_download_url,tool_name=mlc_r2_downloader",
+            "url": "https://inference.mlcommons-storage.org/metadata/llama3-1-8b-cnn-eval.uri",
             "newborn_entry_name": "downloaded_mlc_cnndm_llama3_1_8b",
             "file_path": "llama3_1_8b"
         }, [] ]
