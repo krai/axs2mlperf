@@ -42,6 +42,8 @@
 
     "accuracy_log_dtype": "int32",
 
+    "hf_token": "",
+
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "python_script" ],
@@ -59,7 +61,8 @@
                 "abs_script_path": ["^^", "get", "abs_script_path"],
                 "script_extra_params": [ "^^", "substitute", "--mlperf-accuracy-file #{accuracy_log_path}# --dataset-file #{dataset_path}# --dtype #{accuracy_log_dtype}#" ],
                 "desired_python_version": ["^", "kernel_python_major_dot_minor"],
-                "capture_output": true
+                "capture_output": true,
+                "extra_env": { "HUGGING_FACE_HUB_TOKEN": [ "^^", "substitute", "#{hf_token}#" ] }
             } ],
         0,
         [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ],
