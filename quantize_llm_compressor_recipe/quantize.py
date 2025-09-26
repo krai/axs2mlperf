@@ -11,9 +11,9 @@ args = iter(sys.argv[1:])
 source_model_path = next(args)
 target_model_path = next(args)
 calib_dataset_path = next(args)
-num_gpus = next(args)
-max_sequence_length = next(args)
-num_calibration_samples = next(args)
+num_gpus = int(next(args))
+max_sequence_length = int(next(args))
+num_calibration_samples = int(next(args))
 
 recipe = """
 quant_stage:
