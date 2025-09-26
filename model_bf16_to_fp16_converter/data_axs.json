@@ -5,7 +5,7 @@
     ],
 
     "pipeline": [ "^^", "execute", [[
-        [ "convert" ],
+        [ "run" ],
         [ ],
         [ "get", "stored_newborn_entry" ]
     ]] ], 
