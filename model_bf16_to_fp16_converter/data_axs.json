@@ -10,6 +10,8 @@
         [ "get", "stored_newborn_entry" ]
     ]] ], 
 
+    "desired_python_version": "3.11",
+
     "model_name": "llama3_1",
     "model_variant": "8b",
 
