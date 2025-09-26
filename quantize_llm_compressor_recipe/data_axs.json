@@ -45,7 +45,8 @@
     ],
     "calib_dataset_path": [ "^^", "execute", [[
         [ "get", "calib_dataset_entry" ],
-        [ "get_path" ]
+        [ "get_path" ],
+        [ "__add__", "/cnn_dailymail_calibration.json" ]
     ]] ],
 
     "num_gpus": 1,
