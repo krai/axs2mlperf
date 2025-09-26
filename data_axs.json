@@ -78,7 +78,8 @@
         "quantize_quark_recipe": "quantize_quark_recipe",
         "base_small_llm_loadgen_experiment": "base_small_llm_loadgen_experiment",
         "mlc_r2_downloader_recipe": "mlc_r2_downloader_recipe",
-        "mlc_r2_downloader_tool_detector": "mlc_r2_downloader_tool_detector"
+        "mlc_r2_downloader_tool_detector": "mlc_r2_downloader_tool_detector",
+        "model_bf16_to_fp16_converter": "model_bf16_to_fp16_converter"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
