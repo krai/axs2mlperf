@@ -2,10 +2,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 
 from llmcompressor.transformers import SparseAutoModelForCausalLM, oneshot
-from llmcompressor.transformers.compression.helpers import (
-    calculate_offload_device_map,
-    custom_offload_device_map,
-)
+from llmcompressor.transformers.compression.helpers import calculate_offload_device_map
 
 import sys
 
