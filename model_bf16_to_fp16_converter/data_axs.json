@@ -1,0 +1,53 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ], [ "^", "byname", "entry_creator" ] ],
+    "_producer_rules": [
+        [ [ "converted", "method=transformers" ], [[ "get", "pipeline" ]] ]
+    ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [ ],
+        [ "get", "stored_newborn_entry" ]
+    ]] ], 
+
+    "desired_python_version": "3.11",
+
+    "model_name": "llama3_1",
+    "model_variant": "8b",
+
+    "source_model_query": [ "^^", "substitute", [[
+        "downloaded",
+        "hf_model",
+        [ "model_family", "#{model_name}#" ],
+        [ "variant", "#{model_variant}#" ]
+    ]] ],
+    "source_model_entry": [ "^", "byquery", 
+        [[ "^^", "get", "source_model_query" ]], {}, [ "source_model_query" ]
+    ],
+    "source_model_path": [ "^^", "execute", [[
+        [ "get", "source_model_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "target_model_path": [ "^^", "get", "newborn_entry_path" ],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ 
+            "python_package",
+            "package_name=llm-compressor",
+            "installable=git+https://github.com/vllm-project/llm-compressor.git@sa/big_model_support",
+            ["desired_python_version", [ "^^", "get", "desired_python_version" ] ]
+        ]] ]
+    ],
+
+    "newborn_entry_tags": [ "converted", "method=transformers" ],
+    "newborn_name_template": [ "converted_#{model_name}#_#{model_variant}#_from_bf16_to_fp16_using_#{method}#" ],
+    "newborn_entry_param_names": [
+        "model_name",
+        "model_variant"
+    ],
+
+    "rel_script_path": "convert.py",
+
+    "script_extra_params": [ "^^", "substitute", "#{source_model_path}# #{target_model_path}#" ]
+}

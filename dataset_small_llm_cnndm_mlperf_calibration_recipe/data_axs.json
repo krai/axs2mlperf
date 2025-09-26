@@ -1,0 +1,10 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "dataset_name=cnndm", "model_family=llama3_1", "variant=8b", "type=calibration" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "downloading_tool_query": "shell_tool,can_download_url,tool_name=mlc_r2_downloader",
+            "url": "https://inference.mlcommons-storage.org/metadata/llama3-1-8b-cnn-dailymail-calibration.uri",
+            "newborn_entry_name": "downloaded_mlc_cnndm_llama3_1_8b_calibration",
+            "file_path": "llama3_1_8b"
+        }, [] ]
+    ]
+}
