@@ -40,6 +40,7 @@
         ]] ]
     ],
 
+    "newborn_parent_names": [ "base_safetensors_model" ],
     "newborn_entry_tags": [ "converted", "method=transformers" ],
     "newborn_name_template": [ "converted_#{model_name}#_#{model_variant}#_from_bf16_to_fp16_using_#{method}#" ],
     "newborn_entry_param_names": [

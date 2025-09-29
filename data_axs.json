@@ -81,7 +81,8 @@
         "mlc_r2_downloader_tool_detector": "mlc_r2_downloader_tool_detector",
         "model_bf16_to_fp16_converter": "model_bf16_to_fp16_converter",
         "quantize_llm_compressor_recipe": "quantize_llm_compressor_recipe",
-        "dataset_small_llm_cnndm_mlperf_calibration_recipe": "dataset_small_llm_cnndm_mlperf_calibration_recipe"
+        "dataset_small_llm_cnndm_mlperf_calibration_recipe": "dataset_small_llm_cnndm_mlperf_calibration_recipe",
+        "base_safetensors_model": "base_safetensors_model"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,

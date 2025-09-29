@@ -68,6 +68,7 @@
         ]] ]
     ],
 
+    "newborn_parent_names": [ "base_safetensors_model" ],
     "newborn_entry_tags": [ "quantized", "method=llm_compressor" ],
     "newborn_name_template": [ "quantized_#{model_name}#_#{model_variant}#_using_#{method}#" ],
     "newborn_entry_param_names": [
