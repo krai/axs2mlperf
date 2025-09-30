@@ -1,8 +1,8 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer
 
-from llmcompressor.transformers import SparseAutoModelForCausalLM, oneshot
-from llmcompressor.transformers.compression.helpers import calculate_offload_device_map
+from llmcompressor.transformers import SparseAutoModelForCausalLM
+from llmcompressor import oneshot
 
 import sys
 
@@ -14,8 +14,9 @@ calib_dataset_path = next(args)
 num_gpus = int(next(args))
 max_sequence_length = int(next(args))
 num_calibration_samples = int(next(args))
+calibration_target = next(args)
 
-recipe = """
+recipe_fp8 = """
 quant_stage:
     quant_modifiers:
         QuantizationModifier:
@@ -37,17 +38,33 @@ quant_stage:
                     targets: ["Linear"]
     """
 
-device_map = calculate_offload_device_map(
-    source_model_path,
-    reserve_for_hessians=False,
-    num_gpus=num_gpus,
-    torch_dtype="auto"
-)
+recipe_fp4 = """
+quant_stage:
+    quant_modifiers:
+        QuantizationModifier:
+            ignore: ["lm_head"]
+            config_groups:
+                group_0:
+                    weights:
+                        num_bits: 4
+                        type: float
+                        strategy: tensor_group
+                        dynamic: false
+                        symmetric: true
+                        group_size: 16
+                    input_activations:
+                        num_bits: 4
+                        type: float
+                        strategy: tensor_group
+                        dynamic: local
+                        symmetric: true
+                        group_size: 16
+                    targets: ["Linear"]
+    """
 
 model = SparseAutoModelForCausalLM.from_pretrained(
     source_model_path,
-    torch_dtype="auto",
-    device_map=device_map
+    torch_dtype="auto"
 )
 
 tokenizer = AutoTokenizer.from_pretrained(source_model_path)
@@ -71,6 +88,12 @@ calib_dataset = calib_dataset.map(
 )
 
 num_calibration_samples = min(num_calibration_samples, len(calib_dataset))
+
+recipe = ""
+if calibration_target == "fp8":
+    recipe =  recipe_fp8
+elif calibration_target == "fp4":
+    recipe = recipe_fp4
 
 oneshot(
     model=model,
