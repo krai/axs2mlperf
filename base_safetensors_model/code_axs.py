@@ -1,4 +1,5 @@
 from safetensors import safe_open
+import torch
 import math
 from collections import defaultdict
 from pathlib import Path
