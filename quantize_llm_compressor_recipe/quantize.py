@@ -14,7 +14,7 @@ calib_dataset_path = next(args)
 num_gpus = int(next(args))
 max_sequence_length = int(next(args))
 num_calibration_samples = int(next(args))
-calibration_target = next(args)
+quantization_target = next(args)
 
 recipe_fp8 = """
 quant_stage:
@@ -113,11 +113,11 @@ calib_dataset = calib_dataset.map(
 num_calibration_samples = min(num_calibration_samples, len(calib_dataset))
 
 recipe = ""
-if calibration_target == "fp8":
+if quantization_target == "fp8":
     recipe =  recipe_fp8
-elif calibration_target == "fp4":
+elif quantization_target == "fp4":
     recipe = recipe_fp4
-elif calibration_target == "fp8_fp4_v1":
+elif quantization_target == "fp8_fp4_v1":
     recipe = recipe_fp8_fp4_v1
 
 oneshot(

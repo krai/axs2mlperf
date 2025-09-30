@@ -53,7 +53,7 @@
     "max_sequence_length": 4096,
     "num_calibration_samples": 1000,
 
-    "calibration_target": "fp8",
+    "quantization_target": "fp8",
 
     "python_deps": [
         [ "^^", "python_sync_pip_package", [[
@@ -80,6 +80,6 @@
     "rel_script_path": "quantize.py",
 
     "script_extra_params": [ "^^", "substitute", 
-        "#{source_model_path}# #{target_model_path}# #{calib_dataset_path}# #{num_gpus}# #{max_sequence_length}# #{num_calibration_samples}# #{calibration_target}#"
+        "#{source_model_path}# #{target_model_path}# #{calib_dataset_path}# #{num_gpus}# #{max_sequence_length}# #{num_calibration_samples}# #{quantization_target}#"
     ]
 }
