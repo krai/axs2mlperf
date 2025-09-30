@@ -62,6 +62,29 @@ quant_stage:
                     targets: ["Linear"]
     """
 
+recipe_fp8_fp4_v1 = """
+quant_stage:
+    quant_modifiers:
+        QuantizationModifier:
+            ignore: ["lm_head"]
+            config_groups:
+                group_0:
+                    weights:
+                        num_bits: 4
+                        type: float
+                        strategy: tensor_group
+                        dynamic: false
+                        symmetric: true
+                        group_size: 16
+                    input_activations:
+                        num_bits: 8
+                        type: float
+                        strategy: tensor
+                        dynamic: false
+                        symmetric: true
+                    targets: ["Linear"]
+    """
+
 model = SparseAutoModelForCausalLM.from_pretrained(
     source_model_path,
     torch_dtype="auto"
@@ -94,6 +117,8 @@ if calibration_target == "fp8":
     recipe =  recipe_fp8
 elif calibration_target == "fp4":
     recipe = recipe_fp4
+elif calibration_target == "fp8_fp4_v1":
+    recipe = recipe_fp8_fp4_v1
 
 oneshot(
     model=model,
