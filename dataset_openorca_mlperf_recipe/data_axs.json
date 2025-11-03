@@ -34,9 +34,9 @@
 
     "python_deps": [
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numpy", "package_version===1.26.4" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets" ]] ],
         [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pandas" ]] ],
-        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ]
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=transformers" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets" ]] ]
     ],
 
     "newborn_entry_tags": [ "downloaded", "dataset_name=openorca" ],
