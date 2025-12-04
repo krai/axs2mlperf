@@ -206,7 +206,7 @@ def denumpify_dict(np_dict):
 
     return { k: denumpify_scalar(np_dict[k]) for k in np_dict }
 
-def extract_result(ignore_invalid, keep_prefixes, performance,
+def extract_result(ignore_invalid, keep_prefixes,
                    iteration=-1, loadgen_scenario="UNSET", save_metrics=False,
                    __entry__=None):
 # Parsing the entry and extracting results.
@@ -254,6 +254,7 @@ def extract_result(ignore_invalid, keep_prefixes, performance,
         else:
             result_valid = True
             # Extracting and filtering the report, building a dictionary.
+            performance = __entry__.get("performance")
             for item in performance:
                 if "=" in item:
                     key, value = item.split("=")
