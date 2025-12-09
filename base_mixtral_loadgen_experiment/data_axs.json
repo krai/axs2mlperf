@@ -82,6 +82,6 @@
     "gen_tok_len": [ "^^" , "dig","accuracy_dict.gen_tok_len" ],
     "tokens_per_sample": [ "^^" , "dig","accuracy_dict.tokens_per_sample" ],
 
-    "accuracy_range_dict": { "rouge1": [ 45.036189, null ], "rouge2": [ 23.050071, null ], "rougeL": [ 30.057885, null], "rougeLsum":[ null, null ], "gsm8k": [ 73.0422, null ], "mbxp": [ 59.5188, null ], "gen_len": [ null, null ], "gen_num": [ null, null ], "gen_tok_len": [ null, null ], "tokens_per_sample": [ 131.31, 160.49 ] }
+    "accuracy_range_dict": { "rouge1": [ 45.036189, null ], "rouge2": [ 23.050071, null ], "rougeL": [ 30.057885, null], "gsm8k": [ 73.0422, null ], "mbxp": [ 59.5188, null ], "gen_num": [15000, null], "tokens_per_sample": [ 131.31, 160.49 ] }
 
 }
