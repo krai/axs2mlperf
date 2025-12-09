@@ -206,8 +206,9 @@ def denumpify_dict(np_dict):
 
     return { k: denumpify_scalar(np_dict[k]) for k in np_dict }
 
-def extract_result(ignore_invalid, keep_prefixes, performance,
-                   iteration=-1, loadgen_scenario="UNSET", __entry__=None):
+def extract_result(ignore_invalid, keep_prefixes,
+                   iteration=-1, loadgen_scenario="UNSET", save_metrics=False,
+                   __entry__=None):
 # Parsing the entry and extracting results.
     extracted_result = {}
 
@@ -228,35 +229,59 @@ def extract_result(ignore_invalid, keep_prefixes, performance,
         ignore_invalid = True
 
     if experiment_valid:
-        result_valid = True
-        # Extracting and filtering the report, building a dictionary.
-        for item in performance:
-            if "=" in item:
-                key, value = item.split("=")
-                if key in keep_prefixes:
-                    extracted_result[key] = value
-            elif item == "INVALID" and not ignore_invalid:
-                result_valid = False
-        # Calculating the quality.
-        if loadgen_scenario == "Offline":
-            extracted_result["Quality"] = extracted_result["Samples_per_second"]
-        elif loadgen_scenario == "Server":
-            cutoff_ttft = float(extracted_result["cutoff_ratio_ttft"])
-            cutoff_ttop = float(extracted_result["cutoff_ratio_tpot"])
-            
-            penalty = 0.0
-            if cutoff_ttft > 1.0:
-                penalty += min((cutoff_ttft - 1.0) * 5, 10)
-            if cutoff_ttop > 1.0:
-                penalty += min((cutoff_ttop - 1.0) * 5, 10)
+        if save_metrics:
+            metrics_file_path = __entry__.get_path("metrics.jsonl")
+            total_input = 0
+            total_output = 0
+            min_request_time = float('inf')
+            max_response_time = float('-inf')
 
-            if penalty > 0:
-                extracted_result["Quality"] = -penalty
-            else:
-                extracted_result["Quality"] = float(extracted_result["Completed_samples_per_second"])
+            with open(metrics_file_path) as f:
+                for line in f:
+                    rec = json.loads(line)
 
-        if not result_valid:
-            extracted_result["Quality"] = -50.0
+                    total_input += rec["input_tokens"]
+                    total_output += rec["output_tokens"]
+
+                    min_request_time = min(min_request_time, rec["request_time"])
+                    max_response_time = max(max_response_time, rec["response_time"])
+
+            dur_s = max_response_time - min_request_time
+            total_tokens = total_input + total_output
+
+            total_token_throughput = total_tokens / dur_s
+            extracted_result["Quality"] = total_token_throughput
+        else:
+            result_valid = True
+            # Extracting and filtering the report, building a dictionary.
+            performance = __entry__.get("performance")
+            for item in performance:
+                if "=" in item:
+                    key, value = item.split("=")
+                    if key in keep_prefixes:
+                        extracted_result[key] = value
+                elif item == "INVALID" and not ignore_invalid:
+                    result_valid = False
+            # Calculating the quality.
+            if loadgen_scenario == "Offline":
+                extracted_result["Quality"] = extracted_result["Samples_per_second"]
+            elif loadgen_scenario == "Server":
+                cutoff_ttft = float(extracted_result["cutoff_ratio_ttft"])
+                cutoff_ttop = float(extracted_result["cutoff_ratio_tpot"])
+                
+                penalty = 0.0
+                if cutoff_ttft > 1.0:
+                    penalty += min((cutoff_ttft - 1.0) * 5, 10)
+                if cutoff_ttop > 1.0:
+                    penalty += min((cutoff_ttop - 1.0) * 5, 10)
+
+                if penalty > 0:
+                    extracted_result["Quality"] = -penalty
+                else:
+                    extracted_result["Quality"] = float(extracted_result["Completed_samples_per_second"])
+
+            if not result_valid:
+                extracted_result["Quality"] = -50.0
 
     # Adding the iteration number.
     extracted_result["Iteration"] = iteration
