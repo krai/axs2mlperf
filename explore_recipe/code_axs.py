@@ -111,11 +111,8 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
         cmd_tag_list = []
         cmd_tag_collection = ''
         for key, value in config_cmd.items():
-            # Add collection name as a special argument
-            if key == 'collection_name' and value:
-                cmd_tag_collection = f" --produce_if_not_found,::=collection_name:{value}"
             # Handle flags ending with '+' or '-'
-            elif value and value[0] in ("+", "-"):
+            if value and value[0] in ("+", "-"):
                 cmd_tag_list.append(f"{key}{value[0]}")
             # Add key-value pairs to the command
             elif value or value == 0:
@@ -146,7 +143,8 @@ def retrieve_and_execute_commands(csv_path, explore_timeout_s, newborn_entry=Non
             new_entry = __entry__.get_kernel().byquery(new_query)
             result = __entry__.call("extract_result", [ new_entry ], {})
             new_entry.plant("performance_result", result)
-            new_entry.save()
+            completed = new_entry.get("__completed")
+            new_entry.save(completed=completed)
             results[selection] = result
         
         selection = __entry__.call("select_combination_to_execute", [ combinations, results, headers ], {})
