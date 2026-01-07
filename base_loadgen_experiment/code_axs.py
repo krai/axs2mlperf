@@ -206,7 +206,7 @@ def denumpify_dict(np_dict):
 
     return { k: denumpify_scalar(np_dict[k]) for k in np_dict }
 
-def extract_result(ignore_invalid, keep_prefixes,
+def extract_result(ignore_invalid, keep_prefixes, keep_middle=1.0,
                    iteration=-1, loadgen_scenario="UNSET", save_metrics=False,
                    __entry__=None):
 # Parsing the entry and extracting results.
@@ -236,15 +236,29 @@ def extract_result(ignore_invalid, keep_prefixes,
             min_request_time = float('inf')
             max_response_time = float('-inf')
 
+            num_lines = 0
             with open(metrics_file_path) as f:
                 for line in f:
                     rec = json.loads(line)
+                    num_lines += 1
+
+            counter = 0
+            min_counter = int(0.5 * (1 - keep_middle) * num_lines)
+            max_counter = num_lines - min_counter
+            with open(metrics_file_path) as f:
+                for line in f:
+                    rec = json.loads(line)
+                    if counter < min_counter or counter > max_counter:
+                        counter += 1
+                        continue
 
                     total_input += rec["input_tokens"]
                     total_output += rec["output_tokens"]
 
                     min_request_time = min(min_request_time, rec["request_time"])
                     max_response_time = max(max_response_time, rec["response_time"])
+
+                    counter += 1
 
             dur_s = max_response_time - min_request_time
             total_tokens = total_input + total_output
