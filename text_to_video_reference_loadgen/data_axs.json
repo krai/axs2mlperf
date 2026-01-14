@@ -1,0 +1,66 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "shell" ],
+        [ "^", "byname", "base_loadgen_program" ]
+    ],
+    
+    "_producer_rules": [
+        [ [ "loadgen_output", "task=text_to_video", "framework=torch" ], [[ "get", "run" ]] ]
+    ],
+
+    "hostname": [ "^", "func", "socket.gethostname" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "text_to_video_reference_loadgen_script" ]
+    ]] ],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ]
+    ],
+
+    "loadgen_scenario": "Offline",
+    "loadgen_dataset_size": 248,
+    "loadgen_buffer_size": 248,
+
+    "num_gpus": 8,
+    "num_iterations": 1,
+    "num_prompts": -1,
+
+    "model_name": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "model_path": [ "^^", "substitute", "#{output_dir}#/models/Wan2.2-T2V-A14B-Diffusers" ],
+
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "vbench_prompts.txt" ]
+    ]] ],
+
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_video_loadgen_experiment" ] ],
+    "output_entry_param_names": [
+        "num_gpus"
+    ],
+
+    "videos_path": [ "^^", "substitute", "#{output_dir}#/videos" ],
+    "config_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "inference_config.yaml" ]
+    ]] ],
+    "fixed_latent_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "fixed_latent.pt" ]
+    ]] ],
+
+    "download_model_script_name": "download_model.py",
+    "run_inference_script_name": "run_inference.py",
+
+    "build_container": "#{launch_script_path}# --build",
+    "download_model": "#{launch_script_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{model_name}#",
+    "run_inference": "#{launch_script_path}# python3 -m torch.distributed.run --nproc_per_node=#{num_gpus}# #{run_inference_script_name}# --model-path #{model_path}# --dataset #{dataset_path}# --output-dir #{videos_path}# --config #{config_path}# --num-iterations #{num_iterations}# --num-prompts #{num_prompts}# --fixed-latent #{fixed_latent_path}#",
+
+    "in_dir": [ "^^", "get", "output_dir" ],
+
+    "shell_cmd": [ "^^", "substitute",
+        "#{build_container}# && #{download_model}# && #{run_inference}#"
+    ]
+}
