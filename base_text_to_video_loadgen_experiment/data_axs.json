@@ -1,0 +1,30 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "text_to_video_reference_loadgen_script" ]
+    ]] ],
+
+    "videos_path": "",
+    "output_dir": "",
+    "num_gpus": 8,
+
+    "extract_accuracy_report": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "shell" ],
+        [ "run", [], {
+                "accuracy_script_name": "run_evaluation.py",
+                "shell_cmd": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_dir}# --num-gpus #{num_gpus}#" ],
+                "capture_output": true
+            } ],
+        0,
+        [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ],
+        0,
+        [ "denumpify_dict" ],
+        0,
+        [ "func", "str" ]
+    ]], {} ]
+}

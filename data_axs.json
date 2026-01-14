@@ -81,7 +81,9 @@
         "mlc_r2_downloader_tool_detector": "mlc_r2_downloader_tool_detector",
         "model_bf16_to_fp16_converter": "model_bf16_to_fp16_converter",
         "quantize_llm_compressor_recipe": "quantize_llm_compressor_recipe",
-        "dataset_small_llm_cnndm_mlperf_calibration_recipe": "dataset_small_llm_cnndm_mlperf_calibration_recipe"
+        "dataset_small_llm_cnndm_mlperf_calibration_recipe": "dataset_small_llm_cnndm_mlperf_calibration_recipe",
+        "base_text_to_video_loadgen_experiment": "base_text_to_video_loadgen_experiment",
+        "text_to_video_reference_loadgen": "text_to_video_reference_loadgen"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
