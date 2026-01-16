@@ -27,7 +27,7 @@
 
     "model_name": "wan2_2",
     "mlperf_model_name": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
-    "model_path": [ "^^", "substitute", "#{newborn_entry_path}#/models/#{mlperf_model_name}#" ],
+    "model_path": "./models",
 
     "download_model_script_name": "download_model.py",
 
