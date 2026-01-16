@@ -83,7 +83,8 @@
         "quantize_llm_compressor_recipe": "quantize_llm_compressor_recipe",
         "dataset_small_llm_cnndm_mlperf_calibration_recipe": "dataset_small_llm_cnndm_mlperf_calibration_recipe",
         "base_text_to_video_loadgen_experiment": "base_text_to_video_loadgen_experiment",
-        "text_to_video_reference_loadgen": "text_to_video_reference_loadgen"
+        "text_to_video_reference_loadgen": "text_to_video_reference_loadgen",
+        "model_pytorch_wan2_2_recipe": "model_pytorch_wan2_2_recipe"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
