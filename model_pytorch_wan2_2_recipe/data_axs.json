@@ -1,0 +1,41 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "shell" ],
+        [ "^", "byname", "entry_creator" ]
+    ],
+    
+    "_producer_rules": [
+        [ [ "downloaded", "pytorch_model", "model_name=wan2_2" ], [[ "get", "pipeline" ]] ]
+    ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [ ],
+        [ "get", "stored_newborn_entry" ]
+    ]] ],
+
+    "newborn_name_template": "downloaded_pytorch_model_wan2_2",
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "text_to_video_reference_script" ]
+    ]] ],
+
+    "file_name": [ "models", [ "^^", "substitute", "#{mlperf_model_name}#" ] ],
+
+    "model_name": "wan2_2",
+    "mlperf_model_name": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "model_path": [ "^^", "substitute", "#{newborn_entry_path}#/models/#{mlperf_model_name}#" ],
+
+    "download_model_script_name": "download_model.py",
+
+    "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
+    "download_model":  [ "^^", "substitute", "#{launch_script_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{mlperf_model_name}#" ],
+
+    "in_dir": [ "^^", "get", "newborn_entry_path" ],
+    "shell_cmd": [ "^^", "substitute",
+        "#{build_container}# && #{download_model}#"
+    ]
+}
