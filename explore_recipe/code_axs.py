@@ -20,8 +20,17 @@ def get_entry_name(__query, prefix="explored_"):
     name = prefix + hash_suffix
     return name
 
+def generate_parameter_combinations(parameters):
+    # Generate all combinations of parameter values
+    values = list(parameters.values())
+    combinations = list(product(*values))
+    return combinations
+
 # Function to parse the query and store results of parsing into a csv file
-def parse_and_store_commands(__query, beginning_to_remove, stored_newborn_entry=None, csv_file_name="parameters.csv", target_collection_name="experiments"):
+def parse_and_store_commands(__query, beginning_to_remove, stored_newborn_entry=None,
+                             csv_file_name="parameters.csv",
+                             target_collection_name="experiments",
+                             __entry__=None):
     # Preprocess the query and remove 'dry_run' flags
     query = preprocess_query(__query, beginning_to_remove)
     query = query.replace(',dry_run+', '').replace(',dry_run-', '')
@@ -53,17 +62,16 @@ def parse_and_store_commands(__query, beginning_to_remove, stored_newborn_entry=
     if target_collection_name:
         parameters["collection_name"] = [ target_collection_name ]
 
-    # Generate combinations of parameter values
+    # Generate lines of parameter values
     headers = list(parameters.keys())
-    values = list(parameters.values())
-    combinations = list(product(*values))
+    lines = __entry__.call("generate_parameter_combinations", [ parameters ], {})
 
-    # Write the parameter combinations to a CSV file
+    # Write the parameter values to a CSV file
     csv_path = stored_newborn_entry.get_path(csv_file_name)
     with open(csv_path, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(headers)
-        writer.writerows(combinations)
+        writer.writerows(lines)
     
     return csv_path
 
