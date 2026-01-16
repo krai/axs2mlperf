@@ -5,7 +5,7 @@
 
     "launch_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "text_to_video_reference_loadgen_script" ]
+        [ "get_path_of", "text_to_video_reference_script" ]
     ]] ],
 
     "videos_path": "",

@@ -5,7 +5,7 @@
     ],
     
     "_producer_rules": [
-        [ [ "loadgen_output", "task=text_to_video", "framework=torch" ], [[ "get", "run" ]] ]
+        [ [ "loadgen_output", "task=text_to_video", "framework=torch" ], [[ "run" ]] ]
     ],
 
     "hostname": [ "^", "func", "socket.gethostname" ],
@@ -13,7 +13,7 @@
 
     "launch_script_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "text_to_video_reference_loadgen_script" ]
+        [ "get_path_of", "text_to_video_reference_script" ]
     ]] ],
 
     "python_deps": [
@@ -54,9 +54,9 @@
     "download_model_script_name": "download_model.py",
     "run_inference_script_name": "run_inference.py",
 
-    "build_container": "#{launch_script_path}# --build",
-    "download_model": "#{launch_script_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{model_name}#",
-    "run_inference": "#{launch_script_path}# python3 -m torch.distributed.run --nproc_per_node=#{num_gpus}# #{run_inference_script_name}# --model-path #{model_path}# --dataset #{dataset_path}# --output-dir #{videos_path}# --config #{config_path}# --num-iterations #{num_iterations}# --num-prompts #{num_prompts}# --fixed-latent #{fixed_latent_path}#",
+    "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
+    "download_model": [ "^^", "substitute", "#{launch_script_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{model_name}#" ],
+    "run_inference": [ "^^", "substitute", "#{launch_script_path}# python3 -m torch.distributed.run --nproc_per_node=#{num_gpus}# #{run_inference_script_name}# --model-path #{model_path}# --dataset #{dataset_path}# --output-dir #{videos_path}# --config #{config_path}# --num-iterations #{num_iterations}# --num-prompts #{num_prompts}# --fixed-latent #{fixed_latent_path}#" ],
 
     "in_dir": [ "^^", "get", "output_dir" ],
 
