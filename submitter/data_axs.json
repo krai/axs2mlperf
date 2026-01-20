@@ -72,12 +72,12 @@
     ]], {}, ["mlperf_inference_git_entry"] ],
     "submission_checker_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [["tools", "submission", "submission_checker.py"]] ]
+        [ "get_path", [["tools", "submission", "submission_checker", "main.py"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
 
     "compliance_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [["compliance", "nvidia"]] ]
+        [ "get_path", [["compliance"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
 
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
