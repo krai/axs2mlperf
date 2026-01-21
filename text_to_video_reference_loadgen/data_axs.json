@@ -27,6 +27,7 @@
     "num_gpus": 8,
     "num_iterations": 1,
     "num_prompts": -1,
+    "performance_sample_count": 5000,
 
     "model_name": "wan2_2",
     "model_query": [ "^^", "substitute", [ "downloaded,pytorch_model,model_name=#{model_name}#" ] ],
@@ -39,10 +40,11 @@
         [ "get_path" ]
     ]] ],
 
+    "dataset_file_name": "vbench_prompts.txt",
     "dataset_name": "mlperf",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "vbench_prompts.txt" ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "substitute", "#{dataset_file_name}#" ] ]
     ]] ],
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_video_loadgen_experiment" ] ],
@@ -51,20 +53,39 @@
     ],
 
     "videos_path": [ "^^", "substitute", "#{output_dir}#/videos" ],
+
+    "config_file_name": "inference_config.yaml",
     "config_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "inference_config.yaml" ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", [ "^^", "substitute", "#{config_file_name}#" ] ]
     ]] ],
+
+    "fixed_latent_file_name": "fixed_latent.pt",
     "fixed_latent_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "fixed_latent.pt" ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "substitute", "#{fixed_latent_file_name}#" ] ]
     ]] ],
 
+    "docker_model_path": "/model",
+    "docker_dataset_path": "/dataset",
+    "docker_output_path": [ "^^", "substitute", "/output/#{dataset_file_name}#" ],
+    "docker_config_path": [ "^^", "substitute", "/config/#{config_file_name}#" ],
+    "docker_fixed_latent_path": [ "^^", "substitute", "/fixed_latent/#{fixed_latent_file_name}#" ],
+
+    "volumes": [ "^^", "substitute",
+        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{output_dir}#:#{docker_output_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{target_audit_conf_path}#:#{docker_audit_conf_path}#"
+    ],
+
+    "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+        "AccuracyOnly", "--accuracy",
+        "PerformanceOnly", ""
+    ]],
+
     "download_model_script_name": "download_model.py",
-    "run_inference_script_name": "run_inference.py",
+    "run_inference_script_name": "run_mlperf.py",
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
-    "run_inference": [ "^^", "substitute", "#{launch_script_path}# python3 -m torch.distributed.run --nproc_per_node=#{num_gpus}# #{run_inference_script_name}# --model-path #{model_path}# --dataset #{dataset_path}# --output-dir #{videos_path}# --config #{config_path}# --num-iterations #{num_iterations}# --num-prompts #{num_prompts}# --fixed-latent #{fixed_latent_path}#" ],
+    "run_inference": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 -m torch.distributed.run --nproc_per_node=#{num_gpus}# #{run_inference_script_name}# --model-path #{docker_model_path}# --dataset #{docker_dataset_path}# --output-dir #{docker_output_path}# --config #{docker_config_path}# --num-iterations #{num_iterations}# --num-prompts #{num_prompts}# --fixed-latent #{docker_fixed_latent_path}# --scenario #{loadgen_scenario}# --user_conf #{docker_user_conf_path}# --audit_conf #{docker_audit_conf_path}# --performance-sample-count #{performance_sample_count}# #{accuracy_flag}#" ],
 
     "in_dir": [ "^^", "get", "output_dir" ],
 

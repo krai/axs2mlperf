@@ -23,16 +23,18 @@
         [ "get_path_of", "text_to_video_reference_script" ]
     ]] ],
 
-    "file_name": [ "models", [ "^^", "substitute", "#{mlperf_model_name}#" ] ],
+    "file_name": [ "^^", "get", "#{mlperf_model_name}#" ],
 
     "model_name": "wan2_2",
-    "mlperf_model_name": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "model_family": "Wan-AI",
+    "mlperf_model_name": "Wan2.2-T2V-A14B-Diffusers",
+    "full_mlperf_model_name": [ "^^", "substitute", "#{model_family}#/#{mlperf_model_name}#" ],
     "model_path": "/model",
 
     "download_model_script_name": "download_model.py",
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
-    "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{in_dir}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{mlperf_model_name}#" ],
+    "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{in_dir}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{full_mlperf_model_name}#" ],
 
     "in_dir": [ "^^", "get", "newborn_entry_path" ],
     "shell_cmd": [ "^^", "substitute",
