@@ -23,7 +23,7 @@
         [ "get_path_of", "text_to_video_reference_script" ]
     ]] ],
 
-    "file_name": [ "^^", "get", "#{mlperf_model_name}#" ],
+    "file_name": [ "^^", "get", "mlperf_model_name" ],
 
     "model_name": "wan2_2",
     "model_family": "Wan-AI",
@@ -35,6 +35,10 @@
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
     "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{in_dir}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{full_mlperf_model_name}#" ],
+
+    "newborn_entry_param_names": [
+        "file_name"
+    ],
 
     "in_dir": [ "^^", "get", "newborn_entry_path" ],
     "shell_cmd": [ "^^", "substitute",
