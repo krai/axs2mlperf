@@ -67,10 +67,12 @@
     ]] ],
 
     "docker_model_path": "/model",
-    "docker_dataset_path": "/dataset",
-    "docker_output_path": [ "^^", "substitute", "/output/#{dataset_file_name}#" ],
+    "docker_dataset_path": [ "^^", "substitute", "/dataset/#{dataset_file_name}#" ],
+    "docker_output_path": "/output/",
     "docker_config_path": [ "^^", "substitute", "/config/#{config_file_name}#" ],
     "docker_fixed_latent_path": [ "^^", "substitute", "/fixed_latent/#{fixed_latent_file_name}#" ],
+    "docker_user_conf_path": "/config/user.conf",
+    "docker_audit_conf_path": "/config/audit.config",
 
     "volumes_mapping": [
         [ "^^", "get", "model_path" ], [ "^^", "get", "docker_model_path" ],
