@@ -44,7 +44,7 @@
     "dataset_name": "mlperf",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "substitute", "#{dataset_file_name}#" ] ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "vbench_prompts.txt" ]
     ]] ],
 
     "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_video_loadgen_experiment" ] ],
@@ -57,13 +57,13 @@
     "config_file_name": "inference_config.yaml",
     "config_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", [ "^^", "substitute", "#{config_file_name}#" ] ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "inference_config.yaml" ]
     ]] ],
 
     "fixed_latent_file_name": "fixed_latent.pt",
     "fixed_latent_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "substitute", "#{fixed_latent_file_name}#" ] ]
+        [ "get_path", "text_to_video", "wan2.2-t2v-14b", "data", "fixed_latent.pt" ]
     ]] ],
 
     "docker_model_path": "/model",
