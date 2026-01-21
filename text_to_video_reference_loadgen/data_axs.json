@@ -72,9 +72,16 @@
     "docker_config_path": [ "^^", "substitute", "/config/#{config_file_name}#" ],
     "docker_fixed_latent_path": [ "^^", "substitute", "/fixed_latent/#{fixed_latent_file_name}#" ],
 
-    "volumes": [ "^^", "substitute",
-        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{output_dir}#:#{docker_output_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{target_audit_conf_path}#:#{docker_audit_conf_path}#"
+    "volumes_mapping": [
+        [ "model_path", "docker_model_path" ],
+        [ "dataset_path", "docker_dataset_path" ],
+        [ "output_dir", "docker_output_path" ],
+        [ "config_path", "docker_config_path" ],
+        [ "fixed_latent_path", "docker_fixed_latent_path" ],
+        [ "loadgen_user_conf_path", "docker_user_conf_path" ],
+        [ "target_audit_conf_path", "docker_audit_conf_path" ]
     ],
+    "volumes": [ "^^", "get_volumes" ],
 
     "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
         "AccuracyOnly", "--accuracy",
