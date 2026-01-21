@@ -73,13 +73,13 @@
     "docker_fixed_latent_path": [ "^^", "substitute", "/fixed_latent/#{fixed_latent_file_name}#" ],
 
     "volumes_mapping": [
-        [ "model_path", "docker_model_path" ],
-        [ "dataset_path", "docker_dataset_path" ],
-        [ "output_dir", "docker_output_path" ],
-        [ "config_path", "docker_config_path" ],
-        [ "fixed_latent_path", "docker_fixed_latent_path" ],
-        [ "loadgen_user_conf_path", "docker_user_conf_path" ],
-        [ "target_audit_conf_path", "docker_audit_conf_path" ]
+        [ "^^", "get", "model_path" ], [ "^^", "get", "docker_model_path" ],
+        [ "^^", "get", "dataset_path" ], [ "^^", "get", "docker_dataset_path" ],
+        [ "^^", "get", "output_dir" ], [ "^^", "get", "docker_output_path" ],
+        [ "^^", "get", "config_path" ], [ "^^", "get", "docker_config_path" ],
+        [ "^^", "get", "fixed_latent_path" ], [ "^^", "get", "docker_fixed_latent_path" ],
+        [ "^^", "get", "loadgen_user_conf_path" ], [ "^^", "get", "docker_user_conf_path" ],
+        [ "^^", "get", "target_audit_conf_path" ], [ "^^", "get", "docker_audit_conf_path" ]
     ],
     "volumes": [ "^^", "get_volumes" ],
 
