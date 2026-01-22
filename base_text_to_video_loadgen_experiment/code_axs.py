@@ -18,10 +18,13 @@ def get_videos_path(output_path, videos_relative_path, dataset_path, accuracy_lo
     with open(dataset_path) as f:
         prompts = [line.strip() for line in f.readlines()]
 
-    for item in accuracy_log:
+    print(f"Saving videos to: {video_output_path}")
+    for i, item in enumerate(accuracy_log):
         prompt_idx = item["qsl_idx"]
         data_dump = item["data"]
 
         save_video(video_output_path, prompts[prompt_idx], data_dump)
-    
+        print(f"Saved video {i} of {len(accuracy_log)}")
+    print("All videos saved.")
+
     return video_output_path
