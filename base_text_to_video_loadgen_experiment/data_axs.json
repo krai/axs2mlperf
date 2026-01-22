@@ -21,7 +21,10 @@
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
     "accuracy_script_name": "run_evaluation.py",
-    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_path}# --num-gpus #{num_gpus}#" ],
+    "docker_videos_path": "/videos",
+    "docker_output_path": "/output",
+    "volumes": [ "^^", "substitute", "-v #{videos_path}#:#{docker_videos_path}# -v #{output_path}#:#{docker_output_path}#" ],
+    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{num_gpus}#" ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
