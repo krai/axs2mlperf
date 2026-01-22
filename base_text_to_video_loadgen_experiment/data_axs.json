@@ -8,8 +8,15 @@
         [ "get_path_of", "text_to_video_reference_script" ]
     ]] ],
 
-    "videos_path": "",
-    "output_dir": "",
+    "dataset_file_name": "vbench_prompts.txt",
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
+    ]] ],
+    "output_path": [ "^^", "get_path"],
+    "videos_relative_path": "videos",
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+    "videos_path": [ "^^", "get_videos_path" ],
     "num_gpus": 8,
 
     "extract_accuracy_report": [ "^^", "execute", [[
@@ -17,7 +24,9 @@
         [ "byname", "shell" ],
         [ "run", [], {
                 "accuracy_script_name": "run_evaluation.py",
-                "shell_cmd": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_dir}# --num-gpus #{num_gpus}#" ],
+                "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
+                "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_path}# --num-gpus #{num_gpus}#" ],
+                "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
                 "capture_output": true
             } ],
         0,
