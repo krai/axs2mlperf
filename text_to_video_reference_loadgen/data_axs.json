@@ -52,8 +52,6 @@
         "num_gpus"
     ],
 
-    "videos_path": [ "^^", "substitute", "#{output_dir}#/videos" ],
-
     "config_file_name": "inference_config.yaml",
     "config_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
