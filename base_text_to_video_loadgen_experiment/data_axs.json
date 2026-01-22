@@ -30,6 +30,9 @@
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
+                "envs": {
+                    "GPU_COUNT": 0
+                },
                 "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
                 "capture_output": true
             } ],
