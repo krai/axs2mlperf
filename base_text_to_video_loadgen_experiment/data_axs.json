@@ -19,13 +19,14 @@
     "videos_path": [ "^^", "get_videos_path" ],
     "num_gpus": 8,
 
+    "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
+    "accuracy_script_name": "run_evaluation.py",
+    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_path}# --num-gpus #{num_gpus}#" ],
+
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
-                "accuracy_script_name": "run_evaluation.py",
-                "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
-                "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# python3 #{accuracy_script_name}# --videos-path #{videos_path}# --output-path #{output_path}# --num-gpus #{num_gpus}#" ],
                 "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
                 "capture_output": true
             } ],
