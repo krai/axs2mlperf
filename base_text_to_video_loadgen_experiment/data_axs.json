@@ -30,15 +30,15 @@
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
-                "env": {
-                    "GPU_COUNT": "device=0"
-                },
-                "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
-                "capture_output": false
-            } ],
+            "env": {
+                "GPU_COUNT": "device=0"
+            },
+            "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
+            "capture_output": false
+        } ],
         0,
-        [ "extract_overall_average", [], {
-            "output_path": [ "^^", "get", "output_path" ]
-        } ]
+        [ "func", [ "ufun.rematch", "Overall Average\\s*:\\s*(nan|\\d+(?:\\.\\d+)?)" ] ],
+        0,
+        [ "func", "str" ]
     ]], {} ]
 }
