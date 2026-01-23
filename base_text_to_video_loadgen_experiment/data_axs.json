@@ -37,6 +37,8 @@
                 "capture_output": false
             } ],
         0,
-        [ "extract_overall_average" ]
+        [ "extract_overall_average", [], {
+            "output_path": [ "^^", "get", "output_path" ]
+        } ]
     ]], {} ]
 }
