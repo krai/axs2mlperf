@@ -17,27 +17,26 @@
     "videos_relative_path": "videos",
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
     "videos_path": [ "^^", "get_videos_path" ],
-    "num_gpus": 8,
+    "accuracy_report_num_gpus": 1,
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
     "accuracy_script_name": "run_evaluation.py",
     "docker_videos_path": "/videos",
     "docker_output_path": "/output",
     "volumes": [ "^^", "substitute", "-v #{videos_path}#:#{docker_videos_path}# -v #{output_path}#:#{docker_output_path}#" ],
-    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{num_gpus}#" ],
+    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{accuracy_report_num_gpus}#" ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
+                "env": {
+                    "GPU_COUNT": "device=0"
+                },
                 "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
-                "capture_output": true
+                "capture_output": false
             } ],
         0,
-        [ "func", [ "ufun.rematch", "(\\{.*\\})" ] ],
-        0,
-        [ "denumpify_dict" ],
-        0,
-        [ "func", "str" ]
+        [ "extract_overall_average" ]
     ]], {} ]
 }
