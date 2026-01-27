@@ -7,8 +7,7 @@ def save_video(video_output_path: str, prompt: str, data: str):
     if not os.path.exists(video_output_path):
         os.makedirs(video_output_path)
 
-    safe_prompt = re.sub(r'[\s.]+', '_', prompt)
-    file_path = os.path.join(video_output_path, f"{safe_prompt}-0.mp4")
+    file_path = os.path.join(video_output_path, f"{prompt}-0.mp4")
     with open(file_path, "wb") as f:
         f.write(bytes.fromhex(data))
 
