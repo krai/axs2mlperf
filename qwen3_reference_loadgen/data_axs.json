@@ -1,0 +1,57 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ], [ "^", "byname", "base_loadgen_program" ] ],
+
+    "_producer_rules": [
+        [ [ "shell_tool", "can_benchmark_qwen3" ],
+            [ [ "get_kernel" ], [ "byname", "pip" ], [ "install" ] ], {
+                "package_name": "mlperf_inf_mm_q3vl",
+                "desired_python_version": "3.12",
+                "installable": [ "^", "execute", [[
+                    [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+                    [ "get_path", "multimodal/qwen3-vl" ]
+                ]] ],
+                "newborn_parent_names": [ "base_pip_package", "python_in_shell" ],
+                "python_deps": [
+                    [ "AS^IS", "AS^IS", "AS^IS", "^^", "get", "__entry__" ]
+                ],
+                "exe_path": [ "AS^IS", "AS^IS", "^^", "get_path", "install/bin/mlperf-inf-mm-q3vl" ],
+                "shell_cmd_templates": {
+                    "help": "#{exe_path}# --help",
+                    "help_benchmark": "#{exe_path}# benchmark endpoint --help",
+                    "be": "#{exe_path}# benchmark endpoint --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --dataset.repo_id #{dataset_name}# --settings.logging.log_output.outdir #{output_dir}#"
+                },
+                "cmd_key": "help"
+            }
+        ],
+        [ [ "loadgen_output", "task=qwen3", "framework=reference" ], [["get", "pipeline"]] ]
+    ],
+
+    "loadgen_scenario": "Offline",
+    "model_path": "/mnt/data/krai/mlcommons-storage/vlm_model",
+    "model_name": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+    "dataset_name": "Shopify/product-catalogue",
+
+    "lc_scenario": [ "^^", "execute", [[
+        [ "get", "loadgen_scenario" ],
+        [ "lower" ]
+    ]] ],
+    "lc_mode": [ "^^", "case", [
+        [ "^^", "get", "loadgen_mode" ],
+        "AccuracyOnly", "accuracy_only",
+        "PerformanceOnly", "performance_only"
+    ] ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", "shell_tool,can_benchmark_qwen3" ],
+        [ "run", [], {
+                "cmd_key": "be",
+                "lc_scenario": [ "^^", "get", "lc_scenario" ],
+                "lc_mode": [ "^^", "get", "lc_mode" ],
+                "dataset_name": [ "^^", "get", "dataset_name" ],
+                "output_dir": [ "^^", "get", "output_dir" ]
+            } ],
+        [],
+        [ "get", "output_entry" ]
+    ]] ]
+}

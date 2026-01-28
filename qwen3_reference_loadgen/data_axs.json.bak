@@ -1,0 +1,23 @@
+{
+    "2_parent_entries": [
+        [ "^", "byname", "python_in_shell" ]
+    ],
+    "_producer_rules": [
+        [ [ "python_package", "contains_deps", "package_name=mlperf_inf_mm_q3vl" ],
+            [ [ "get_kernel" ], [ "byname", "pip" ], [ "install" ] ], {
+                "installable": [ "^^", "execute", [[
+                    [ "get", "mlperf_inference_git_entry" ],
+                    [ "get_path", "multimodal/qwen3-vl" ]
+                ]] ],
+                "newborn_parent_names": [ "base_pip_package", "python_in_shell" ],
+                "python_deps": [
+                    [ "AS^IS", "AS^IS", "AS^IS", "^^", "get", "__entry__" ]
+                ],
+                "exe_path": [ "AS^IS", "AS^IS", "^^", "get_path", "install/bin/mlperf-inf-mm-q3vl" ]
+            }, [ "mlperf_inference_git_entry", "desired_python_version" ]
+        ]
+    ],
+
+    "desired_python_version": "3.12",
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ]
+}
