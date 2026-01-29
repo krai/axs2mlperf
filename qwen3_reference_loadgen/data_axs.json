@@ -18,7 +18,8 @@
                 "shell_cmd_templates": {
                     "help": "#{exe_path}# --help",
                     "help_benchmark": "#{exe_path}# benchmark endpoint --help",
-                    "be": "#{exe_path}# benchmark endpoint --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --dataset.repo_id #{dataset_name}# --settings.logging.log_output.outdir #{output_dir}#"
+                    "benchmark": "#{exe_path}# benchmark endpoint --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --dataset.repo_id #{dataset_name}# --settings.logging.log_output.outdir #{output_dir}#",
+                    "accuracy_report": "#{exe_path}# evaluate --filename #{accuracy_log_path}#"
                 },
                 "cmd_key": "help"
             }
@@ -45,7 +46,7 @@
         [ "get_kernel" ],
         [ "byquery", "shell_tool,can_benchmark_qwen3" ],
         [ "run", [], {
-                "cmd_key": "be",
+                "cmd_key": "benchmark",
                 "lc_scenario": [ "^^", "get", "lc_scenario" ],
                 "lc_mode": [ "^^", "get", "lc_mode" ],
                 "dataset_name": [ "^^", "get", "dataset_name" ],
