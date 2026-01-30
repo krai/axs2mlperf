@@ -42,6 +42,8 @@
         "PerformanceOnly", "performance_only"
     ] ],
 
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_loadgen_experiment" ] ],
+
     "pipeline": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byquery", "shell_tool,can_benchmark_qwen3" ],
