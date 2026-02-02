@@ -14,7 +14,7 @@
                 "python_deps": [
                     [ "AS^IS", "AS^IS", "AS^IS", "^^", "get", "__entry__" ]
                 ],
-                "exe_path": [ "AS^IS", "AS^IS", "^^", "get_path", "install/bin/mlperf-inf-mm-q3vl" ],
+		"exe_path": [ "AS^IS", "AS^IS", "AS^IS", "^^", "get_path", [ [ "^^", "execute", [[ ["get", "rel_bin_dir"], [ "__add__", [[ "mlperf-inf-mm-q3vl" ]] ] ]] ] ] ],
                 "shell_cmd_templates": {
                     "help": "#{exe_path}# --help",
                     "help_benchmark": "#{exe_path}# benchmark endpoint --help",
