@@ -60,5 +60,5 @@ def extract_overall_average(output_path):
 
         if num_dimensions > 0:
             overall_average = total_score / num_dimensions
-    
+
     return overall_average
