@@ -6,7 +6,6 @@
             [ [ "get_kernel" ], [ "byname", "pip" ], [ "install" ] ], {
                 "package_name": "mlperf_inf_mm_q3vl",
                 "desired_python_version": "3.12",
-                "dataset": "Shopify/product-catalogue",
                 "installable": [ "^", "execute", [[
                     [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
                     [ "get_path", "multimodal/qwen3-vl" ]
@@ -16,9 +15,16 @@
                     [ "AS^IS", "AS^IS", "AS^IS", "^^", "get", "__entry__" ]
                 ],
 		"exe_path": [ "AS^IS", "AS^IS", "AS^IS", "^^", "get_path", [ [ "^^", "execute", [[ ["get", "rel_bin_dir"], [ "__add__", [[ "mlperf-inf-mm-q3vl" ]] ] ]] ] ] ],
+
+                "model_path": "/mnt/data/krai/mlperf-scratch-path/models/vlm_model/Qwen3-VL-235B-A22B-Instruct",
+                "model_name": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+                "dataset": "Shopify/product-catalogue",
+                "docker_image": "vllm/vllm-openai:v0.15.0-cu130",
+
                 "shell_cmd_templates": {
                     "help": "#{exe_path}# --help",
                     "help_benchmark": "#{exe_path}# benchmark endpoint --help",
+		    "server_cmd": "echo docker run --gpus all -v /mnt/data:/mnt/data -e TRITON_PTXAS_PATH=/usr/local/cuda/bin/ptxas -e PATH=/usr/local/cuda/bin:$PATH -e LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-} -p 8000:8000 --ipc=host #{docker_image}# --served-model-name #{model_name}# --model #{model_path}# --tensor-parallel-size 8 --limit-mm-per-prompt.video 0 --no-enable-prefix-caching",
                     "benchmark": "#{exe_path}# benchmark endpoint --dataset.repo_id #{dataset}# --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --settings.logging.log_output.outdir #{output_dir}#",
                     "accuracy_report": "#{exe_path}# evaluate --dataset.repo_id #{dataset}# --filename #{accuracy_log_path}#"
                 },
@@ -29,8 +35,6 @@
     ],
 
     "loadgen_scenario": "Offline",
-    "model_path": "/mnt/data/krai/mlperf-scratch-path/models/vlm_model/Qwen3-VL-235B-A22B-Instruct",
-    "model_name": "Qwen/Qwen3-VL-235B-A22B-Instruct",
 
     "lc_scenario": [ "^^", "execute", [[
         [ "get", "loadgen_scenario" ],

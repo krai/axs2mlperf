@@ -23,6 +23,9 @@
         # Also retain the desired dataset path in the tool itself:
     [Session 2]$ axs byquery shell_tool,can_benchmark_qwen3,dataset=/mnt/data/krai/mlperf-scratch-path/data/vlm_data/shopify_product_catalog/data
 
+        # Server command can also be produced by the tool, but it's better to start it ASAP as it takes a lot of time to start up. Anyway:
+    [Session 2]$ axs byquery shell_tool,can_benchmark_qwen3 , run --cmd_key=server_cmd
+
         # If the server looks healthy, run the Accuracy benchmark:
     [Session 2]$ axs byquery loadgen_output,task=qwen3,framework=reference,loadgen_mode=AccuracyOnly
 
