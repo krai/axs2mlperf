@@ -4,7 +4,7 @@
     The main mode of operation assumes that a dockerized server is run first in a parallel session.
     Which will likely need a pre-downloaded Qwen3 model.
 
-    [Session 1]$ docker run --gpus all -v /mnt/data:/mnt/data -e TRITON_PTXAS_PATH=/usr/local/cuda/bin/ptxas -p 8000:8000 --ipc=host vllm/vllm-openai:latest --served-model-name Qwen/Qwen3-VL-235B-A22B-Instruct --model /mnt/data/krai/mlcommons-storage/models/vlm_model/Qwen3-VL-235B-A22B-Instruct --tensor-parallel-size 8 --limit-mm-per-prompt.video 0 --no-enable-prefix-caching
+    [Session 1]$ docker run --gpus all -v /mnt/data:/mnt/data -e TRITON_PTXAS_PATH=/usr/local/cuda/bin/ptxas -e PATH=/usr/local/cuda/bin:$PATH -e LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-} -p 8000:8000 --ipc=host vllm/vllm-openai:v0.15.0-cu130 --served-model-name Qwen/Qwen3-VL-235B-A22B-Instruct --model /mnt/data/krai/mlperf-scratch-path/models/vlm_model/Qwen3-VL-235B-A22B-Instruct --tensor-parallel-size 8 --limit-mm-per-prompt.video 0 --no-enable-prefix-caching
 
     Note: From experience, this can take anywhere between 12 and 75 minutes to load all the model's shards into memory.
     Note that if the model is preloaded, you need both --model (containing local path to the model) and --served-model-name (to give it the name).
