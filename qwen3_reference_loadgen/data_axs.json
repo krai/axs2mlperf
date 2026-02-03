@@ -6,6 +6,7 @@
             [ [ "get_kernel" ], [ "byname", "pip" ], [ "install" ] ], {
                 "package_name": "mlperf_inf_mm_q3vl",
                 "desired_python_version": "3.12",
+                "dataset": "Shopify/product-catalogue",
                 "installable": [ "^", "execute", [[
                     [ "byquery", "git_repo,repo_name=mlperf_inference_git" ],
                     [ "get_path", "multimodal/qwen3-vl" ]
@@ -18,8 +19,8 @@
                 "shell_cmd_templates": {
                     "help": "#{exe_path}# --help",
                     "help_benchmark": "#{exe_path}# benchmark endpoint --help",
-                    "benchmark": "#{exe_path}# benchmark endpoint --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --dataset.repo_id #{dataset_name}# --settings.logging.log_output.outdir #{output_dir}#",
-                    "accuracy_report": "#{exe_path}# evaluate --filename #{accuracy_log_path}#"
+                    "benchmark": "#{exe_path}# benchmark endpoint --dataset.repo_id #{dataset}# --settings.test.scenario #{lc_scenario}# --settings.test.mode #{lc_mode}# --settings.logging.log_output.outdir #{output_dir}#",
+                    "accuracy_report": "#{exe_path}# evaluate --dataset.repo_id #{dataset}# --filename #{accuracy_log_path}#"
                 },
                 "cmd_key": "help"
             }
@@ -28,9 +29,8 @@
     ],
 
     "loadgen_scenario": "Offline",
-    "model_path": "/mnt/data/krai/mlcommons-storage/vlm_model",
+    "model_path": "/mnt/data/krai/mlperf-scratch-path/models/vlm_model/Qwen3-VL-235B-A22B-Instruct",
     "model_name": "Qwen/Qwen3-VL-235B-A22B-Instruct",
-    "dataset_name": "Shopify/product-catalogue",
 
     "lc_scenario": [ "^^", "execute", [[
         [ "get", "loadgen_scenario" ],
@@ -51,7 +51,6 @@
                 "cmd_key": "benchmark",
                 "lc_scenario": [ "^^", "get", "lc_scenario" ],
                 "lc_mode": [ "^^", "get", "lc_mode" ],
-                "dataset_name": [ "^^", "get", "dataset_name" ],
                 "output_dir": [ "^^", "get", "output_dir" ]
             } ],
         [],

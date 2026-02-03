@@ -19,8 +19,9 @@
         # Get the axs2mlperf repo that contains our reference benchmark
     [Session 2]$ axs byquery git_repo,collection,repo_name=axs2mlperf
 
-        # Now pull all the deps and build the mlperf_inf_mm_q3vl utility itself:
-    [Session 2]$ axs byquery shell_tool,can_benchmark_qwen3
+        # Now pull all the deps and build the mlperf_inf_mm_q3vl utility itself.
+        # Also retain the desired dataset path in the tool itself:
+    [Session 2]$ axs byquery shell_tool,can_benchmark_qwen3,dataset=/mnt/data/krai/mlperf-scratch-path/data/vlm_data/shopify_product_catalog/data
 
         # If the server looks healthy, run the Accuracy benchmark:
     [Session 2]$ axs byquery loadgen_output,task=qwen3,framework=reference,loadgen_mode=AccuracyOnly
