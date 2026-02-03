@@ -3,7 +3,7 @@
         [ "^", "byname", "shell" ],
         [ "^", "byname", "entry_creator" ]
     ],
-    
+
     "_producer_rules": [
         [ [ "downloaded", "pytorch_model", "model_name=wan2_2" ], [[ "get", "pipeline" ]] ]
     ],
