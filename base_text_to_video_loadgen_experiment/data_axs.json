@@ -3,15 +3,12 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "launch_script_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "text_to_video_reference_script" ]
-    ]] ],
+    "launch_script_path": [ "^^", "get_path", [ "launch.sh" ] ],
 
     "dataset_file_name": "vbench_prompts.txt",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ "text_to_video", "wan2.2-t2v-14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
+        [ "get_path", [[ "text_to_video", "wan2.2-t2v-a14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
     ]] ],
     "output_path": [ "^^", "get_path"],
     "videos_relative_path": "videos",
@@ -30,9 +27,6 @@
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
-            "env": {
-                "GPU_COUNT": "device=0"
-            },
             "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
             "capture_output": true
         } ],
