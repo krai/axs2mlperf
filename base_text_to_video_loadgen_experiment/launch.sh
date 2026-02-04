@@ -8,7 +8,7 @@ IMAGE_NAME=${IMAGE_NAME:-text2video-mlperf}
 IMAGE_TAG=${IMAGE_TAG:-latest}
 CONTAINER_NAME=${CONTAINER_NAME:-text2video}
 GPU_IDS=${GPU_IDS:-all}
-WORK_DIR=$(dirname "$(realpath "$0")")
+WORK_DIR=${WORK_DIR:-$(dirname "$(realpath "$0")")}
 INFERENCE_ROOT=$(dirname "$WORK_DIR")
 
 EXTRA_VOLUMES=()

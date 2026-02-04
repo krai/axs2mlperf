@@ -18,7 +18,7 @@
     "videos_relative_path": "videos",
     "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
     "videos_path": [ "^^", "get_videos_path" ],
-    "accuracy_report_num_gpus": 1,
+    "accuracy_report_num_gpus": 8,
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
     "accuracy_script_name": "run_evaluation.py",
@@ -27,10 +27,19 @@
     "volumes": [ "^^", "substitute", "-v #{videos_path}#:#{docker_videos_path}# -v #{output_path}#:#{docker_output_path}#" ],
     "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{accuracy_report_num_gpus}#" ],
 
+    "work_dir": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video", "wan-2.2-t2v-a14b" ]] ]
+    ]] ],
+
     "extract_accuracy_report": [ "^^", "execute", [[
         [ "get_kernel" ],
         [ "byname", "shell" ],
         [ "run", [], {
+            "env": {
+                "WORK_DIR": [ "^^", "get", "work_dir" ]
+            },
+            "in_dir": [ "^^", "get", "work_dir" ],
             "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
             "capture_output": true
         } ],
