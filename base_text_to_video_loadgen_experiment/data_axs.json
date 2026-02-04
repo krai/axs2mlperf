@@ -3,7 +3,11 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
-    "launch_script_path": [ "^^", "get_path", [ "launch.sh" ] ],
+    "launch_script_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "launch_script_entry" ],
+        [ "get_path", [ "launch.sh" ] ]
+    ]] ],
 
     "dataset_file_name": "vbench_prompts.txt",
     "dataset_path": [ "^^", "execute", [[
