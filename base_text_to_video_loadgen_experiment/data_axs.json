@@ -12,7 +12,7 @@
     "dataset_file_name": "vbench_prompts.txt",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ "text_to_video", "wan2.2-t2v-a14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
+        [ "get_path", [[ "text_to_video", "wan-2.2-t2v-a14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
     ]] ],
     "output_path": [ "^^", "get_path"],
     "videos_relative_path": "videos",
