@@ -27,9 +27,15 @@
     "volumes": [ "^^", "substitute", "-v #{videos_path}#:#{docker_videos_path}# -v #{output_path}#:#{docker_output_path}#" ],
     "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{accuracy_report_num_gpus}#" ],
 
-    "work_dir": [ "^^", "execute", [[
+    "dockerfile_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
+    "dockerfile_path": [ "^^", "execute", [[
+        [ "get", "dockerfile_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "inference_root": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ "text_to_video", "wan-2.2-t2v-a14b" ]] ]
+        [ "get_path", [[ "text_to_video" ]] ]
     ]] ],
 
     "extract_accuracy_report": [ "^^", "execute", [[
@@ -37,7 +43,8 @@
         [ "byname", "shell" ],
         [ "run", [], {
             "env": {
-                "WORK_DIR": [ "^^", "get", "work_dir" ]
+                "WORK_DIR": [ "^^", "get", "dockerfile_path" ],
+                "INFERENCE_ROOT": [ "^^", "get", "inference_root" ]
             },
             "in_dir": [ "^^", "get", "work_dir" ],
             "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],

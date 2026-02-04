@@ -9,7 +9,7 @@ IMAGE_TAG=${IMAGE_TAG:-latest}
 CONTAINER_NAME=${CONTAINER_NAME:-text2video}
 GPU_IDS=${GPU_IDS:-all}
 WORK_DIR=${WORK_DIR:-$(dirname "$(realpath "$0")")}
-INFERENCE_ROOT=$(dirname "$WORK_DIR")
+INFERENCE_ROOT=${INFERENCE_ROOT:-$(dirname "$WORK_DIR")}
 
 EXTRA_VOLUMES=()
 
@@ -87,7 +87,7 @@ build_image() {
         --build-arg USER_ID=$USER_ID \
         --build-arg GROUP_ID=$GROUP_ID \
         --build-arg USER_NAME=$USER_NAME \
-        -f "$WORK_DIR/docker/Dockerfile" \
+        -f "$WORK_DIR/Dockerfile" \
         -t "$FULL_IMAGE" \
         "$INFERENCE_ROOT"
     
@@ -145,7 +145,7 @@ docker run $DOCKER_FLAGS \
     -v "$INFERENCE_ROOT:/workspace" \
     -v "/home/scratch.svc_compute_arch:/home/scratch.svc_compute_arch" \
     "${EXTRA_VOLUMES[@]}" \
-    -w /workspace/wan2.2-t2v-14b \
+    -w /workspace/wan-2.2-t2v-a14b \
     "$FULL_IMAGE" \
     $RUN_CMD
 set +x
