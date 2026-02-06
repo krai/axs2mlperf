@@ -205,7 +205,7 @@ def get_testing_entry(experiment_entry):
 def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
-    code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
+    code_path           = make_local_dir( [ division, submitter, 'src'], submitted_tree_path)
     systems_path        = make_local_dir( [ division, submitter, 'systems'], submitted_tree_path )
 
     sut_descriptions_dictionary      = {}
@@ -216,7 +216,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         print(f"    Copying: {model_mapping_path}  -->  {dst_file_path}", file=sys.stderr)
         shutil.copy( model_mapping_path, dst_file_path)
 
-    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, code_path, __entry__ )
 
     generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__ )
     
@@ -594,11 +594,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         print("")
 
 
-def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
-
-    code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
-
-    sut_descriptions_dictionary      = {}
+def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, code_path, __entry__):
 
     for experiment_entry in experiment_entries:
 
