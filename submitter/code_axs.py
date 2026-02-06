@@ -256,50 +256,6 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         modified_program_name = experiment_program_name.replace("resnet50", "image_classification") 
 
-        # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
-
-        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
-            src_file_path = os.path.join(src_dir, src_file_name)
-            dst_file_path = os.path.join(measurement_path, src_file_name)
-            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
-            shutil.copy( src_file_path, dst_file_path)
-
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
-
-        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
-        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
-
-        try:
-            measurements_meta_data  = {
-                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
-                "input_data_types": model_meta_data["input_data_types"],
-                "weight_data_types": model_meta_data["weight_data_types"],
-                "starting_weights_filename": model_meta_data["url"],
-                "weight_transformations": model_meta_data["weight_transformations"],
-            }
-        except KeyError as e:
-            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
-
-        save_json(measurements_meta_data, measurements_meta_path, indent=4)
-
-        experiment_entry.parent_objects = None
-
-        if with_power:
-            analyzer_table_file = "analyzer_table.md"
-            power_settings_file = "power_settings.md"
-
-            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
-            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
-
-            analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
-            power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
-
-            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
-                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
-                shutil.copy2(sut_power_settings_path, power_settings_file_path)
-
         # --------------------------------[ results ]--------------------------------------
         mode        = {
             'AccuracyOnly': 'accuracy',
@@ -330,7 +286,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         for filename in files_to_copy:
             src_file_path = os.path.join(src_dir, filename)
 
-            if (compliance_test_name in ( "TEST01", "TEST06" )  and filename == 'mlperf_log_accuracy.json'):
+            if (compliance_test_name in ( "TEST01", "TEST06" ) and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST_acc, filename)
             else:
                 dst_file_path = os.path.join(results_path, filename)
@@ -381,6 +337,51 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             results_images_path = os.path.join(results_path, "images")
             print(f"    Copying: {src_images_dir}  -->  {results_images_path}", file=sys.stderr)
             shutil.copytree( src_images_dir, results_images_path, dirs_exist_ok=True)
+
+        # As per 6.0 measurement files go into the results folder
+        # ----------------------------[ measurements ]------------------------------------
+        measurement_path = os.path.join(submitted_tree_path, division, submitter, 'results', sut_name, mlperf_model_name, scenario)
+
+        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
+            src_file_path = os.path.join(src_dir, src_file_name)
+            dst_file_path = os.path.join(measurement_path, src_file_name)
+            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+            shutil.copy( src_file_path, dst_file_path)
+
+        measurements_meta_path  = os.path.join(measurement_path, "measurements.json")
+
+        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
+        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
+
+        try:
+            measurements_meta_data  = {
+                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
+                "input_data_types": model_meta_data["input_data_types"],
+                "weight_data_types": model_meta_data["weight_data_types"],
+                "starting_weights_filename": model_meta_data["url"],
+                "weight_transformations": model_meta_data["weight_transformations"],
+            }
+        except KeyError as e:
+            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
+
+        save_json(measurements_meta_data, measurements_meta_path, indent=4)
+
+        experiment_entry.parent_objects = None
+
+        # This is moved to results, but not properly tested
+        if with_power:
+            analyzer_table_file = "analyzer_table.md"
+            power_settings_file = "power_settings.md"
+
+            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
+            analyzer_table_file_path = os.path.join(measurement_path, analyzer_table_file)
+            power_settings_file_path = os.path.join(measurement_path, power_settings_file)
+
+            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
+                shutil.copy2(sut_power_settings_path, power_settings_file_path)
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in ( "TEST01", "TEST04", "TEST06" ):
