@@ -24,6 +24,7 @@
 
     "division": "open",
     "submitter": "Krai",
+    "mlperf_round": "6.0",
 
     "dataset_name2dataset_size": {
         "imagenet": 50000,

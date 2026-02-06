@@ -202,7 +202,7 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
@@ -218,7 +218,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
     copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
 
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -501,7 +501,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, mlperf_round, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
     """First run lay_out() to build the submission tree, then run_checker() to check its integrity.
 
 Usage examples:
@@ -515,13 +515,13 @@ Usage examples:
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round,power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__=None):
     
     readme_template_path = __entry__.get_path("README_template.md")
 
@@ -549,8 +549,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
             target_value = ",loadgen_target_qps=" + str(target_qps)
         else:
             target_value = ""
-
-        mlperf_round = 5.0 # FIXME: turn into a data_axs.json level parameter
 
         mode = loadgen_mode.replace("Only", "")
 
