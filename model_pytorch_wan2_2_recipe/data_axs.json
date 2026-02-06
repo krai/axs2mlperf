@@ -31,6 +31,12 @@
     "full_mlperf_model_name": [ "^^", "substitute", "#{model_family}#/#{mlperf_model_name}#" ],
     "model_path": "/model",
 
+    "retrained": "No",
+    "input_data_types": "fp16",
+    "weight_data_types": "fp16",
+    "weight_transformations": "No",
+    "url": "https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+
     "download_model_script_name": "download_model.py",
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
