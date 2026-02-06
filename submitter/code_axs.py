@@ -566,7 +566,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'results', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
