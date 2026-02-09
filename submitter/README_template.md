@@ -1,5 +1,5 @@
 
-# MLPerf Inference v{mlperf_round} - {division} - {submitter}
+# MLPerf Inference {mlperf_version} - {division} - {submitter}
 
 To run experiments individually, use the following commands.
 
