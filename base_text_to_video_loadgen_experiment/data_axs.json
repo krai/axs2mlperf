@@ -53,6 +53,8 @@
         0,
         [ "func", [ "ufun.rematch", "Overall Average\\s*:\\s*(nan|\\d+(?:\\.\\d+)?)" ] ],
         0,
+        [ "convert_metric" ],
+        0,
         [ "func", "str" ]
     ]], {} ]
 }

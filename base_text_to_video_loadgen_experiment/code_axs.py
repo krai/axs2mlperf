@@ -62,3 +62,11 @@ def extract_overall_average(output_path):
             overall_average = total_score / num_dimensions
 
     return overall_average
+
+def convert_metric(original_value):
+    try:
+        float_value = float(original_value) * 100.0
+        converted_value = f"'vbench_score': {float_value}"
+        return converted_value
+    except ValueError:
+        return original_value
