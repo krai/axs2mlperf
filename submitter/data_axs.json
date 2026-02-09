@@ -24,6 +24,7 @@
 
     "division": "open",
     "submitter": "Krai",
+    "mlperf_version": "v6.0",
 
     "dataset_name2dataset_size": {
         "imagenet": 50000,
@@ -148,9 +149,10 @@
     "run_checker_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
-            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --csv /dev/null",
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --version #{mlperf_version}# --csv /dev/null",
             "capture_output": false,
             "capture_stderr": true,
+	    "mlperf_version": ["^^", "get", "mlperf_version" ],
             "submission_checker_path":["^^", "get", "submission_checker_path" ],
             "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
             } ]

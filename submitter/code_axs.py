@@ -488,7 +488,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
     return submitted_tree_path
 
 
-def run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__):
+def run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path,mlperf_version, __entry__):
 
     result_checker =  __entry__.call( 'get', 'run_checker_script', {
             "submission_checker_path": submission_checker_path,
@@ -500,7 +500,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios,mlperf_version, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
     """First run lay_out() to build the submission tree, then run_checker() to check its integrity.
 
 Usage examples:
@@ -517,7 +517,7 @@ Usage examples:
         lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
-    run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
+    run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, mlperf_version, __entry__)
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, __entry__=None):
