@@ -514,14 +514,14 @@ Usage examples:
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, mlperf_version, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_version, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, mlperf_version, __entry__)
 
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, mlperf_version, __entry__=None):
-    
+
     readme_template_path = __entry__.get_path("README_template.md")
 
     for experiment_entry in experiment_entries:
