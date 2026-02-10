@@ -151,11 +151,12 @@
     "run_checker_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
-            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --csv /dev/null",
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --version #{mlperf_version}# --input #{submitted_tree_path}# --csv /dev/null",
             "capture_output": false,
             "capture_stderr": true,
             "submission_checker_path":["^^", "get", "submission_checker_path" ],
-            "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
+            "submitted_tree_path": ["^^", "get", "submitted_tree_path" ],
+            "mlperf_version": ["^^", "get", "mlperf_round"]
             } ]
        ]]
     ],
