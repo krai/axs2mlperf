@@ -86,12 +86,12 @@
 
     "script_filename": "./run.sh",
     "cfg_parallel": true,
-    "precompile_resolutions": "720x1280 1280x720",
+    "precompile_resolutions": "720x1280",
     "precompile_frames": 81,
     "dit_ring_para": 4,
     "decoder_ctx_para": 6,
     "wan_dit_compile_level": "max-autotune-no-cudagraphs",
-    "attn_backend": "sage",
+    "attn_backend": "flash",
     "sage_offset_layers": 1,
     "caching_strategy": "",
     "wan_use_fp8": false,
@@ -113,7 +113,6 @@
 
     "params_dict": {
         "checkpoint": [ "^^", "get", "checkpoint" ],
-        "model_path": [ "^^", "get", "docker_model_path" ],
         "precompile_resolutions": [ "^^", "get", "precompile_resolutions" ],
         "precompile_frames": [ "^^", "get", "precompile_frames" ],
         "dataset": [ "^^", "get", "docker_dataset_path" ],
@@ -167,7 +166,7 @@
     ],
 
     "volumes": [ "^^", "substitute",
-        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_cong_mount}#"
+        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_cong_mount}# -v ~/.cache/huggingface:/app/huggingface"
     ],
 
     "docker_image_name": "kiss-v",
