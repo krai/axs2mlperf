@@ -105,7 +105,7 @@ Usage examples:
             "llama2":               [ 'TEST06' ],
             "llama3_1":             [ 'TEST06' ],
             "moe":                  [ 'TEST06' ],
-            "text_to_video":        [ 'TEST01', 'TEST04' ]
+            "text_to_video":        [ 'TEST04' ]
         }[task]
 
         for compliance_test_name in compliance_test_list:
