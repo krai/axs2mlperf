@@ -156,7 +156,7 @@
             "capture_stderr": true,
             "submission_checker_path":["^^", "get", "submission_checker_path" ],
             "submitted_tree_path": ["^^", "get", "submitted_tree_path" ],
-            "mlperf_version": ["^^", "get", "mlperf_round"]
+            "mlperf_version": [ "^^", "substitute", "v#{mlperf_round}#" ]
             } ]
        ]]
     ],
