@@ -96,7 +96,7 @@
     "caching_strategy": "",
     "wan_use_fp8": false,
     "wan_use_mxfp8": false,
-    "wan_fp8_offset_layers": 0,
+    "fp8_offset_layers": 0,
 
     "nodes": 1,
     "node_idx": 0,
@@ -127,7 +127,7 @@
         "attn_backend": [ "^^", "get", "attn_backend" ],
         "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
         "caching_strategy": [ "^^", "get", "caching_strategy" ],
-        "wan_fp8_offset_layers": [ "^^", "get", "wan_fp8_offset_layers" ],
+        "fp8_offset_layers": [ "^^", "get", "fp8_offset_layers" ],
 
         "nodes": [ "^^", "get", "nodes" ],
         "node_idx": [ "^^", "get", "node_idx" ],
