@@ -46,6 +46,6 @@
     "submitter": "Krai",
     "sw_notes": "Powered by the KRAI X technology",
     "system_name": "HPE Cray XD670 (8x H200_NVL_141GB, vLLM)",
-    "system_type": "edge",
+    "system_type": "datacenter",
     "system_type_detail": "N/A"
 }

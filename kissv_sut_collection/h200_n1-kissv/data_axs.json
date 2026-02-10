@@ -10,5 +10,5 @@
         [ "func", "ufun.load_json" ]
     ]] ],
 
-    "system_type": "edge"
+    "system_type": "datacenter"
 }
