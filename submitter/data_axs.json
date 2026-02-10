@@ -77,11 +77,15 @@
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path", [["tools", "submission", "submission_checker", "main.py"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
-
     "compliance_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path", [["compliance"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
+    "mlperf_conf_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [["loadgen", "mlperf.conf"]] ]
+    ]], {}, ["mlperf_inference_git_entry"] ],
+
 
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
     "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],

@@ -202,7 +202,7 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
     code_path           = make_local_dir( [ division, submitter, 'src'], submitted_tree_path)
@@ -342,9 +342,22 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         # ----------------------------[ measurements ]------------------------------------
         measurement_path = os.path.join(submitted_tree_path, division, submitter, 'results', sut_name, mlperf_model_name, scenario)
 
-        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
+        # Copy user.conf from the experiment entry
+        src_file_name = 'user.conf'
+        src_file_path = os.path.join(src_dir, src_file_name)
+        dst_file_path = os.path.join(measurement_path, src_file_name)
+        print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+        shutil.copy( src_file_path, dst_file_path)
+
+        # Copy mlperf.conf from the experiment entry and if it is not there, then from the mlcommons repository
+        src_file_name = 'mlperf.conf'
+        dst_file_path = os.path.join(measurement_path, src_file_name)
+        try:
             src_file_path = os.path.join(src_dir, src_file_name)
-            dst_file_path = os.path.join(measurement_path, src_file_name)
+            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+            shutil.copy( src_file_path, dst_file_path)
+        except FileNotFoundError:
+            src_file_path = mlperf_conf_path
             print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
             shutil.copy( src_file_path, dst_file_path)
 
@@ -502,7 +515,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, mlperf_round, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path,power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
     """First run lay_out() to build the submission tree, then run_checker() to check its integrity.
 
 Usage examples:
@@ -516,7 +529,7 @@ Usage examples:
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round,power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
