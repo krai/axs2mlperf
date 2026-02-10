@@ -1,0 +1,11 @@
+{
+    "_parent_entries": [
+        [ "^", "core_collection" ]
+    ],
+    "tags": [
+        "collection"
+    ],
+    "contained_entries": {
+        "xd670_h200_x8_kissv": "xd670_h200_x8_kissv"
+    }
+}
