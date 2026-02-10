@@ -28,11 +28,14 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
 
     if sut_system_type == "edge":
         if task in ("image_classification", "object_detection"):
-            scenarios = ["Offline", "SingleStream", "MultiStream" ]
+            scenarios = [ "Offline", "SingleStream", "MultiStream" ]
         else:
-            scenarios = ["Offline", "SingleStream" ]
+            scenarios = [ "Offline", "SingleStream" ]
     elif sut_system_type in ("dc", "datacenter"):
-        scenarios = ["Offline", "Server" ]
+        if task in ("text_to_video"):
+            scenarios = [ "Offline", "SingleStream" ]
+        else:
+            scenarios = [ "Offline", "Server" ]
 
     return scenarios
 
