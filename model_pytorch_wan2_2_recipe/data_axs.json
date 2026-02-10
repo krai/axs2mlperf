@@ -18,9 +18,10 @@
 
     "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
 
+    "launch_script_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
     "launch_script_path": [ "^^", "execute", [[
-        [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path_of", "text_to_video_reference_script" ]
+        [ "get", "launch_script_entry" ],
+        [ "get_path", [ "launch.sh" ] ]
     ]] ],
 
     "file_name": [ "^^", "get", "mlperf_model_name" ],
