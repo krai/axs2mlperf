@@ -94,10 +94,13 @@
     "attn_backend": "sage",
     "sage_offset_layers": 1,
     "caching_strategy": "",
+    "wan_use_fp8": false,
+    "wan_use_mxfp8": false,
+    "wan_fp8_offset_layers": 0,
 
     "nodes": 1,
     "node_idx": 0,
-    "nccl_master_addr": "127.0.0.1",
+    "master_addr": "127.0.0.1",
 
     "checkpoint": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
     "docker_model_path": "/model",
@@ -124,10 +127,11 @@
         "attn_backend": [ "^^", "get", "attn_backend" ],
         "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
         "caching_strategy": [ "^^", "get", "caching_strategy" ],
+        "wan_fp8_offset_layers": [ "^^", "get", "wan_fp8_offset_layers" ],
 
         "nodes": [ "^^", "get", "nodes" ],
         "node_idx": [ "^^", "get", "node_idx" ],
-        "nccl_master_addr": [ "^^", "get", "nccl_master_addr" ]
+        "master_addr": [ "^^", "get", "master_addr" ]
     },
     "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
         "AccuracyOnly", "--accuracy",
@@ -135,6 +139,14 @@
     ]],
     "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ], 
         true, "--cfg_parallel",
+        false, ""
+    ]],
+    "wan_use_fp8_linear_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_fp8" ], 
+        true, "--wan_use_fp8_linear",
+        false, ""
+    ]],
+    "wan_mxfp8_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_mxfp8" ], 
+        true, "--wan_mxfp8",
         false, ""
     ]],
     "qps": [ "^^", "case",[ [ "^^", "get", "loadgen_target_qps" ], 
@@ -151,7 +163,7 @@
     ],
     "params": [ "^^", "get_params" ],
     "docker_command": [ "^^", "substitute",
-        "#{script_filename}# #{params}# #{qps}# #{accuracy_flag}# #{cfg_parallel_flag}# #{audit_cong}#"
+        "#{script_filename}# #{params}# #{qps}# #{accuracy_flag}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_cong}#"
     ],
 
     "volumes": [ "^^", "substitute",
