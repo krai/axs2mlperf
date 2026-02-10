@@ -175,6 +175,6 @@
     "shm_size": "32G",
 
     "shell_cmd": [ "^^", "substitute",
-        "docker run --rm --gpus all --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}# #{docker_command}#"
+        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}# #{docker_command}#"
     ]
 }
