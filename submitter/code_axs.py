@@ -268,9 +268,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
             results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
         elif compliance_test_name  in ( "TEST01", "TEST04", "TEST06" ):
-            results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'results', sut_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name in ( "TEST01", "TEST06" ):
-                results_path_syll_TEST_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST_acc = [ division, submitter, 'results', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST_acc = make_local_dir(results_path_syll_TEST_acc, submitted_tree_path)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -401,14 +401,14 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in ( "TEST01", "TEST04", "TEST06" ):
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
+            compliance_path_test = make_local_dir( [ division, submitter, 'results', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
+            tmp_dir = make_local_dir( [ division, submitter, 'results', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
             results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'results', sut_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             if task in ["llm", "llama2", "llama3_1", "moe"]:
                 dtype = experiment_entry['benchmark_output_data_type']
