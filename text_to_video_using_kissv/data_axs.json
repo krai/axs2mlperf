@@ -35,6 +35,7 @@
     "weight_transformations": "No",
     "url": "https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B-Diffusers",
 
+    "division": "closed",
     "model_name": "wan-2.2-t2v-a14b",
     "mlperf_model_name": "wan-2.2-t2v-a14b",
     "simple_model_name": "wan2_2",
@@ -101,6 +102,7 @@
     "nodes": 1,
     "node_idx": 0,
     "master_addr": "127.0.0.1",
+    "hosts": "127.0.0.1",
 
     "checkpoint": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
     "docker_model_path": "/model",
@@ -127,6 +129,7 @@
         "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
         "caching_strategy": [ "^^", "get", "caching_strategy" ],
         "fp8_offset_layers": [ "^^", "get", "fp8_offset_layers" ],
+        "division": [ "^^", "get", "division" ],
 
         "nodes": [ "^^", "get", "nodes" ],
         "node_idx": [ "^^", "get", "node_idx" ],
@@ -152,21 +155,28 @@
         null, ""
         ], { "default_value": [ "^^", "substitute", "--qps #{loadgen_target_qps}#" ] }
     ],
-    "audit_cong": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+    "audit_conf": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
         null, ""
-        ], { "default_value": [ "^^", "substitute", "--audit_conf #{docker_audit_conf_path}#" ] }
+        ], { "default_value": [ "^^", "substitute", "--audit_conf #{target_audit_conf_path}#" ] }
     ],
-    "maybe_audit_cong_mount": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+    "maybe_audit_conf_mount": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
         null, ""
         ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
     ],
     "params": [ "^^", "get_params" ],
     "docker_command": [ "^^", "substitute",
-        "#{script_filename}# #{params}# #{qps}# #{accuracy_flag}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_cong}#"
+        "#{script_filename}# #{params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_conf}#"
     ],
 
     "volumes": [ "^^", "substitute",
-        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_cong_mount}# -v ~/.cache/huggingface:/app/huggingface"
+        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_conf_mount}# -v ~/.cache/huggingface:/app/huggingface"
+    ],
+
+    "docker_run_cmd": [ "^^", "substitute",
+        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}# #{docker_command}#"
+    ],
+    "mlperf_cmd": [ "^^", "substitute", 
+        "python3 harness.py --dataset #{dataset_path}# --config #{config_path}# --scenario #{loadgen_scenario}# --user_conf #{loadgen_user_conf_path}# #{audit_conf}# --division #{division}# #{qps}# --port 8080 --hosts #{hosts}# #{accuracy_flag}#"
     ],
 
     "docker_image_name": "kiss-v",
@@ -174,6 +184,6 @@
     "shm_size": "32G",
 
     "shell_cmd": [ "^^", "substitute",
-        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}# #{docker_command}#"
+        "python3 --nodes #{nodes}# --node_idx #{node_idx}# --docker_cmd \"#{docker_run_cmd}#\" --mlperf_cmd \"#{mlperf_cmd}#\""
     ]
 }
