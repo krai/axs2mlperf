@@ -47,7 +47,22 @@
         "file_name"
     ],
 
-    "in_dir": [ "^^", "get", "newborn_entry_path" ],
+    "dockerfile_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
+    "dockerfile_path": [ "^^", "execute", [[
+        [ "get", "dockerfile_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "inference_root": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video" ]] ]
+    ]] ],
+
+    "env": {
+        "WORK_DIR": [ "^^", "get", "dockerfile_path" ],
+        "INFERENCE_ROOT": [ "^^", "get", "inference_root" ]
+    },
+
     "shell_cmd": [ "^^", "substitute",
         "#{build_container}# && #{download_model}#"
     ]
