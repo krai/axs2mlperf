@@ -54,7 +54,7 @@ def get_params(params_dict):
         params.append(f"--{key} {value}")
     return " ".join(params)
 
-def run_experiment(nodes: int, node_idx: int, docker_cmd: str, mlperf_cmd: str):
+def run_experiment(nodes: int, node_idx: int, server_run_cmd: str, mlperf_cmd: str):
     """
     Orchestrates MLPerf experiments with distinct logic for single-node, 
     multi-node master, and multi-node worker scenarios.
@@ -63,7 +63,7 @@ def run_experiment(nodes: int, node_idx: int, docker_cmd: str, mlperf_cmd: str):
     # --- CASE 1: SINGLE NODE ---
     if nodes == 1:
         print("[Single-Node] Starting experiment...")
-        sidecar = subprocess.Popen(docker_cmd, shell=True)
+        sidecar = subprocess.Popen(server_run_cmd, shell=True)
         try:
             workload = subprocess.Popen(mlperf_cmd, shell=True)
             workload.wait()
@@ -80,7 +80,7 @@ def run_experiment(nodes: int, node_idx: int, docker_cmd: str, mlperf_cmd: str):
         subprocess.run("docker run --rm -d --name redis-master -p 6379:6379 redis", shell=True)
         time.sleep(2) 
         
-        sidecar = subprocess.Popen(docker_cmd, shell=True)
+        sidecar = subprocess.Popen(server_run_cmd, shell=True)
         try:
             workload = subprocess.Popen(mlperf_cmd, shell=True)
             workload.wait()
@@ -95,7 +95,7 @@ def run_experiment(nodes: int, node_idx: int, docker_cmd: str, mlperf_cmd: str):
     if nodes > 1 and node_idx > 0:
         print(f"[Multi-Node Worker {node_idx}] Running sidecar and waiting...")
         # Workers simply run the docker_cmd and wait for it to exit
-        subprocess.run(docker_cmd, shell=True)
+        subprocess.run(server_run_cmd, shell=True)
         print(f"[Multi-Node Worker {node_idx}] Execution finished.")
         
     return "success"

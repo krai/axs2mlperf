@@ -164,7 +164,7 @@
         ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
     ],
     "params": [ "^^", "get_params" ],
-    "docker_command": [ "^^", "substitute",
+    "server_command": [ "^^", "substitute",
         "#{script_filename}# #{params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_conf}#"
     ],
 
@@ -172,11 +172,19 @@
         "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_conf_mount}# -v ~/.cache/huggingface:/app/huggingface"
     ],
 
-    "docker_run_cmd": [ "^^", "substitute",
-        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}# #{docker_command}#"
+    "docker_setup": [ "^^", "substitute", 
+        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
+    ],
+
+    "server_run_cmd": [ "^^", "substitute",
+        "#{docker_setup}# -p 29500:29500 #{server_command}#"
+    ],
+
+    "mlperf_command": [ "^^", "substitute", 
+        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
     ],
     "mlperf_cmd": [ "^^", "substitute", 
-        "python3 harness.py --dataset #{dataset_path}# --config #{config_path}# --scenario #{loadgen_scenario}# --user_conf #{loadgen_user_conf_path}# #{audit_conf}# --division #{division}# #{qps}# --port 8080 --hosts #{hosts}# #{accuracy_flag}#"
+        "#{docker_setup}# #{mlperf_command}#"
     ],
 
     "docker_image_name": "kiss-v",
