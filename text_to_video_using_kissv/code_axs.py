@@ -1,5 +1,9 @@
+import subprocess
+import time
 from pathlib import Path
+
 import yaml
+
 
 def generate_inference_config_yaml(
     output_dir,
@@ -49,3 +53,49 @@ def get_params(params_dict):
     for key, value in params_dict.items():
         params.append(f"--{key} {value}")
     return " ".join(params)
+
+def run_experiment(nodes: int, node_idx: int, docker_cmd: str, mlperf_cmd: str):
+    """
+    Orchestrates MLPerf experiments with distinct logic for single-node, 
+    multi-node master, and multi-node worker scenarios.
+    """
+
+    # --- CASE 1: SINGLE NODE ---
+    if nodes == 1:
+        print("[Single-Node] Starting experiment...")
+        sidecar = subprocess.Popen(docker_cmd, shell=True)
+        try:
+            workload = subprocess.Popen(mlperf_cmd, shell=True)
+            workload.wait()
+        finally:
+            sidecar.terminate()
+            sidecar.wait()
+            print("[Single-Node] Cleanup complete.")
+        return "success"
+
+    # --- CASE 2: MULTI-NODE (MASTER) ---
+    if nodes > 1 and node_idx == 0:
+        print("[Multi-Node Master] Initializing Redis and Sidecar...")
+        # Start Redis
+        subprocess.run("docker run --rm -d --name redis-master -p 6379:6379 redis", shell=True)
+        time.sleep(2) 
+        
+        sidecar = subprocess.Popen(docker_cmd, shell=True)
+        try:
+            workload = subprocess.Popen(mlperf_cmd, shell=True)
+            workload.wait()
+        finally:
+            sidecar.terminate()
+            sidecar.wait()
+            subprocess.run("docker stop redis-master", shell=True)
+            print("[Multi-Node Master] Cleanup complete.")
+        return "success"
+
+    # --- CASE 3: MULTI-NODE (WORKER) ---
+    if nodes > 1 and node_idx > 0:
+        print(f"[Multi-Node Worker {node_idx}] Running sidecar and waiting...")
+        # Workers simply run the docker_cmd and wait for it to exit
+        subprocess.run(docker_cmd, shell=True)
+        print(f"[Multi-Node Worker {node_idx}] Execution finished.")
+        
+    return "success"

@@ -183,7 +183,9 @@
     "docker_image_tag": "latest",
     "shm_size": "32G",
 
+    "dummy": [ "^^", "run_experiment" ],
+
     "shell_cmd": [ "^^", "substitute",
-        "python3 --nodes #{nodes}# --node_idx #{node_idx}# --docker_cmd \"#{docker_run_cmd}#\" --mlperf_cmd \"#{mlperf_cmd}#\""
+        "echo #{dummy}#"
     ]
 }
