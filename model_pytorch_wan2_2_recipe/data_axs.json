@@ -41,7 +41,7 @@
     "download_model_script_name": "download_model.py",
 
     "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
-    "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{in_dir}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{full_mlperf_model_name}#" ],
+    "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{newborn_entry_path}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{full_mlperf_model_name}#" ],
 
     "newborn_entry_param_names": [
         "file_name"
