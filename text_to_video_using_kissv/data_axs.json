@@ -173,10 +173,10 @@
     ],
 
     "docker_setup": [ "^^", "substitute", 
-        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
+        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
     ],
     "docker_setup_with_port": [ "^^", "substitute", 
-        "docker run --rm --gpus all --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# -p 29500:29500 -p 8080:8080 #{docker_image_name}#:#{docker_image_tag}#"
+        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# -p 29500:29500 -p 8080:8080 #{docker_image_name}#:#{docker_image_tag}#"
     ],
 
     "server_run_cmd": [ "^^", "substitute",
