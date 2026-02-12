@@ -101,8 +101,8 @@
 
     "nodes": 1,
     "node_idx": 0,
-    "master_addr": "127.0.0.1",
-    "hosts": "127.0.0.1",
+    "master_addr": [ "^", "func", "socket.gethostname" ],
+    "hosts": [ "^", "func", "socket.gethostname" ],
 
     "checkpoint": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
     "docker_model_path": "/model",
