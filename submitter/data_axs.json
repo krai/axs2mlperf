@@ -24,6 +24,7 @@
 
     "division": "open",
     "submitter": "Krai",
+    "mlperf_round": "6.0",
 
     "dataset_name2dataset_size": {
         "imagenet": 50000,
@@ -33,7 +34,8 @@
         "squad_v1_1": 10833,
         "cnndm_v3_0_0": 13368,
         "openorca": 24576,
-	"llrg": 8313
+        "llrg": 8313,
+        "text_to_video": 248
     },
     "task2buffer_size": {
         "image_classification": 1024,
@@ -43,8 +45,9 @@
         "text_to_image": 5000,
         "llm": 24576,
         "llama2": 24576,
-	"llama3_1": 8313,
-        "moe": 24576
+        "llama3_1": 8313,
+        "moe": 24576,
+        "text_to_video": null
     },
 
     "program_entry": [ "^^", "execute", [[
@@ -72,20 +75,24 @@
     ]], {}, ["mlperf_inference_git_entry"] ],
     "submission_checker_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [["tools", "submission", "submission_checker.py"]] ]
+        [ "get_path", [["tools", "submission", "submission_checker", "main.py"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
-
     "compliance_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [["compliance", "nvidia"]] ]
+        [ "get_path", [["compliance"]] ]
     ]], {}, ["mlperf_inference_git_entry"] ],
+    "mlperf_conf_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [["loadgen", "mlperf.conf"]] ]
+    ]], {}, ["mlperf_inference_git_entry"] ],
+
 
     "desired_python_version": ["^", "kernel_python_major_dot_minor"],
     "python_tool_entry": [ "^", "byquery", [[ "shell_tool", "can_python", ["desired_python_version", ["^^", "get", "desired_python_version"]] ]], {}, ["desired_python_version"] ],
     "scenario_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , [ "^^", "substitute", "--scenario #{scenario}#"],
         "llama2" , [ "^^", "substitute", "--scenario #{scenario}#"],
-	"llama3_1" , [ "^^", "substitute", "--scenario #{scenario}#"],
+        "llama3_1" , [ "^^", "substitute", "--scenario #{scenario}#"],
         "moe" , [ "^^", "substitute", "--scenario #{scenario}#"]
         ],
         { "default_value": ""  }
@@ -94,7 +101,7 @@
     "result_dir_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , "",
         "llama2" , "",
-	"llama3_1", "",
+        "llama3_1", "",
         "moe" , ""
         ],
         { "default_value": [ "^^", "substitute", "--results_dir #{results_dir}#" ] }
@@ -104,7 +111,7 @@
     "dtype_cmd": [ "^^", "case",  [ ["^^", "get", "task"],
         "llm" , [ "^^", "substitute", "--dtype #{dtype}#"],
         "llama2" , [ "^^", "substitute", "--dtype #{dtype}#"],
-	"llama3_1" , [ "^^", "substitute", "--dtype #{dtype}#"],
+        "llama3_1" , [ "^^", "substitute", "--dtype #{dtype}#"],
         "moe" , [ "^^", "substitute", "--dtype #{dtype}#"]
         ],
         { "default_value": "" }
@@ -148,11 +155,12 @@
     "run_checker_script": [ "^^", "execute", [[
             [ "get", "python_tool_entry" ],
             [ "run", [], {
-            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --input #{submitted_tree_path}# --csv /dev/null",
+            "shell_cmd_with_subs": "\"#{tool_path}#\" #{submission_checker_path}# --version #{mlperf_version}# --input #{submitted_tree_path}# --csv /dev/null",
             "capture_output": false,
             "capture_stderr": true,
             "submission_checker_path":["^^", "get", "submission_checker_path" ],
-            "submitted_tree_path": ["^^", "get", "submitted_tree_path" ]
+            "submitted_tree_path": ["^^", "get", "submitted_tree_path" ],
+            "mlperf_version": [ "^^", "substitute", "v#{mlperf_round}#" ]
             } ]
        ]]
     ],

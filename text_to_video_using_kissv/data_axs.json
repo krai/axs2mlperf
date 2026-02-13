@@ -1,0 +1,232 @@
+{
+    "_parent_entries": [
+        [ "^", "byname", "shell" ],
+        [ "^", "byname", "base_loadgen_program" ]
+    ],
+
+    "_producer_rules": [
+        [ [ "loadgen_output", "task=text_to_video", "framework=kiss_v" ], [[ "run" ]] ]
+    ],
+
+    "pyyaml_query": [ "python_package", "package_name=pyyaml" ],
+
+    "_BEFORE_CODE_LOADING": [ "^^", "execute", [[
+        ["get_kernel"],
+        ["byquery", [[ "^^", "get", "pyyaml_query" ]] ],
+        ["use"]
+    ]] ],
+
+    "hostname": [ "^", "func", "socket.gethostname" ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "text_to_video_reference_script" ]
+    ]] ],
+
+    "loadgen_scenario": "SingleStream",
+    "loadgen_dataset_size": 248,
+    "loadgen_buffer_size": null,
+    "loadgen_server_coalesce_queries": null,
+
+    "retrained": "No",
+    "input_data_types": "fp16",
+    "weight_data_types": "fp16",
+    "weight_transformations": "No",
+    "url": "https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+
+    "division": "closed",
+    "model_name": "wan-2.2-t2v-a14b",
+    "mlperf_model_name": "wan-2.2-t2v-a14b",
+    "simple_model_name": "wan2_2",
+    "model_query": [ "^^", "substitute",
+        [ "downloaded,pytorch_model,model_name=#{simple_model_name}#" ]
+    ],
+    "model_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byquery", [[ "^^", "get", "model_query" ]] ]
+    ]] ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get_path" ]
+    ]] ],
+    "shortened_mlperf_model_name": "wan-2.2-t2v-a14b",
+
+    "dataset_file_name": "vbench_prompts.txt",
+    "dataset_name": "mlperf",
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ 
+            "text_to_video",
+            "wan-2.2-t2v-a14b",
+            "data",
+            [ "^^", "get", "dataset_file_name" ]
+        ]] ]
+    ]] ],
+
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_text_to_video_loadgen_experiment" ] ],
+
+    "inference_config_filename": "inference_config.yaml",
+    "height": 720,
+    "width": 1280,
+    "num_frames": 81,
+    "fps": 16,
+    "sample_steps": 20,
+    "seed": 42,
+    "guidance_scale": 4.0,
+    "guidance_scale_2": 3.0,
+    "boundary_ratio": 0.875,
+    "negative_prompt": "vivid colors, overexposed, static, blurry details, subtitles, style,\nwork of art, painting, picture, still, overall grayish, worst quality,\nlow quality, JPEG artifacts, ugly, deformed, extra fingers, poorly drawn hands,\npoorly drawn face, deformed, disfigured, deformed limbs, fused fingers,\nstatic image, cluttered background, three legs, many people in the background,\nwalking backwards",
+    "config_path": [ "^^", "generate_inference_config_yaml" ],
+
+    "fixed_latent_file_name": "fixed_latent.pt",
+    "fixed_latent_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video", "wan-2.2-t2v-a14b", "data", [ "^^", "get", "fixed_latent_file_name" ] ]] ]
+    ]] ],
+
+    "script_filename": "./run.sh",
+    "cfg_parallel": true,
+    "precompile_resolutions": "720x1280",
+    "precompile_frames": 81,
+    "dit_ring_para": 4,
+    "decoder_ctx_para": 6,
+    "wan_dit_compile_level": "max-autotune-no-cudagraphs",
+    "attn_backend": "flash",
+    "sage_offset_layers": 0,
+    "caching_strategy": "none",
+    "wan_use_fp8": false,
+    "wan_use_mxfp8": false,
+    "fp8_offset_layers": 0,
+
+    "nodes": 1,
+    "node_idx": 0,
+    "master_addr": [ "^", "func", "socket.gethostname" ],
+    "hosts": [ "^", "func", "socket.gethostname" ],
+
+    "checkpoint": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+    "docker_model_path": "/model",
+    "docker_dataset_path": [ "^^", "substitute", "/dataset/#{dataset_file_name}#" ],
+    "docker_user_conf_path": "/configs/user.conf",
+    "docker_config_path": [ "^^", "substitute", "/configs/#{inference_config_filename}#" ],
+    "docker_fixed_latent_path": [ "^^", "substitute", "/latent/#{fixed_latent_file_name}#" ],
+    "docker_output_dir": "/app/output",
+    "docker_audit_conf_path": "/configs/audit.config",
+
+    "params_dict": {
+        "checkpoint": [ "^^", "get", "checkpoint" ],
+        "precompile_resolutions": [ "^^", "get", "precompile_resolutions" ],
+        "precompile_frames": [ "^^", "get", "precompile_frames" ],
+        "dataset": [ "^^", "get", "docker_dataset_path" ],
+        "user_conf": [ "^^", "get", "docker_user_conf_path" ],
+        "config": [ "^^", "get", "docker_config_path" ],
+        "latent_location": [ "^^", "get", "docker_fixed_latent_path" ],
+        "scenario": [ "^^", "get", "loadgen_scenario" ],
+        "dit_ring_para": [ "^^", "get", "dit_ring_para" ],
+        "decoder_ctx_para": [ "^^", "get", "decoder_ctx_para" ],
+        "wan_dit_compile_level": [ "^^", "get", "wan_dit_compile_level" ],
+        "attn_backend": [ "^^", "get", "attn_backend" ],
+        "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
+        "caching_strategy": [ "^^", "get", "caching_strategy" ],
+        "fp8_offset_layers": [ "^^", "get", "fp8_offset_layers" ],
+        "division": [ "^^", "get", "division" ],
+
+        "nodes": [ "^^", "get", "nodes" ],
+        "node_idx": [ "^^", "get", "node_idx" ],
+        "master_addr": [ "^^", "get", "master_addr" ]
+    },
+
+    "mlperf_params_dict": {
+        "dataset": [ "^^", "get", "docker_dataset_path" ],
+        "user_conf": [ "^^", "get", "docker_user_conf_path" ],
+        "config": [ "^^", "get", "docker_config_path" ],
+        "scenario": [ "^^", "get", "loadgen_scenario" ],
+        "division": [ "^^", "get", "division" ]
+    },
+
+    "server_params_dict": {
+        "checkpoint": [ "^^", "get", "checkpoint" ],
+        "precompile_resolutions": [ "^^", "get", "precompile_resolutions" ],
+        "precompile_frames": [ "^^", "get", "precompile_frames" ],
+        "latent_location": [ "^^", "get", "docker_fixed_latent_path" ],
+        "dit_ring_para": [ "^^", "get", "dit_ring_para" ],
+        "decoder_ctx_para": [ "^^", "get", "decoder_ctx_para" ],
+        "wan_dit_compile_level": [ "^^", "get", "wan_dit_compile_level" ],
+        "attn_backend": [ "^^", "get", "attn_backend" ],
+        "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
+        "caching_strategy": [ "^^", "get", "caching_strategy" ],
+        "fp8_offset_layers": [ "^^", "get", "fp8_offset_layers" ],
+
+        "nodes": [ "^^", "get", "nodes" ],
+        "node_idx": [ "^^", "get", "node_idx" ],
+        "master_addr": [ "^^", "get", "master_addr" ]
+    },
+
+    "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+        "AccuracyOnly", "--accuracy",
+        "PerformanceOnly", ""
+    ]],
+    "async_file_write_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+        "AccuracyOnly", "",
+        "PerformanceOnly", "--async_file_write"
+    ]],
+    "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ], 
+        true, "--cfg_parallel",
+        false, ""
+    ]],
+    "wan_use_fp8_linear_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_fp8" ], 
+        true, "--wan_use_fp8_linear",
+        false, ""
+    ]],
+    "wan_mxfp8_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_mxfp8" ], 
+        true, "--wan_mxfp8",
+        false, ""
+    ]],
+    "qps": [ "^^", "case",[ [ "^^", "get", "loadgen_target_qps" ], 
+        null, ""
+        ], { "default_value": [ "^^", "substitute", "--qps #{loadgen_target_qps}#" ] }
+    ],
+    "audit_conf": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+        null, ""
+        ], { "default_value": [ "^^", "substitute", "--audit_conf #{target_audit_conf_path}#" ] }
+    ],
+    "maybe_audit_conf_mount": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+        null, ""
+        ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
+    ],
+    "params": [ "^^", "get_params" ],
+    "mlperf_params": [ "^^", "get_params", [ "^^", "get", "mlperf_params_dict"] ],
+    "server_params": [ "^^", "get_params", [ "^^", "get", "server_params_dict"] ],
+    "server_command": [ "^^", "substitute",
+        "#{script_filename}# #{server_params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{async_file_write_flag}#"
+    ],
+
+    "volumes": [ "^^", "substitute",
+        "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{output_dir}#/videos:/app/videos -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_conf_mount}# -v ~/.cache/huggingface:/app/huggingface -v ~/.cache/torch:/app/cache"
+    ],
+
+    "docker_setup": [ "^^", "substitute", 
+        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
+    ],
+
+    "server_run_cmd": [ "^^", "substitute",
+        "#{docker_setup}# #{server_command}#"
+    ],
+
+    "mlperf_command": [ "^^", "substitute", 
+        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{mlperf_params}# #{qps}# #{accuracy_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
+    ],
+    "mlperf_cmd": [ "^^", "substitute", 
+        "#{docker_setup}# #{mlperf_command}#"
+    ],
+
+    "docker_image_name": "kiss-v",
+    "docker_image_tag": "latest",
+    "shm_size": "32G",
+
+    "dummy": [ "^^", "run_experiment" ],
+
+    "shell_cmd": [ "^^", "substitute",
+        "echo #{dummy}#"
+    ]
+}

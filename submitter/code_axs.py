@@ -28,11 +28,14 @@ def scenarios_from_sut_type_and_task(sut_system_type, task):
 
     if sut_system_type == "edge":
         if task in ("image_classification", "object_detection"):
-            scenarios = ["Offline", "SingleStream", "MultiStream" ]
+            scenarios = [ "Offline", "SingleStream", "MultiStream" ]
         else:
-            scenarios = ["Offline", "SingleStream" ]
+            scenarios = [ "Offline", "SingleStream" ]
     elif sut_system_type in ("dc", "datacenter"):
-        scenarios = ["Offline", "Server" ]
+        if task in ("text_to_video"):
+            scenarios = [ "Offline", "SingleStream" ]
+        else:
+            scenarios = [ "Offline", "Server" ]
 
     return scenarios
 
@@ -100,8 +103,9 @@ Usage examples:
             "text_to_image":        [ 'TEST01' , 'TEST04' ],
             "llm":                  [ 'TEST06' ],
             "llama2":               [ 'TEST06' ],
-            "llama3_1":               [ 'TEST06' ],
-            "moe":                  [ 'TEST06' ]
+            "llama3_1":             [ 'TEST06' ],
+            "moe":                  [ 'TEST06' ],
+            "text_to_video":        [ 'TEST04' ]
         }[task]
 
         for compliance_test_name in compliance_test_list:
@@ -201,10 +205,10 @@ def get_testing_entry(experiment_entry):
     return testing_entry
 
 
-def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
+def lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path, power=False, model_meta_data=None, submitted_tree_path=None, model_mapping_path=None, __entry__=None):
 
     submitter_path      = make_local_dir( [ division, submitter ], submitted_tree_path)
-    code_path           = make_local_dir( [ division, submitter, 'code'], submitted_tree_path)
+    code_path           = make_local_dir( [ division, submitter, 'src'], submitted_tree_path)
     systems_path        = make_local_dir( [ division, submitter, 'systems'], submitted_tree_path )
 
     sut_descriptions_dictionary      = {}
@@ -215,9 +219,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         print(f"    Copying: {model_mapping_path}  -->  {dst_file_path}", file=sys.stderr)
         shutil.copy( model_mapping_path, dst_file_path)
 
-    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    copy_readmes_for_code( experiment_entries, division, submitter, submitted_tree_path, power, code_path, __entry__ )
 
-    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, __entry__ )
+    generate_readmes_for_measurements( experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__ )
     
     for experiment_entry in experiment_entries:
 
@@ -255,50 +259,6 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         modified_program_name = experiment_program_name.replace("resnet50", "image_classification") 
 
-        # ----------------------------[ measurements ]------------------------------------
-        measurement_general_path = make_local_dir ( [ division, submitter, 'measurements', sut_name ], submitted_tree_path )
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
-
-        for src_file_name in ( 'mlperf.conf', 'user.conf' ):
-            src_file_path = os.path.join(src_dir, src_file_name)
-            dst_file_path = os.path.join(measurement_path, src_file_name)
-            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
-            shutil.copy( src_file_path, dst_file_path)
-
-        measurements_meta_path  = os.path.join(measurement_path, f"{sut_name}_{modified_program_name}_{scenario}.json")
-
-        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
-        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
-
-        try:
-            measurements_meta_data  = {
-                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
-                "input_data_types": model_meta_data["input_data_types"],
-                "weight_data_types": model_meta_data["weight_data_types"],
-                "starting_weights_filename": model_meta_data["url"],
-                "weight_transformations": model_meta_data["weight_transformations"],
-            }
-        except KeyError as e:
-            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
-
-        save_json(measurements_meta_data, measurements_meta_path, indent=4)
-
-        experiment_entry.parent_objects = None
-
-        if with_power:
-            analyzer_table_file = "analyzer_table.md"
-            power_settings_file = "power_settings.md"
-
-            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
-            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
-
-            analyzer_table_file_path = os.path.join(measurement_general_path, analyzer_table_file)
-            power_settings_file_path = os.path.join(measurement_general_path, power_settings_file)
-
-            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
-                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
-                shutil.copy2(sut_power_settings_path, power_settings_file_path)
-
         # --------------------------------[ results ]--------------------------------------
         mode        = {
             'AccuracyOnly': 'accuracy',
@@ -308,9 +268,9 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         if  ( mode== 'accuracy') or ( mode == 'performance' and not compliance_test_name):
             results_path_syll   = [ division, submitter, 'results', sut_name, mlperf_model_name, scenario, mode]
         elif compliance_test_name  in ( "TEST01", "TEST04", "TEST06" ):
-            results_path_syll = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name ]
+            results_path_syll = [ division, submitter, 'results', sut_name , mlperf_model_name, scenario , compliance_test_name ]
             if compliance_test_name in ( "TEST01", "TEST06" ):
-                results_path_syll_TEST_acc = [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
+                results_path_syll_TEST_acc = [ division, submitter, 'results', sut_name , mlperf_model_name, scenario , compliance_test_name, 'accuracy' ]
                 results_path_TEST_acc = make_local_dir(results_path_syll_TEST_acc, submitted_tree_path)
 
         files_to_copy       = [ 'mlperf_log_summary.txt', 'mlperf_log_detail.txt' ]
@@ -329,7 +289,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         for filename in files_to_copy:
             src_file_path = os.path.join(src_dir, filename)
 
-            if (compliance_test_name in ( "TEST01", "TEST06" )  and filename == 'mlperf_log_accuracy.json'):
+            if (compliance_test_name in ( "TEST01", "TEST06" ) and filename == 'mlperf_log_accuracy.json'):
                 dst_file_path = os.path.join(results_path_TEST_acc, filename)
             else:
                 dst_file_path = os.path.join(results_path, filename)
@@ -381,16 +341,74 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
             print(f"    Copying: {src_images_dir}  -->  {results_images_path}", file=sys.stderr)
             shutil.copytree( src_images_dir, results_images_path, dirs_exist_ok=True)
 
+        # As per 6.0 measurement files go into the results folder
+        # ----------------------------[ measurements ]------------------------------------
+        measurement_path = os.path.join(submitted_tree_path, division, submitter, 'results', sut_name, mlperf_model_name, scenario)
+
+        # Copy user.conf from the experiment entry
+        src_file_name = 'user.conf'
+        src_file_path = os.path.join(src_dir, src_file_name)
+        dst_file_path = os.path.join(measurement_path, src_file_name)
+        print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+        shutil.copy( src_file_path, dst_file_path)
+
+        # Copy mlperf.conf from the experiment entry and if it is not there, then from the mlcommons repository
+        src_file_name = 'mlperf.conf'
+        dst_file_path = os.path.join(measurement_path, src_file_name)
+        try:
+            src_file_path = os.path.join(src_dir, src_file_name)
+            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+            shutil.copy( src_file_path, dst_file_path)
+        except FileNotFoundError:
+            src_file_path = mlperf_conf_path
+            print(f"    Copying: {src_file_path}  -->  {dst_file_path}", file=sys.stderr)
+            shutil.copy( src_file_path, dst_file_path)
+
+        measurements_meta_path  = os.path.join(measurement_path, "measurements.json")
+
+        # model_meta_data has become a generic source of measurements_meta_data (can be overridden, can come from the model, or be spread through the experiment entry)
+        model_meta_data = model_meta_data or experiment_entry.get("compiled_model_source_entry", experiment_entry)
+
+        try:
+            measurements_meta_data  = {
+                "retraining": model_meta_data.get("retraining", ("yes" if model_meta_data.get('retrained', False) else "no")),
+                "input_data_types": model_meta_data["input_data_types"],
+                "weight_data_types": model_meta_data["weight_data_types"],
+                "starting_weights_filename": model_meta_data["url"],
+                "weight_transformations": model_meta_data["weight_transformations"],
+            }
+        except KeyError as e:
+            raise RuntimeError(f"Key {e} is missing from model_meta_data or the model")
+
+        save_json(measurements_meta_data, measurements_meta_path, indent=4)
+
+        experiment_entry.parent_objects = None
+
+        # This is moved to results, but not properly tested
+        if with_power:
+            analyzer_table_file = "analyzer_table.md"
+            power_settings_file = "power_settings.md"
+
+            sut_analyzer_table_path = os.path.join(sut_path, analyzer_table_file)
+            sut_power_settings_path = os.path.join(sut_path, power_settings_file)
+
+            analyzer_table_file_path = os.path.join(measurement_path, analyzer_table_file)
+            power_settings_file_path = os.path.join(measurement_path, power_settings_file)
+
+            if os.path.isfile(sut_analyzer_table_path ) and os.path.isfile(sut_power_settings_path):
+                shutil.copy2(sut_analyzer_table_path, analyzer_table_file_path)
+                shutil.copy2(sut_power_settings_path, power_settings_file_path)
+
         # -------------------------------[ compliance , verification ]--------------------------------------
         if compliance_test_name in ( "TEST01", "TEST04", "TEST06" ):
-            compliance_path_test = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
+            compliance_path_test = make_local_dir( [ division, submitter, 'results', sut_name , mlperf_model_name, scenario, compliance_test_name ], submitted_tree_path )
 
             ("Verification for ", compliance_test_name)
 
-            tmp_dir = make_local_dir( [ division, submitter, 'compliance', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
+            tmp_dir = make_local_dir( [ division, submitter, 'results', sut_name , mlperf_model_name, scenario, 'tmp' ], submitted_tree_path )
             results_dir = os.path.join(submitter_path , 'results', sut_name, mlperf_model_name, scenario)
             compliance_dir = src_dir
-            output_dir = os.path.join(submitter_path ,'compliance', sut_name , mlperf_model_name, scenario)
+            output_dir = os.path.join(submitter_path ,'results', sut_name , mlperf_model_name, scenario)
             verify_script_path =  os.path.join(compliance_path,compliance_test_name, "run_verification.py")
             if task in ["llm", "llama2", "llama3_1", "moe"]:
                 dtype = experiment_entry['benchmark_output_data_type']
@@ -500,7 +518,7 @@ def run_checker(submitted_tree_path, division, submitter, submission_checker_pat
     logfile.write(result_checker)
 
 
-def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
+def full_run(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, checker_log_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path,power=False, model_meta_data=None, submitted_tree_path=None,  model_mapping_path=None, __entry__=None):
     """First run lay_out() to build the submission tree, then run_checker() to check its integrity.
 
 Usage examples:
@@ -514,13 +532,13 @@ Usage examples:
         print("The path " + submitted_tree_path + " exists, skipping lay_out()")
     else:
         print("Run lay_out in {submitted_tree_path} ...")
-        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
+        lay_out(experiment_entries, division, submitter, log_truncation_script_path, submission_checker_path, sut_path, compliance_path, scenarios, mlperf_round, mlperf_conf_path, power, model_meta_data, submitted_tree_path, model_mapping_path, __entry__)
 
     print("Run checker...")
     run_checker(submitted_tree_path, division, submitter, submission_checker_path, checker_log_path, __entry__)
 
 
-def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, __entry__=None):
+def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__=None):
     
     readme_template_path = __entry__.get_path("README_template.md")
 
@@ -549,8 +567,6 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         else:
             target_value = ""
 
-        mlperf_round = 5.0 # FIXME: turn into a data_axs.json level parameter
-
         mode = loadgen_mode.replace("Only", "")
 
         print(f"Experiment: {experiment_entry.get_name()} living in {src_dir}\n  produced_by={experiment_cmd}\n     mode={mode}", file=sys.stderr)
@@ -566,7 +582,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         
         mlperf_model_name = experiment_entry['mlperf_model_name']
 
-        measurement_path = make_local_dir( [ division, submitter, 'measurements', sut_name, mlperf_model_name, scenario], submitted_tree_path )
+        measurement_path = make_local_dir( [ division, submitter, 'results', sut_name, mlperf_model_name, scenario], submitted_tree_path )
 
         path_model_readme = os.path.join(measurement_path, "README.md")
         if os.path.exists(readme_template_path) and not os.path.exists(path_model_readme):
@@ -594,11 +610,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         print("")
 
 
-def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, __entry__):
-
-    code_path = make_local_dir( [ division, submitter, 'code'], submitted_tree_path )
-
-    sut_descriptions_dictionary      = {}
+def copy_readmes_for_code(experiment_entries, division, submitter, submitted_tree_path, power, code_path, __entry__):
 
     for experiment_entry in experiment_entries:
 

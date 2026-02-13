@@ -1,0 +1,60 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_loadgen_experiment" ] ],
+
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "launch_script_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
+    "launch_script_path": [ "^^", "execute", [[
+        [ "get", "launch_script_entry" ],
+        [ "get_path", [ "launch.sh" ] ]
+    ]] ],
+
+    "dataset_file_name": "vbench_prompts.txt",
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video", "wan-2.2-t2v-a14b", "data", [ "^^", "get", "dataset_file_name" ] ]] ]
+    ]] ],
+    "output_path": [ "^^", "get_path"],
+    "videos_relative_path": "videos",
+    "accuracy_log_path": ["^^", "get_path", "mlperf_log_accuracy.json"],
+    "videos_path": [ "^^", "get_videos_path" ],
+    "accuracy_report_num_gpus": 8,
+
+    "build_container": [ "^^", "substitute", "#{launch_script_path}# --build" ],
+    "accuracy_script_name": "run_evaluation.py",
+    "docker_videos_path": "/videos",
+    "docker_output_path": "/output",
+    "volumes": [ "^^", "substitute", "-v #{videos_path}#:#{docker_videos_path}# -v #{output_path}#:#{docker_output_path}#" ],
+    "run_accuracy_script": [ "^^", "substitute", "#{launch_script_path}# #{volumes}# python3 #{accuracy_script_name}# --videos-path #{docker_videos_path}# --output-path #{docker_output_path}# --num-gpus #{accuracy_report_num_gpus}#" ],
+
+    "dockerfile_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
+    "dockerfile_path": [ "^^", "execute", [[
+        [ "get", "dockerfile_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "inference_root": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path", [[ "text_to_video" ]] ]
+    ]] ],
+
+    "extract_accuracy_report": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "byname", "shell" ],
+        [ "run", [], {
+            "env": {
+                "WORK_DIR": [ "^^", "get", "dockerfile_path" ],
+                "INFERENCE_ROOT": [ "^^", "get", "inference_root" ]
+            },
+            "in_dir": [ "^^", "get", "work_dir" ],
+            "shell_cmd": [ "^^", "substitute", "#{build_container}# && #{run_accuracy_script}#" ],
+            "capture_output": true
+        } ],
+        0,
+        [ "func", [ "ufun.rematch", "Overall Average\\s*:\\s*(nan|\\d+(?:\\.\\d+)?)" ] ],
+        0,
+        [ "convert_metric" ],
+        0,
+        [ "func", "str" ]
+    ]], {} ]
+}
