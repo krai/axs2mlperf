@@ -195,8 +195,8 @@
         ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
     ],
     "params": [ "^^", "get_params" ],
-    "mlperf_params": [ "^^", "get_params", "mlperf_params_dict" ],
-    "server_params": [ "^^", "get_params", "server_params_dict" ],
+    "mlperf_params": [ "^^", "get_params", [ "^^", "get", "mlperf_params_dict"] ],
+    "server_params": [ "^^", "get_params", [ "^^", "get", "server_params_dict"] ],
     "server_command": [ "^^", "substitute",
         "#{script_filename}# #{server_params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{async_file_write_flag}#"
     ],
