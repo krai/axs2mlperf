@@ -167,8 +167,8 @@
         "PerformanceOnly", ""
     ]],
     "async_file_write_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
-        "AccuracyOnly", "--async_file_write",
-        "PerformanceOnly", ""
+        "AccuracyOnly", "",
+        "PerformanceOnly", "--async_file_write"
     ]],
     "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ], 
         true, "--cfg_parallel",
