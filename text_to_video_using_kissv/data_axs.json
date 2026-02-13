@@ -135,8 +135,39 @@
         "node_idx": [ "^^", "get", "node_idx" ],
         "master_addr": [ "^^", "get", "master_addr" ]
     },
+
+    "mlperf_params_dict": {
+        "dataset": [ "^^", "get", "docker_dataset_path" ],
+        "user_conf": [ "^^", "get", "docker_user_conf_path" ],
+        "config": [ "^^", "get", "docker_config_path" ],
+        "scenario": [ "^^", "get", "loadgen_scenario" ],
+        "division": [ "^^", "get", "division" ]
+    },
+
+    "server_params_dict": {
+        "checkpoint": [ "^^", "get", "checkpoint" ],
+        "precompile_resolutions": [ "^^", "get", "precompile_resolutions" ],
+        "precompile_frames": [ "^^", "get", "precompile_frames" ],
+        "latent_location": [ "^^", "get", "docker_fixed_latent_path" ],
+        "dit_ring_para": [ "^^", "get", "dit_ring_para" ],
+        "decoder_ctx_para": [ "^^", "get", "decoder_ctx_para" ],
+        "wan_dit_compile_level": [ "^^", "get", "wan_dit_compile_level" ],
+        "attn_backend": [ "^^", "get", "attn_backend" ],
+        "sage_offset_layers": [ "^^", "get", "sage_offset_layers" ],
+        "caching_strategy": [ "^^", "get", "caching_strategy" ],
+        "fp8_offset_layers": [ "^^", "get", "fp8_offset_layers" ],
+
+        "nodes": [ "^^", "get", "nodes" ],
+        "node_idx": [ "^^", "get", "node_idx" ],
+        "master_addr": [ "^^", "get", "master_addr" ]
+    },
+
     "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
         "AccuracyOnly", "--accuracy",
+        "PerformanceOnly", ""
+    ]],
+    "async_file_write_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+        "AccuracyOnly", "--async_file_write",
         "PerformanceOnly", ""
     ]],
     "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ], 
@@ -164,8 +195,10 @@
         ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
     ],
     "params": [ "^^", "get_params" ],
+    "mlperf_params": [ "^^", "get_params", "mlperf_params_dict" ],
+    "server_params": [ "^^", "get_params", "server_params_dict" ],
     "server_command": [ "^^", "substitute",
-        "#{script_filename}# #{params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_conf}#"
+        "#{script_filename}# #{server_params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{async_file_write_flag}#"
     ],
 
     "volumes": [ "^^", "substitute",
@@ -175,16 +208,13 @@
     "docker_setup": [ "^^", "substitute", 
         "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
     ],
-    "docker_setup_with_port": [ "^^", "substitute", 
-        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# -p 29500:29500 -p 8080:8080 #{docker_image_name}#:#{docker_image_tag}#"
-    ],
 
     "server_run_cmd": [ "^^", "substitute",
-        "#{docker_setup_with_port}# #{server_command}#"
+        "#{docker_setup}# #{server_command}#"
     ],
 
     "mlperf_command": [ "^^", "substitute", 
-        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{params}# #{qps}# #{cfg_parallel_flag}# #{wan_use_fp8_linear_flag}# #{wan_mxfp8_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
+        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{mlperf_params}# #{qps}# #{accuracy_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
     ],
     "mlperf_cmd": [ "^^", "substitute", 
         "#{docker_setup}# #{mlperf_command}#"
