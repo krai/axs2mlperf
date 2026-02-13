@@ -6,6 +6,8 @@
         "collection"
     ],
     "contained_entries": {
-        "h200_n1-kissv": "h200_n1-kissv"
+        "h200_n1-kissv": "h200_n1-kissv",
+        "b200_n1-kissv": "b200_n1-kissv",
+        "b300_n1-kissv": "b300_n1-kissv"
     }
 }
