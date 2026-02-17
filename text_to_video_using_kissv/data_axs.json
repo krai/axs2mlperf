@@ -220,6 +220,8 @@
         "#{docker_setup}# #{mlperf_command}#"
     ],
 
+    "output_entry_param_names": [ "retrained", "input_data_types", "weight_data_types", "weight_transformations", "url", "loadgen_buffer_size", "loadgen_dataset_size", "division", "cfg_parallel", "dit_ring_para", "decoder_ctx_para", "attn_backend", "sage_offset_layers", "caching_strategy", "wan_use_fp8", "wan_use_mxfp8", "fp8_offset_layers" ],
+
     "docker_image_name": "kiss-v",
     "docker_image_tag": "latest",
     "shm_size": "32G",
