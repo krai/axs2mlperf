@@ -56,7 +56,7 @@
     "dataset_name": "mlperf",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
-        [ "get_path", [[ 
+        [ "get_path", [[
             "text_to_video",
             "wan-2.2-t2v-a14b",
             "data",
@@ -162,35 +162,35 @@
         "master_addr": [ "^^", "get", "master_addr" ]
     },
 
-    "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+    "accuracy_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ],
         "AccuracyOnly", "--accuracy",
         "PerformanceOnly", ""
     ]],
-    "async_file_write_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ], 
+    "async_file_write_flag": [ "^^", "case",[ [ "^^", "get", "loadgen_mode" ],
         "AccuracyOnly", "",
         "PerformanceOnly", "--async_file_write"
     ]],
-    "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ], 
+    "cfg_parallel_flag": [ "^^", "case",[ [ "^^", "get", "cfg_parallel" ],
         true, "--cfg_parallel",
         false, ""
     ]],
-    "wan_use_fp8_linear_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_fp8" ], 
+    "wan_use_fp8_linear_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_fp8" ],
         true, "--wan_use_fp8_linear",
         false, ""
     ]],
-    "wan_mxfp8_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_mxfp8" ], 
+    "wan_mxfp8_flag": [ "^^", "case",[ [ "^^", "get", "wan_use_mxfp8" ],
         true, "--wan_mxfp8",
         false, ""
     ]],
-    "qps": [ "^^", "case",[ [ "^^", "get", "loadgen_target_qps" ], 
+    "qps": [ "^^", "case",[ [ "^^", "get", "loadgen_target_qps" ],
         null, ""
         ], { "default_value": [ "^^", "substitute", "--qps #{loadgen_target_qps}#" ] }
     ],
-    "audit_conf": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+    "audit_conf": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ],
         null, ""
         ], { "default_value": [ "^^", "substitute", "--audit_conf #{target_audit_conf_path}#" ] }
     ],
-    "maybe_audit_conf_mount": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ], 
+    "maybe_audit_conf_mount": [ "^^", "case",[ [ "^^", "get", "loadgen_compliance_test" ],
         null, ""
         ], { "default_value": [ "^^", "substitute", "-v #{target_audit_conf_path}#:#{docker_audit_conf_path}#" ] }
     ],
@@ -205,19 +205,23 @@
         "-v #{model_path}#:#{docker_model_path}# -v #{dataset_path}#:#{docker_dataset_path}# -v #{loadgen_user_conf_path}#:#{docker_user_conf_path}# -v #{config_path}#:#{docker_config_path}# -v #{fixed_latent_path}#:#{docker_fixed_latent_path}# -v #{output_dir}#:#{docker_output_dir}# -v #{output_dir}#/videos:/app/videos -v #{input_parameters_file_path}#:#{input_parameters_file_path}# #{maybe_audit_conf_mount}# -v ~/.cache/huggingface:/app/huggingface -v ~/.cache/torch:/app/cache"
     ],
 
-    "docker_setup": [ "^^", "substitute", 
-        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}# #{docker_image_name}#:#{docker_image_tag}#"
+    "docker_setup": [ "^^", "substitute",
+        "docker run --rm --gpus all --net host --ulimit nofile=16384:16384 --shm-size #{shm_size}# #{volumes}#"
+    ],
+
+    "docker_image": [ "^^", "substitute",
+        "#{docker_image_name}#:#{docker_image_tag}#"
     ],
 
     "server_run_cmd": [ "^^", "substitute",
-        "#{docker_setup}# #{server_command}#"
+        "#{docker_setup}# --name kiss_v_server #{docker_image}# #{server_command}#"
     ],
 
-    "mlperf_command": [ "^^", "substitute", 
+    "mlperf_command": [ "^^", "substitute",
         "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{mlperf_params}# #{qps}# #{accuracy_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
     ],
-    "mlperf_cmd": [ "^^", "substitute", 
-        "#{docker_setup}# #{mlperf_command}#"
+    "mlperf_cmd": [ "^^", "substitute",
+        "#{docker_setup}# --name loadgen_client #{docker_image}# #{mlperf_command}#"
     ],
 
     "output_entry_param_names": [ "retrained", "input_data_types", "weight_data_types", "weight_transformations", "url", "loadgen_buffer_size", "loadgen_dataset_size", "division", "cfg_parallel", "dit_ring_para", "decoder_ctx_para", "attn_backend", "sage_offset_layers", "caching_strategy", "wan_use_fp8", "wan_use_mxfp8", "fp8_offset_layers" ],

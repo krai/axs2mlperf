@@ -68,7 +68,7 @@ def run_experiment(nodes: int, node_idx: int, server_run_cmd: str, mlperf_cmd: s
             workload = subprocess.Popen(mlperf_cmd, shell=True)
             workload.wait()
         finally:
-            sidecar.terminate()
+            subprocess.run("docker kill kiss_v_server", shell=True)
             sidecar.wait()
             print("[Single-Node] Cleanup complete.")
         return "success"
@@ -85,9 +85,9 @@ def run_experiment(nodes: int, node_idx: int, server_run_cmd: str, mlperf_cmd: s
             workload = subprocess.Popen(mlperf_cmd, shell=True)
             workload.wait()
         finally:
-            sidecar.terminate()
+            subprocess.run("docker kill kiss_v_server", shell=True)
+            subprocess.run("docker kill redis-master", shell=True)
             sidecar.wait()
-            subprocess.run("docker stop redis-master", shell=True)
             print("[Multi-Node Master] Cleanup complete.")
         return "success"
 
