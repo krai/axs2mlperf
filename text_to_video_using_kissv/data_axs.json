@@ -98,6 +98,7 @@
     "wan_use_fp8": false,
     "wan_use_mxfp8": false,
     "fp8_offset_layers": 0,
+    "enhanced_mode": false,
 
     "nodes": 1,
     "node_idx": 0,
@@ -182,6 +183,10 @@
         true, "--wan_mxfp8",
         false, ""
     ]],
+    "enhanced_mode_flag": [ "^^", "case",[ [ "^^", "get", "enhanced_mode" ],
+        true, "--use_enhanced_mode",
+        false, ""
+    ]],
     "qps": [ "^^", "case",[ [ "^^", "get", "loadgen_target_qps" ],
         null, ""
         ], { "default_value": [ "^^", "substitute", "--qps #{loadgen_target_qps}#" ] }
@@ -218,7 +223,7 @@
     ],
 
     "mlperf_command": [ "^^", "substitute",
-        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{mlperf_params}# #{qps}# #{accuracy_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}#\""
+        "/bin/bash -c \"source /app/.venv/bin/activate && python3 mlperf.py #{mlperf_params}# #{qps}# #{accuracy_flag}# #{audit_conf}# --port 8080 --hosts #{hosts}# #{enhanced_mode_flag}#\""
     ],
     "mlperf_cmd": [ "^^", "substitute",
         "#{docker_setup}# --name loadgen_client #{docker_image}# #{mlperf_command}#"
