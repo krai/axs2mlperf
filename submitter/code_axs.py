@@ -7,6 +7,8 @@ import json
 import subprocess
 from ufun import save_json
 from tabulate import tabulate
+from argparse import Namespace
+from runnable import Runnable
 
 def create_run_verification_input_dict(task, tmp_dir, verify_script_path, results_dir, compliance_dir, output_dir, scenario, dtype=None):
     result_dict = {
@@ -154,7 +156,7 @@ Usage examples:
                     print(f"Entry {joined_query} is missing, but INFERRABLE, adding it as a mapping\n")
                     [ substituted_param, target_value, source_value, inferred_query, inferred_entry ] = inferrable_case
                     candidate_entry = inferred_entry or __entry__.get_kernel().byquery(inferred_query, True)
-                    candidate_entry[substituted_param] = target_value
+                    candidate_entry = Runnable(name = "editable_child", parent_objects = [ candidate_entry ], own_data = { substituted_param: target_value }, own_functions=Namespace( get_path=(lambda file_name, __entry__: __entry__.parent_objects[0].get_path(file_name) ) ), kernel = candidate_entry.get_kernel() )
                 else:
                     if candidate_entry:
                         print(f"Entry {joined_query} was already PRESENT, adding it to the list\n")
@@ -194,7 +196,7 @@ def make_local_dir( path_list, submitted_tree_path ):
 
 def get_testing_entry(experiment_entry):
 
-    entry_path = experiment_entry.get_path("")
+    entry_path = experiment_entry.call("get_path", [""])
     path_to_program_output = os.path.join(entry_path, 'program_output.json')
 
     with open(path_to_program_output, 'r') as file:
@@ -237,7 +239,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
         experiment_program_name  = experiment_entry.get('program_name')
         program_entry = __entry__.get_kernel().byname(experiment_program_name)
 
-        src_dir = experiment_entry.get_path("")
+        src_dir = experiment_entry.call("get_path", [""])
 
         sut_name        = experiment_entry.get('sut_name')
         sut_description = experiment_entry.get('sut_description')
@@ -299,7 +301,7 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
                 shutil.copy( src_file_path, dst_file_path)
 
         if with_power and mode=='performance' and not compliance_test_name:
-             power_src_dir = power_experiment_entry.get_path("power_logs")
+             power_src_dir = power_experiment_entry.call("get_path", ["power_logs"])
              dir_list = ['power', 'ranging', 'run_1']
 
              for elem in dir_list:
@@ -382,7 +384,8 @@ def lay_out(experiment_entries, division, submitter, log_truncation_script_path,
 
         save_json(measurements_meta_data, measurements_meta_path, indent=4)
 
-        experiment_entry.parent_objects = None
+        orphan_entry = experiment_entry.parent_objects[0] if experiment_entry.__class__ == Runnable else experiment_entry
+        orphan_entry.parent_objects = None
 
         # This is moved to results, but not properly tested
         if with_power:
@@ -540,13 +543,13 @@ Usage examples:
 
 def generate_readmes_for_measurements(experiment_entries, division, submitter, submitted_tree_path, power, mlperf_round, __entry__=None):
     
-    readme_template_path = __entry__.get_path("README_template.md")
+    readme_template_path = __entry__.call("get_path", ["README_template.md"] )
 
     for experiment_entry in experiment_entries:
 
         scenario        = experiment_entry['loadgen_scenario'].lower()
 
-        src_dir         = experiment_entry.get_path("")
+        src_dir         = experiment_entry.call("get_path", [""])
         sut_name        = experiment_entry.get('sut_name')
         
         loadgen_mode    = experiment_entry.get('loadgen_mode')
@@ -555,7 +558,7 @@ def generate_readmes_for_measurements(experiment_entries, division, submitter, s
         target_qps = experiment_entry.get("loadgen_target_qps")
         target_latency = experiment_entry.get("loadgen_target_latency")
 
-        experiment_cmd  = 'axs byquery ' + experiment_entry.get('__query')
+        experiment_cmd  = 'axs byquery ' + (experiment_entry.get('__query') or experiment_entry.parent_objects[0].get('__query'))
         #experiment_cmd  = experiment_entry.get('produced_by')
         compliance_test_name      = experiment_entry.get('loadgen_compliance_test')
        
@@ -642,7 +645,7 @@ def generate_table(experiment_entries, division, submitter, power, __entry__):
         
         scenario = experiment_entry['loadgen_scenario']
 
-        entry_path = experiment_entry.get_path("")
+        entry_path = experiment_entry.call("get_path", [""])
         if power:
             power_experiment_path = os.path.join(entry_path, 'power_logs')
             performance_dir_path = os.path.join(power_experiment_path, 'run_1')
