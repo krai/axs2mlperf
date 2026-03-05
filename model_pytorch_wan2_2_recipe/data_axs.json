@@ -44,7 +44,12 @@
     "download_model":  [ "^^", "substitute", "#{launch_script_path}# -v #{newborn_entry_path}#:#{model_path}# python3 #{download_model_script_name}# --download-path #{model_path}# --model-name #{full_mlperf_model_name}#" ],
 
     "newborn_entry_param_names": [
-        "file_name"
+        "file_name",
+        "retrained",
+        "input_data_types",
+        "weight_data_types",
+        "weight_transformations",
+        "url"
     ],
 
     "dockerfile_entry": [ "^", "byname", "base_text_to_video_loadgen_experiment" ],
