@@ -29,12 +29,6 @@
     "loadgen_buffer_size": null,
     "loadgen_server_coalesce_queries": null,
 
-    "retrained": "No",
-    "input_data_types": "fp16",
-    "weight_data_types": "fp16",
-    "weight_transformations": "No",
-    "url": "https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B-Diffusers",
-
     "division": "closed",
     "model_name": "wan-2.2-t2v-a14b",
     "mlperf_model_name": "wan-2.2-t2v-a14b",
@@ -50,6 +44,7 @@
         [ "get", "model_entry" ],
         [ "get_path" ]
     ]] ],
+
     "shortened_mlperf_model_name": "wan-2.2-t2v-a14b",
 
     "dataset_file_name": "vbench_prompts.txt",
@@ -239,5 +234,6 @@
 
     "shell_cmd": [ "^^", "substitute",
         "echo #{dummy}#"
-    ]
+    ],
+    "output_entry_param_names": ["retrained", "input_data_types", "weight_data_types", "weight_transformations", "url"]
 }
