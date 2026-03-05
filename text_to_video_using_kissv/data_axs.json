@@ -48,7 +48,7 @@
     "shortened_mlperf_model_name": "wan-2.2-t2v-a14b",
 
     "dataset_file_name": "vbench_prompts.txt",
-    "dataset_name": "mlperf",
+    "dataset_name": "text_to_video",
     "dataset_path": [ "^^", "execute", [[
         [ "get", "mlperf_inference_git_entry" ],
         [ "get_path", [[
