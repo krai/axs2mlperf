@@ -1,10 +1,20 @@
-# MLPerf Inference - Text-to-Video task
+# KISS-V: Krai Inference Serving Solution for Video
 
 ## Prerequisites
 * Docker must be installed.
-* The user running benchmarks must be incuded in the `docker` group.
+* The user running benchmarks must be included in the `docker` group.
 
-## Define a local workspace directory
+## Download the KISS-V (MLPerf edition) Docker image
+
+### H200
+```
+docker pull krai4ai/kiss-v_mlperf:h200
+```
+
+## Install [Krai](https://krai.ai)'s [axs](https://github.com/krai/axs) automation technology
+
+### Define a local workspace directory
+
 Use `$HOME`:
 ```
 export AXS_WORK_DIR=${HOME}
@@ -15,18 +25,16 @@ or e.g.:
 export AXS_WORK_DIR=/mnt/data/krai/${USER}
 ```
 
-## Install KRAI [AXS](https://github.com/krai/axs)
-
 ### Clone
 
 Clone the AXS repository under `${AXS_WORK_DIR}`:
 ```
-git clone https://github.com/krai/axs ${AXS_WORK_DIR}/axs
+git clone --branch master https://github.com/krai/axs ${AXS_WORK_DIR}/axs
 ```
 
 ### Init
 
-Define environment variables in your `~/.bashrc`:
+Define environment variables in your `~/.bashrc` e.g.:
 ```
 echo "
 
@@ -44,25 +52,13 @@ source ~/.bashrc
 axs version
 ```
 
-## Import public AXS repositories
+### Import public AXS repositories
 
 Import the required public repos into your work collection:
-
 ```
 axs byquery git_repo,collection,repo_name=axs2mlperf
 ```
 
-## Download the KISS-V (MLPerf edition) Docker image
-
-### H200
-```
-docker pull krai4ai/kiss-v_mlperf:h200
-```
-
-### B300
-```
-docker pull krai4ai/kiss-v_mlperf:b300
-```
 
 ## Benchmark
 
