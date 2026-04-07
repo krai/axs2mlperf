@@ -1,10 +1,10 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "openai_model", "model_name=gpt_oss" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "openai_model", "model_name=gpt-oss-120b" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url,tool_name=mlc_r2_downloader",
 	    "url": "https://inference.mlcommons-storage.org/metadata/gpt-oss-model.uri",
-	    "newborn_entry_name": "downloaded_gpt_oss_model",
-	    "file_name": [ "gpt-oss-120b" ]
+	    "newborn_entry_name": "downloaded_gpt_oss_120b_model",
+	    "file_name": [ "gpt-oss-model.uri", "gpt-oss-120b" ]
 	}, [] ]
     ]
 }
