@@ -5,5 +5,5 @@ axs byquery downloaded,mlc_r2_downloader
 
 # 2. Download dataset
 ```
-axs byquery downloaded,dataset_name=dataset_gpt_oss_120b_model
+axs byquery downloaded,dataset_name=mlperf-dataset-for-gpt-oss-120b
 ```

@@ -1,9 +1,9 @@
 {
     "_producer_rules": [
-        [ [ "downloaded", "dataset_name=dataset_gpt_oss_120b_model" ], [["get_kernel"],["byname","downloader"],["download"]], {
+        [ [ "downloaded", "dataset_name=mlperf-dataset-for-gpt-oss-120b" ], [["get_kernel"],["byname","downloader"],["download"]], {
             "downloading_tool_query": "shell_tool,can_download_url,tool_name=mlc_r2_downloader",
 	    "url": "https://inference.mlcommons-storage.org/metadata/gpt-oss-data.uri",
-	    "newborn_entry_name": "downloaded_dataset_gpt_oss_model",
+	    "newborn_entry_name": "downloaded_mlperf_dataset_for_gpt_oss_120b",
             "file_path": [ "gpt-oss_data" ]
         } ]
     ]
