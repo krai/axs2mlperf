@@ -1,0 +1,10 @@
+{
+    "_producer_rules": [
+        [ [ "downloaded", "dataset_name=dataset_gpt_oss_120b_model" ], [["get_kernel"],["byname","downloader"],["download"]], {
+            "downloading_tool_query": "shell_tool,can_download_url,tool_name=mlc_r2_downloader",
+	    "url": "https://inference.mlcommons-storage.org/metadata/gpt-oss-data.uri",
+	    "newborn_entry_name": "downloaded_dataset_gpt_oss_model",
+            "file_path": [ "gpt-oss_data" ]
+        } ]
+    ]
+}
