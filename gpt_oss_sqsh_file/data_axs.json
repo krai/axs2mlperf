@@ -1,0 +1,22 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ], [ "^", "byname", "entry_creator" ]],
+    "_producer_rules": [
+        [ [ "sqsh", "task=gpt-oss", "model_name=gpt-oss-120b" ], [["get", "pipeline"]] ]
+    ],
+    "sandbox_name": "sglang_v0.5.4.post2",
+    "docker_image": "lmsysorg/sglang:v0.5.4.post2",
+    "newborn_entry_name": "sqsh_file_for_gpt_oss_120b",
+    "newborn_entry_tags": [ "sqsh" ],
+    "newborn_parent_names": [],
+    "newborn_entry_param_names": [ "file_name" ],
+
+    "pipeline": [ "^^", "execute", [[
+        [ "run" ],
+        [],
+        [ "get", "newborn_entry" ]
+    ]]],
+    "file_name": [ "^^", "substitute", "#{sandbox_name}#.sqsh" ],
+    
+    "abs_script_path": "/hpelustre/krai/maria/work_collection/axs2mlperf/gpt_oss_sqsh_file/setup_enroot.sh",
+    "shell_cmd": [ "^^", "substitute","\"#{abs_script_path}#\" --docker_image \"#{docker_image}#\" --sandbox_name \"#{sandbox_name}#\" --sqsh_location \"#{newborn_entry_path}#\"" ]
+}

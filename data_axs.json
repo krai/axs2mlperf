@@ -89,7 +89,8 @@
         "text_to_video_using_kissv": "text_to_video_using_kissv",
         "kissv_sut_collection": "kissv_sut_collection",
         "model_gpt_oss_recipe": "model_gpt_oss_recipe",
-        "dataset_gpt_oss_120b_model_recipe": "dataset_gpt_oss_120b_model_recipe"
+        "dataset_gpt_oss_120b_model_recipe": "dataset_gpt_oss_120b_model_recipe",
+        "gpt_oss_sqsh_file": "gpt_oss_sqsh_file"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
