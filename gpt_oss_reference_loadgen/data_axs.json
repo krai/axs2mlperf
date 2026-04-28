@@ -1,0 +1,110 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_in_shell" ], [ "^", "byname", "base_loadgen_program" ]],
+    "_producer_rules": [
+        [ [ "loadgen_output", "task=gpt-oss", "model_name=gpt-oss-120b" ], [["get", "pipeline"]] ]
+    ],
+    "mlperf_inference_git_entry": [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git" ],
+
+    "gpt_oss_reference_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gpt_oss_reference_loadgen_script" ]
+    ]]],
+    "gpt_oss_run_server_script_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gpt_oss_run_server_script" ]
+    ]]],
+    "gpt_oss_setup_enroot_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gpt_oss_setup_enroot" ]
+    ]]],
+    "gpt_oss_generation_config_path": [ "^^", "execute", [[
+        [ "get", "mlperf_inference_git_entry" ],
+        [ "get_path_of", "gpt_oss_generation_config" ]
+    ]]],
+
+    "python_deps": [
+        [ "^^", "python_sync_pip_package", [[ "^^", "get", "loadgen_query" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=absl-py", "package_version=2.3.1" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=anthropic", "package_version=0.72.0" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=audioread", "package_version=3.1.0" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=huggingface_hub","package_version=0.36.2" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=datasets", "package_version=2.21.0" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=joblib", "package_version=1.5.3" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=lazy_loader", "package_version=0.4" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=msgpack", "package_version=1.1.2" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=numba", "package_version=0.63.1" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=pooch", "package_version=1.8.2" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=scikit-learn", "package_version=1.8.0" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=soxr", "package_version=1.0.0" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=sglang", "package_version=0.5.4.post2" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=flashinfer-cubin", "package_version=0.4.1" ]] ],
+        [ "^^", "python_sync_pip_package", [[ "python_package", "package_name=flashinfer-python", "package_version=0.4.1" ]] ]
+
+    ],
+
+    "output_entry_parents": [ "AS^IS", "AS^IS", [ "^", "byname", "base_gpt_oss_loadgen_experiment" ] ],
+    "output_entry_param_names": [
+        "model_name"
+    ],
+    "model_entry": [ "^", "byquery", "downloaded,openai_model,model_name=gpt-oss-120b" ],
+    "model_path": [ "^^", "execute", [[
+        [ "get", "model_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "dataset_name": "mlperf-dataset-for-gpt-oss-120b",
+    "dataset_entry": [ "^", "byquery", "downloaded,dataset_name=mlperf-dataset-for-gpt-oss-120b" ],
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "dataset_entry" ],
+        [ "get_path", [ [ "gpt-oss_data", "acc","acc_eval_ref.parquet"] ] ]
+    ]]],
+    "loadgen_scenario": "Offline",
+    "scenario": [ "^^", "case", [ [ "^^", "get", "loadgen_mode"],
+	    "Server", "server" ],
+            { "default_value": "offline" }
+    ],
+    "max_samples": null,
+    "max_samples_cmd": [ "^^", "case", [ [ "^^", "get", "max_samples"],
+	    null, "" ],
+	    { "default_value":  [ "^^", "substitute", "--max-samples #{max_samples}#" ] }
+    ],
+
+    "backend": "sglang",
+    "server_url": "http://localhost:30000",
+    "max_new_tokens": null,
+    "max_new_tokens_cmd": [ "^^", "case", [ [ "^^", "get", "max_new_tokens"],
+        null, "" ],
+	{ "default_value":  [ "^^", "substitute", "--max-new-tokens #{max_new_tokens}#" ] }
+    ],
+    "num_workers": 1,
+    "max_concurrency": 128,
+    "timeout": 2400,
+
+    "loadgen_dataset_size": null,
+    "loadgen_buffer_size": null,
+
+    "framework": "",
+
+    "server_stream_interval": 100,
+    "dp": 1,
+    "eagle_path": "",
+    "eagle_path_cmd": [ "^^", "case", [ [ "^^", "get", "eagle_path"],
+        "", "" ],
+	{ "default_value": [ "^^", "substitute", "--eagle_path #{eagle_path}#" ] }
+    ],
+
+    "server_pid_file": "server.pid",
+
+    "accuracy_cmd": [ "^^", "case", [ [ "^^", "get", "loadgen_mode"],
+        "AccuracyOnly", "--accuracy" ],
+        { "default_value": "" }
+    ],
+    "server_script_path": [ "^", "execute", [[
+        [ "byname", "gpt_oss_reference_loadgen" ],
+        [ "get_path", "run_server.sh" ]
+    ]]],
+    
+    "server_cmd": [ "^^", "substitute", "nohup \"#{server_script_path}#\" --model_path \"#{model_path}#\" --dp #{dp}# #{eagle_path_cmd}# --stream_interval #{server_stream_interval}# >\"#{output_dir}#/server.log\" 2>&1 </dev/null & echo \"Server is started with PID $!\" ; echo $! >> \"#{output_dir}#/#{server_pid_file}#\"; echo \"Waiting for server start...\"; t=0; while ! grep -q \"The server is fired up and ready to roll\" \"#{output_dir}#/server.log\" && [[ $t -lt 300 ]]; do ((t++)); sleep 1; done; if [[ $t -lt 300 ]]; then echo \"Server started\"; ps auxf | grep \"#{model_path}#\" | grep -v grep | grep -v bash | awk '{print $2}' >> \"#{output_dir}#/#{server_pid_file}#\"; else echo \"Timeout. Check server log \" ; exit -1; fi" ],
+    
+    "shell_cmd_with_subs": [ "^^", "substitute", "#{server_cmd}# ; #{gpt_oss_reference_script_path}# --scenario #{scenario}# --input-file #{dataset_path}# #{accuracy_cmd}#   --mlperf-conf \"#{loadgen_mlperf_conf_path}#\" --user-conf \"#{loadgen_user_conf_path}#\" --output-dir \"#{output_dir}#\" --generation-config \"#{gpt_oss_generation_config_path}#\" #{max_samples_cmd}# --backend \"#{backend}#\" --server-url \"#{server_url}#\" #{max_new_tokens_cmd}# --num-workers #{num_workers}# --max-concurrency #{max_concurrency}# --timeout #{timeout}# ; kill -9 $(cat #{output_dir}#/#{server_pid_file}#)" ]
+}
