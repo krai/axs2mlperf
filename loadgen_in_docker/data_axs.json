@@ -1,0 +1,27 @@
+{
+    "_parent_entries": [ [ "^", "byname", "entries_from_docker" ] ],
+    
+    "_producer_rules": [
+        [ [ "loadgen_output_in_docker-:loadgen_output", "task=image_classification", "framework=onnxrt" ], [[ "get", "pipeline" ]], {
+                "execution_entry_product_collection_name": "collection_name"
+        } ],
+
+        [ [ "loadgen_output_in_docker-:loadgen_output", "task=object_detection", "framework=onnxrt" ], [[ "get", "pipeline" ]], {
+                "execution_entry_product_collection_name": "collection_name"
+        } ],
+
+        [ [ "loadgen_output_in_docker-:loadgen_output", "task=bert", "framework=onnxrt" ], [[ "get", "pipeline" ]], {
+                "execution_entry_product_collection_name": "collection_name"
+        } ],
+
+        [ [ "loadgen_output_in_docker-:loadgen_output", "task=image_classification", "framework=pytorch" ], [[ "get", "pipeline" ]], {
+                "execution_entry_product_collection_name": "collection_name"
+        } ]
+    ],
+
+    "host_entries_to_pass_down": [
+        [ "^", "byquery", "collection,git_repo,repo_name=axs2mlperf" ],
+        [ "^", "byquery", "git_repo,repo_name=mlperf_inference_git,submodules+" ],
+        [ "^^", "get", "exchange_collection" ]
+    ]
+}

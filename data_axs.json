@@ -92,7 +92,8 @@
         "dataset_gpt_oss_120b_model_recipe": "dataset_gpt_oss_120b_model_recipe",
         "gpt_oss_sqsh_file": "gpt_oss_sqsh_file",
         "base_gpt_oss_loadgen_experiment": "base_gpt_oss_loadgen_experiment",
-        "gpt_oss_reference_loadgen": "gpt_oss_reference_loadgen"
+        "gpt_oss_reference_loadgen": "gpt_oss_reference_loadgen",
+        "loadgen_in_docker": "loadgen_in_docker"
     },
     "repo_name": "axs2mlperf",
     "checkout": null,
