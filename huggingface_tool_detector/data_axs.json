@@ -1,6 +1,6 @@
 {
     "_parent_entries": [
-        [ "^", "byname", "python_tool_detector" ]
+        [ "^", "byname", "python_based_tool_detector" ]
     ],
     "_producer_rules": [
 	    [ ["shell_tool", "can_download_url_from_huggingface" ] , [["detect"]],
